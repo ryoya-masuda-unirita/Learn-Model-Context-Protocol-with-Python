@@ -1,15 +1,22 @@
+"""クライアントにサンプリングを依頼するサーバー。
+
+新しい商品が追加されると、その商品説明の生成をクライアントの LLM に依頼する
+（sampling/createMessage を送る）。
+"""
 import sys
 import json
 import queue
 import threading
 import random
+from collections.abc import Callable
+from typing import Any
 
 from utils.messages import initializeResponse, progress_notification
 
 
-initialized = False
+initialized: bool = False
 
-product = {
+product: dict[str, Any] = {
     "id": "12345",
     "name": "サンプル商品",
     "price": 19.99,
@@ -17,13 +24,29 @@ product = {
 }
 
 class ProductStore:
-    def __init__(self):
-        self.started = False
-        self.listeners = {}
+    """商品を管理し、商品が追加されたらリスナーに通知するストア。
+
+    最初のリスナーが登録されたときに、商品を自動で追加するタイマーを開始する。
+
+    Attributes
+    ----------
+    started : bool
+        商品を追加するタイマーを開始済みかどうか。
+    listeners : dict[str, list[Callable[[dict[str, Any]], Any]]]
+        メッセージ名をキー、コールバックのリストを値とする辞書。
+    """
+
+    def __init__(self) -> None:
+        """ストアを初期化する。"""
+        self.started: bool = False
+        self.listeners: dict[str, list[Callable[[dict[str, Any]], Any]]] = {}
         # 5秒ごとに商品をキューに追加するタイマーを作る
 
-    def add_product(self):
-        """ストアに商品を追加し、リスナーに通知する。"""
+    def add_product(self) -> None:
+        """ストアに商品を追加し、リスナーに通知する。
+
+        ID・名前・価格・キーワードはランダムに作る。
+        """
         product = {
             "id": str(random.randint(10000, 99999)),
             "name": f"商品 {random.randint(1, 100)}",
@@ -32,20 +55,36 @@ class ProductStore:
         }
         self.dispatch_message("new_product", product)
 
-    def start_product_queue_timer(self):
-        """5秒ごとに商品をキューに追加するタイマーを開始する。"""
-        def schedule_next():
+    def start_product_queue_timer(self) -> None:
+        """5秒ごとに商品をキューに追加するタイマーを開始する。
+
+        実際には 1〜2 秒後に商品を追加するタイマーを2つ開始する。
+        """
+        def schedule_next() -> None:
+            """1〜2 秒後に商品を追加するタイマーを開始する。"""
             delay = random.uniform(1, 2)
             self.product_timer = threading.Timer(delay, self.add_product)
             self.product_timer.start()
 
-        def add_twice():
+        def add_twice() -> None:
+            """タイマーを2つ開始する。"""
             schedule_next()
             schedule_next()
 
         add_twice()
 
-    def add_listener(self, message, callback):
+    def add_listener(self, message: str, callback: Callable[[dict[str, Any]], Any]) -> None:
+        """商品の更新を受け取るリスナーを追加する。
+
+        最初の呼び出しで、商品を追加するタイマーも開始する。
+
+        Parameters
+        ----------
+        message : str
+            購読するメッセージ名（例: "new_product"）。
+        callback : Callable[[dict[str, Any]], Any]
+            メッセージを受け取ったときに、ペイロードを引数にして呼ばれる関数。
+        """
         if not self.started:
             self.started = True
             self.start_product_queue_timer()
@@ -55,13 +94,33 @@ class ProductStore:
         callbacks.append(callback)
         self.listeners[message] = callbacks
 
-    def dispatch_message(self, message, payload):
-        """登録されているすべてのリスナーにメッセージを送る。"""
+    def dispatch_message(self, message: str, payload: dict[str, Any]) -> None:
+        """登録されているすべてのリスナーにメッセージを送る。
+
+        Parameters
+        ----------
+        message : str
+            送るメッセージ名。
+        payload : dict[str, Any]
+            リスナーに渡すデータ。
+        """
         callbacks = self.listeners.get(message, [])
         for callback in callbacks:
             callback(payload)
 
-def create_sampling_message(product):
+def create_sampling_message(product: dict[str, Any]) -> dict[str, Any]:
+    """商品説明の生成を依頼するサンプリングのリクエストを作る。
+
+    Parameters
+    ----------
+    product : dict[str, Any]
+        説明を生成したい商品（id、name、price、keywords を持つ辞書）。
+
+    Returns
+    -------
+    dict[str, Any]
+        sampling/createMessage の JSON-RPC リクエスト。
+    """
     sampling_message = {
         "jsonrpc": "2.0",
         "id": 1,
@@ -81,10 +140,17 @@ def create_sampling_message(product):
     }
     return sampling_message
 
-store = ProductStore()
+store: ProductStore = ProductStore()
 store.add_listener("new_product", lambda product: print(json.dumps(create_sampling_message(product))) and sys.stdout.flush())
 
-def handle_sampling_response(response):
+def handle_sampling_response(response: dict[str, Any]) -> None:
+    """クライアントから届いたサンプリングの応答を処理する。
+
+    Parameters
+    ----------
+    response : dict[str, Any]
+        result.content.text に LLM の生成結果を持つ JSON-RPC 応答。
+    """
     content = response['result']['content']['text']
     print("[SERVER] [サンプリングの応答を受信しました]:", content)
     sys.stdout.flush()
@@ -92,13 +158,13 @@ def handle_sampling_response(response):
 
 while True:
     for line in sys.stdin:
-        message = line.strip()
+        message: str = line.strip()
         if message == "hello":
             print("こんにちは")
             sys.stdout.flush()  # 出力をすぐに送る
         elif message.startswith('{"jsonrpc":'):
-            json_message = json.loads(message)
-            method = json_message.get('method', '')
+            json_message: dict[str, Any] = json.loads(message)
+            method: str = json_message.get('method', '')
 
             if not initialized:
                 if method != "initialize" and method != "notifications/initialized":
@@ -121,8 +187,8 @@ while True:
                     break
                      # capabilities を返すべき
                 case "tools/call":
-                    tool_name = json_message['params']['name']
-                    args = json_message['params']['args']
+                    tool_name: str = json_message['params']['name']
+                    args: dict[str, Any] = json_message['params']['args']
 
                     print(json.dumps(create_sampling_message(product)))
                     sys.stdout.flush()
@@ -134,7 +200,7 @@ while True:
                     sys.stdout.flush()
 
                     # TODO: tool 呼び出しへの応答を作る（つまり、正しい tool を呼び出す）
-                    response = {
+                    response: dict[str, Any] = {
                         "jsonrpc": "2.0",
                         "id": json_message["id"],
                         "result": {

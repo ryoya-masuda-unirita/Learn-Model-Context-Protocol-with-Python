@@ -1,3 +1,7 @@
+"""LLM を使って呼び出す tool を決める、MCP サーバー（server.py）のクライアント。
+
+自然言語のプロンプトを LLM に渡し、LLM が選んだ tool を MCP サーバーで実行する。
+"""
 from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
 from openai import OpenAI
@@ -5,15 +9,30 @@ from openai import OpenAI
 # LLM
 import os
 import json
+from typing import Any
 
 # stdio 接続用のサーバーパラメーターを作る
-server_params = StdioServerParameters(
+server_params: StdioServerParameters = StdioServerParameters(
     command="mcp",  # 実行ファイル
     args=["run", "server.py"],  # コマンドライン引数（任意）
     env=None,  # 環境変数（任意）
 )
 
-def call_llm(prompt, functions):
+def call_llm(prompt: str, functions: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """LLM にプロンプトと tool の定義を渡し、呼び出すべき tool を決めてもらう。
+
+    Parameters
+    ----------
+    prompt : str
+        ユーザーが入力したプロンプト。
+    functions : list[dict[str, Any]]
+        LLM に渡す tool の定義（OpenAI の function calling 形式）のリスト。
+
+    Returns
+    -------
+    list[dict[str, Any]]
+        呼び出すべき tool の名前（name）と引数（args）の辞書のリスト。
+    """
     token = os.environ["GITHUB_TOKEN"]
     endpoint = "https://models.github.ai/inference"
 
@@ -59,7 +78,19 @@ def call_llm(prompt, functions):
 
     return functions_to_call
 
-def convert_to_llm_tool(tool):
+def convert_to_llm_tool(tool: types.Tool) -> dict[str, Any]:
+    """MCP の tool の定義を、OpenAI の function calling 形式に変換する。
+
+    Parameters
+    ----------
+    tool : types.Tool
+        MCP サーバーから取得した tool の定義。
+
+    Returns
+    -------
+    dict[str, Any]
+        OpenAI の Chat Completions API の tools に渡せる形式の定義。
+    """
     tool_schema = {
         "type": "function",
         "function": {
@@ -75,7 +106,11 @@ def convert_to_llm_tool(tool):
 
     return tool_schema
 
-async def run():
+async def run() -> None:
+    """サーバーに接続し、入力されたプロンプトを LLM に渡して tool を呼び出す。
+
+    'quit' と入力すると終了する。
+    """
     async with stdio_client(server_params) as (read, write):
         async with ClientSession(
             read, write

@@ -1,3 +1,6 @@
+"""EC サイトのサーバーで公開する tool の一覧。tool 名をキーにした辞書として提供する。"""
+from typing import Any
+
 from .add_to_cart import tool_add_to_cart
 from .get_all_categories import tool_get_all_categories
 from .get_cart_items import tool_get_all_cart_items
@@ -7,7 +10,7 @@ from .get_orders import tool_get_orders
 from .get_product import tool_get_product
 from .place_order import tool_place_order
 
-tools = {
+tools: dict[str, dict[str, Any]] = {
   tool_add_to_cart["name"] : tool_add_to_cart,
   tool_get_all_categories["name"] : tool_get_all_categories,
   tool_get_all_cart_items["name"] : tool_get_all_cart_items,

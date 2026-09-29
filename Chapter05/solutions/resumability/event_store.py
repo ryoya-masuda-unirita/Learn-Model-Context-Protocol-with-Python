@@ -13,13 +13,22 @@ from uuid import uuid4
 from mcp.server.streamable_http import EventCallback, EventId, EventMessage, EventStore, StreamId
 from mcp.types import JSONRPCMessage
 
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 @dataclass
 class EventEntry:
     """
     イベントストア内の1件のイベントを表す。
+
+    Attributes
+    ----------
+    event_id : EventId
+        イベントの一意な ID。
+    stream_id : StreamId
+        イベントが属するストリームの ID。
+    message : JSONRPCMessage
+        イベントとして送った JSON-RPC メッセージ。
     """
 
     event_id: EventId
@@ -29,18 +38,30 @@ class EventEntry:
 
 class InMemoryEventStore(EventStore):
     """
-    resumability のための、EventStore インターフェースのシンプルなインメモリ実装。
+    EventStore インターフェースの、resumability のためのシンプルなインメモリ実装。
+
     主にサンプルやテスト向けであり、本番環境向けではない。
     本番環境では永続化ストレージを使う方が適切。
 
     メモリを節約するため、ストリームごとに直近 N 件のイベントだけを保持する。
+
+    Attributes
+    ----------
+    max_events_per_stream : int
+        ストリームごとに保持するイベントの最大数。
+    streams : dict[StreamId, deque[EventEntry]]
+        ストリーム ID ごとのイベントの deque。
+    event_index : dict[EventId, EventEntry]
+        イベント ID からイベントを素早く引くための索引。
     """
 
-    def __init__(self, max_events_per_stream: int = 100):
+    def __init__(self, max_events_per_stream: int = 100) -> None:
         """イベントストアを初期化する。
 
-        Args:
-            max_events_per_stream: ストリームごとに保持するイベントの最大数
+        Parameters
+        ----------
+        max_events_per_stream : int, optional
+            ストリームごとに保持するイベントの最大数。デフォルトは 100。
         """
         self.max_events_per_stream = max_events_per_stream
         # ストリームごとに直近 N 件のイベントを保持する
@@ -49,7 +70,20 @@ class InMemoryEventStore(EventStore):
         self.event_index: dict[EventId, EventEntry] = {}
 
     async def store_event(self, stream_id: StreamId, message: JSONRPCMessage) -> EventId:
-        """生成したイベント ID と一緒にイベントを保存する。"""
+        """生成したイベント ID と一緒にイベントを保存する。
+
+        Parameters
+        ----------
+        stream_id : StreamId
+            イベントを保存するストリームの ID。
+        message : JSONRPCMessage
+            保存する JSON-RPC メッセージ。
+
+        Returns
+        -------
+        EventId
+            生成したイベント ID。
+        """
         event_id = str(uuid4())
         event_entry = EventEntry(event_id=event_id, stream_id=stream_id, message=message)
 
@@ -74,7 +108,20 @@ class InMemoryEventStore(EventStore):
         last_event_id: EventId,
         send_callback: EventCallback,
     ) -> StreamId | None:
-        """指定したイベント ID より後に発生したイベントを再生する。"""
+        """指定したイベント ID より後に発生したイベントを再生する。
+
+        Parameters
+        ----------
+        last_event_id : EventId
+            クライアントが最後に受け取ったイベントの ID。
+        send_callback : EventCallback
+            再生する各イベントを送るためのコールバック。
+
+        Returns
+        -------
+        StreamId | None
+            イベントを再生したストリームの ID。last_event_id が見つからなければ None。
+        """
         if last_event_id not in self.event_index:
             logger.warning(f"イベント ID {last_event_id} がストアに見つかりません")
             return None

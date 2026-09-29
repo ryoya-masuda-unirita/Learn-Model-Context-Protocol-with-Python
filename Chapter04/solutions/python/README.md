@@ -60,69 +60,58 @@ npx @modelcontextprotocol/inspector --cli http://localhost:3000/sse --method too
 {
   "tools": [
     {
-      "name": "add_product_to_cart",
-      "description": "カートに商品を追加する",
+      "name": "get_products_by_category",
+      "description": "カテゴリーで商品を取得する。\n\nParameters\n----------\ncategory : str\n    取得する商品のカテゴリー名（例: \"カテゴリー 1\"）。\n\nReturns\n-------\nList[Product]\n    指定したカテゴリーの商品のリスト。\n",
       "inputSchema": {
-        "type": "object",
         "properties": {
-          "product_name": {
-            "title": "Product Name",
+          "category": {
+            "title": "Category",
             "type": "string"
           }
         },
         "required": [
-          "product_name"
+          "category"
         ],
-        "title": "add_product_to_cartArguments"
+        "title": "get_products_by_categoryArguments",
+        "type": "object"
       },
       "outputSchema": {
-        "type": "object",
-        "properties": {},
-        "title": "CartItem"
-      }
-    },
-    {
-      "name": "list_cart",
-      "description": "カートの中身をすべて一覧表示する",
-      "inputSchema": {
-        "type": "object",
-        "properties": {},
-        "title": "list_cartArguments"
-      },
-      "outputSchema": {
-        "type": "object",
-        "properties": {
-          "result": {
-            "items": {
-              "$ref": "#/$defs/CartItem"
-            },
-            "title": "Result",
-            "type": "array"
-          }
-        },
-        "required": [
-          "result"
-        ],
         "$defs": {
-          "CartItem": {
-            "properties": {},
-            "title": "CartItem",
+          "Product": {
+            "description": "商品。",
+            "properties": {
+              "id": {
+                "title": "Id",
+                "type": "integer"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "price": {
+                "title": "Price",
+                "type": "number"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "category": {
+                "title": "Category",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "price",
+              "description",
+              "category"
+            ],
+            "title": "Product",
             "type": "object"
           }
         },
-        "title": "list_cartOutput"
-      }
-    },
-    {
-      "name": "get_products",
-      "description": "すべての商品を取得する",
-      "inputSchema": {
-        "type": "object",
-        "properties": {},
-        "title": "get_productsArguments"
-      },
-      "outputSchema": {
-        "type": "object",
         "properties": {
           "result": {
             "items": {
@@ -135,14 +124,161 @@ npx @modelcontextprotocol/inspector --cli http://localhost:3000/sse --method too
         "required": [
           "result"
         ],
+        "title": "get_products_by_categoryOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "add_product_to_cart",
+      "description": "カートに商品を追加する。\n\nParameters\n----------\nproduct_name : str\n    追加する商品の名前（例: \"商品 1\"）。\n\nReturns\n-------\nCartItem\n    追加したカートの商品。\n",
+      "inputSchema": {
+        "properties": {
+          "product_name": {
+            "title": "Product Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "product_name"
+        ],
+        "title": "add_product_to_cartArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "description": "カートに入っている商品。",
+        "properties": {
+          "cart_id": {
+            "title": "Cart Id",
+            "type": "integer"
+          },
+          "product_id": {
+            "title": "Product Id",
+            "type": "integer"
+          },
+          "quantity": {
+            "title": "Quantity",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "cart_id",
+          "product_id",
+          "quantity"
+        ],
+        "title": "CartItem",
+        "type": "object"
+      }
+    },
+    {
+      "name": "list_cart",
+      "description": "カートの中身をすべて一覧表示する。\n\nReturns\n-------\nList[CartItem]\n    カートに入っている商品のリスト。\n",
+      "inputSchema": {
+        "properties": {},
+        "title": "list_cartArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "$defs": {
+          "CartItem": {
+            "description": "カートに入っている商品。",
+            "properties": {
+              "cart_id": {
+                "title": "Cart Id",
+                "type": "integer"
+              },
+              "product_id": {
+                "title": "Product Id",
+                "type": "integer"
+              },
+              "quantity": {
+                "title": "Quantity",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "cart_id",
+              "product_id",
+              "quantity"
+            ],
+            "title": "CartItem",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "result": {
+            "items": {
+              "$ref": "#/$defs/CartItem"
+            },
+            "title": "Result",
+            "type": "array"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "list_cartOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_products",
+      "description": "すべての商品を取得する。\n\nReturns\n-------\nList[Product]\n    すべての商品のリスト。\n",
+      "inputSchema": {
+        "properties": {},
+        "title": "get_productsArguments",
+        "type": "object"
+      },
+      "outputSchema": {
         "$defs": {
           "Product": {
-            "properties": {},
+            "description": "商品。",
+            "properties": {
+              "id": {
+                "title": "Id",
+                "type": "integer"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "price": {
+                "title": "Price",
+                "type": "number"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "category": {
+                "title": "Category",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "price",
+              "description",
+              "category"
+            ],
             "title": "Product",
             "type": "object"
           }
         },
-        "title": "get_productsOutput"
+        "properties": {
+          "result": {
+            "items": {
+              "$ref": "#/$defs/Product"
+            },
+            "title": "Result",
+            "type": "array"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "get_productsOutput",
+        "type": "object"
       }
     }
   ]

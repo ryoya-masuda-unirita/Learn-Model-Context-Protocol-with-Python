@@ -1,14 +1,27 @@
-from flask import Flask, request, jsonify
+"""アクセストークンで保護されたユーザー情報を提供するリソースサーバー（Flask）。
+
+`python resource-server.py` でポート 5001 で起動する。
+"""
+from flask import Flask, Response, request, jsonify
 import requests
 
-app = Flask(__name__)
+app: Flask = Flask(__name__)
 
 # シミュレーション用のトークンストア（実際には認可サーバーと共有する）
-valid_tokens = {}
-AUTH_SERVER = "http://localhost:5000"
+valid_tokens: dict[str, dict[str, str]] = {}
+AUTH_SERVER: str = "http://localhost:5000"
 
 @app.route("/userinfo")
-def userinfo():
+def userinfo() -> Response | tuple[Response, int]:
+    """アクセストークンを検証し、ユーザー情報を返す。
+
+    トークンの検証は、認可サーバーの /introspect に問い合わせて行う。
+
+    Returns
+    -------
+    Response | tuple[Response, int]
+        トークンが有効ならユーザー情報の JSON。トークンがなければ 401、無効なら 403 とエラーの JSON。
+    """
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         return jsonify({"error": "missing_token"}), 401

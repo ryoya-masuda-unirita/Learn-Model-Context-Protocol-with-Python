@@ -1,12 +1,23 @@
+"""tool の一覧取得と tool の呼び出しに対応したサーバー。
+
+初期化が終わるまでは、initialize と notifications/initialized 以外のメソッドを受け付けない。
+"""
 import sys
 import json
+from typing import Any
 
 from utils.messages import initializeResponse
 
-initialized = False
+initialized: bool = False
 
-def create_notification():
-    """通知メッセージを作る。"""
+def create_notification() -> dict[str, Any]:
+    """通知メッセージを作る。
+
+    Returns
+    -------
+    dict[str, Any]
+        notifications/initialized の JSON-RPC 通知メッセージ。
+    """
     return {
         "jsonrpc": "2.0",
         "method": "notifications/initialized",
@@ -15,13 +26,13 @@ def create_notification():
 
 while True:
     for line in sys.stdin:
-        message = line.strip()
+        message: str = line.strip()
         if message == "hello":
             print("こんにちは")
             sys.stdout.flush()  # 出力をすぐに送る
         elif message.startswith('{"jsonrpc":'):
-            json_message = json.loads(message)
-            method = json_message.get('method', '')
+            json_message: dict[str, Any] = json.loads(message)
+            method: str = json_message.get('method', '')
 
             if not initialized:
                 if method != "initialize" and method != "notifications/initialized":
@@ -45,10 +56,10 @@ while True:
 
 
 
-                    tool_name = json_message['params']['name']
-                    args = json_message['params']['args']
+                    tool_name: str = json_message['params']['name']
+                    args: dict[str, Any] = json_message['params']['args']
                     # TODO: tool 呼び出しへの応答を作る（つまり、正しい tool を呼び出す）
-                    response = {
+                    response: dict[str, Any] = {
                         "jsonrpc": "2.0",
                         "id": json_message["id"],
                         "result": {

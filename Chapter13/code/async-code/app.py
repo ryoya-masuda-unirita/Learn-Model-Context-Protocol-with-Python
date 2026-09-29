@@ -1,11 +1,22 @@
+"""asyncio で複数のタスクを並行に実行する基本的なサンプル。"""
 import asyncio
 
-async def task(name, delay):
+async def task(name: str, delay: float) -> None:
+    """開始と終了を表示するだけのタスク。
+
+    Parameters
+    ----------
+    name : str
+        タスクの名前。
+    delay : float
+        終了までに待つ秒数。
+    """
     print(f"タスク {name} を開始しました")
     await asyncio.sleep(delay)
     print(f"タスク {name} が {delay} 秒後に終了しました")
 
-async def main():
+async def main() -> None:
+    """3つのタスクを asyncio.gather で並行に実行する。"""
     await asyncio.gather(
         task("A", 2),
         task("B", 1),

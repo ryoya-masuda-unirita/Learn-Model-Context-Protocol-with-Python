@@ -1,3 +1,7 @@
+"""elicitation で、会員でないユーザーに会員登録を勧める旅行予約の MCP サーバー。
+
+`uvicorn server:app --port 3000` で SSE サーバーとして起動する。
+"""
 from pydantic import BaseModel, Field, EmailStr
 
 from mcp.server.fastmcp import Context, FastMCP
@@ -6,7 +10,7 @@ from mcp.server.session import ServerSession
 from starlette.applications import Starlette
 from starlette.routing import Mount, Host
 
-mcp = FastMCP(name="Elicitation Example")
+mcp: FastMCP = FastMCP(name="Elicitation Example")
 
 # TODO: elicitation のサンプル。SSE に対応させる
 
@@ -25,7 +29,24 @@ class MemberPreferences(BaseModel):
 
 @mcp.tool()
 async def book_trip(date: str, member_id: str, ctx: Context[ServerSession, None]) -> str:
-    """旅行を予約する。会員かどうかを確認し、会員でなければ登録を勧める。"""
+    """旅行を予約する。会員かどうかを確認し、会員でなければ登録を勧める。
+
+    会員でなければ、elicitation でユーザーに会員登録するかを尋ねる。
+
+    Parameters
+    ----------
+    date : str
+        予約したい日付（YYYY-MM-DD）。
+    member_id : str
+        会員 ID。会員でなければ "guest"。
+    ctx : Context[ServerSession, None]
+        MCP のリクエストコンテキスト。elicitation に使う。
+
+    Returns
+    -------
+    str
+        予約の結果を表すメッセージ。
+    """
     # 会員かどうか確認する
     if not member_id or member_id == "guest":
         # 会員ではない - ユーザーに登録するか尋ねる
@@ -43,7 +64,7 @@ async def book_trip(date: str, member_id: str, ctx: Context[ServerSession, None]
     # 会員である
     return f"[SUCCESS] 会員 {member_id} として {date} で予約しました"
 
-app = Starlette(
+app: Starlette = Starlette(
     routes=[
         Mount('/', app=mcp.sse_app()),
     ]

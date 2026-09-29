@@ -1,15 +1,34 @@
+"""Flask で Server-Sent Events (SSE) を送るサーバー。
+
+/sse にアクセスすると、1秒ごとに現在時刻を5回送ってから接続を閉じる。
+"""
+from collections.abc import Iterator
+
 from flask import Flask, Response
 import time
 
-app = Flask(__name__)
+app: Flask = Flask(__name__)
 
 
-port = 8000
+port: int = 8000
 
 @app.route('/sse')
-def sse():
-    def generate():
+def sse() -> Response:
+    """SSE のストリームを返す。
 
+    Returns
+    -------
+    Response
+        text/event-stream 形式でイベントを送り続けるレスポンス。
+    """
+    def generate() -> Iterator[str]:
+        """1秒ごとに現在時刻のイベントを作る。
+
+        Yields
+        ------
+        str
+            SSE 形式（"data: ..." と空行）のイベント。
+        """
         count = 0
         max = 5
 
@@ -20,7 +39,7 @@ def sse():
                 yield f"data: {max} 件のメッセージを送信しました。接続を閉じます。\n\n"
                 break
             time.sleep(1)
-    
+
     return Response(generate(), mimetype='text/event-stream')
 
 import json

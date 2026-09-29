@@ -1,19 +1,24 @@
+"""応答の前に進捗の通知（notifications/progress）を送るサーバー。
+
+初期化が終わるまでは、initialize と notifications/initialized 以外のメソッドを受け付けない。
+"""
 import sys
 import json
+from typing import Any
 
 from utils.messages import initializeResponse, progress_notification
 
-initialized = False
+initialized: bool = False
 
 while True:
     for line in sys.stdin:
-        message = line.strip()
+        message: str = line.strip()
         if message == "hello":
             print("こんにちは")
             sys.stdout.flush()  # 出力をすぐに送る
         elif message.startswith('{"jsonrpc":'):
-            json_message = json.loads(message)
-            method = json_message.get('method', '')
+            json_message: dict[str, Any] = json.loads(message)
+            method: str = json_message.get('method', '')
 
             if not initialized:
                 if method != "initialize" and method != "notifications/initialized":
@@ -34,8 +39,8 @@ while True:
                     break
                      # capabilities を返すべき
                 case "tools/call":
-                    tool_name = json_message['params']['name']
-                    args = json_message['params']['args']
+                    tool_name: str = json_message['params']['name']
+                    args: dict[str, Any] = json_message['params']['args']
 
                     print(json.dumps(progress_notification))
                     sys.stdout.flush()
@@ -44,7 +49,7 @@ while True:
                     sys.stdout.flush()
 
                     # TODO: tool 呼び出しへの応答を作る（つまり、正しい tool を呼び出す）
-                    response = {
+                    response: dict[str, Any] = {
                         "jsonrpc": "2.0",
                         "id": json_message["id"],
                         "result": {

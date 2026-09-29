@@ -1,3 +1,4 @@
+"""旅行予約の MCP サーバーに SSE で接続し、elicitation に応答するクライアント。"""
 # TODO: Python のクライアントを追加する
 
 import asyncio
@@ -7,7 +8,21 @@ from mcp.client.sse import sse_client
 from mcp.types import ElicitRequestParams, ElicitResult, TextContent
 from mcp.shared.context import RequestContext
 
-async def elicitation_callback_handler(context: RequestContext[ClientSession, None], params: ElicitRequestParams):
+async def elicitation_callback_handler(context: RequestContext[ClientSession, None], params: ElicitRequestParams) -> ElicitResult:
+    """サーバーからの elicitation のリクエストに、決まった内容で応答する。
+
+    Parameters
+    ----------
+    context : RequestContext[ClientSession, None]
+        リクエストのコンテキスト。
+    params : ElicitRequestParams
+        サーバーから届いた elicitation のリクエスト。
+
+    Returns
+    -------
+    ElicitResult
+        ユーザーの入力の代わりにハードコードした応答。
+    """
     print(f"[CLIENT] elicitation のデータを受信しました: {params.message}")
  
     # 1. 別の日付を選ぶのを断る
@@ -29,7 +44,8 @@ async def elicitation_callback_handler(context: RequestContext[ClientSession, No
 
     
 
-async def main():
+async def main() -> None:
+    """サーバーに接続し、tool の一覧を表示してから book_trip を呼び出す。"""
     # Server-Sent Events (SSE) サーバーに接続する
     async with sse_client(url="http://localhost:8000/sse") as (
         read_stream,

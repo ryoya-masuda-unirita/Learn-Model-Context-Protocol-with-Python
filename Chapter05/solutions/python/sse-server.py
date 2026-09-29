@@ -1,3 +1,7 @@
+"""SSE で公開する MCP サーバーの ASGI アプリケーション。
+
+`uvicorn sse-server:app --port 8000` で起動する。
+"""
 from starlette.applications import Starlette
 from starlette.routing import Mount, Host
 
@@ -9,11 +13,24 @@ from mcp.types import (
 )
 
 # MCP サーバーを作る
-mcp = FastMCP("Streamable DEMO")
+mcp: FastMCP = FastMCP("Streamable DEMO")
 
 @mcp.tool(description="ファイルの内容を返すシンプルな tool")
 async def echo(message: str, ctx: Context) -> str:
+    """ファイルを処理しているふりをして、進捗をログで通知しながらメッセージを返す。
 
+    Parameters
+    ----------
+    message : str
+        返すメッセージ。
+    ctx : Context
+        MCP のリクエストコンテキスト。ログの通知を送るのに使う。
+
+    Returns
+    -------
+    str
+        メッセージを含むファイルの内容。
+    """
     # ctx2 = mcp.get_context()
     # print(f"コンテキスト ID: {ctx2}")
 
@@ -30,7 +47,7 @@ async def echo(message: str, ctx: Context) -> str:
 
     return TextContent(type="text", text=f"ファイルの内容です: {message}")
 
-app = Starlette(
+app: Starlette = Starlette(
     routes=[
         Mount('/', app=mcp.sse_app()),
     ]

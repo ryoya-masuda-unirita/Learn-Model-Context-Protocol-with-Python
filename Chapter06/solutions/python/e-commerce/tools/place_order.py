@@ -1,3 +1,4 @@
+"""顧客の新しい注文を作成する place_order tool の定義。"""
 # @mcp.tool()
 # def place_order(customer_id:int) -> Order:
 #     """注文する"""
@@ -8,10 +9,29 @@
 #     orders.append(new_order)
 #     return {"type": "text", "name": f"ID: {new_order.order_id},customer: {new_order.customer_id}"}
 
+from typing import Any
+
 from data import orders, customers
 from .schema import OrderModel
 
-async def handler(args) -> OrderModel:
+async def handler(args: dict[str, Any]) -> OrderModel:
+    """顧客の新しい注文を作成する。
+
+    Parameters
+    ----------
+    args : dict[str, Any]
+        tool に渡された引数。OrderModel のフィールド（order_id、customer_id、quantity、total_price）を持つ。
+
+    Returns
+    -------
+    OrderModel
+        作成した注文。order_id は新しく採番する。
+
+    Raises
+    ------
+    ValueError
+        存在しない顧客の ID が指定された場合。
+    """
     order = OrderModel(**args)
 
     if order.customer_id != 0 and not any(customer.id == order.customer_id for customer in customers):
@@ -23,7 +43,7 @@ async def handler(args) -> OrderModel:
 
     return new_order
 
-tool_place_order = {
+tool_place_order: dict[str, Any] = {
     "name": "place_order",
     "description": "顧客の新しい注文を作成する",
     "input_schema": OrderModel,

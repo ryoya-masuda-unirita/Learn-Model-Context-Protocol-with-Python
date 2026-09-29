@@ -1,3 +1,4 @@
+"""商品の一覧を表示するサンプル。"""
 from products import products
 
 for p in products:

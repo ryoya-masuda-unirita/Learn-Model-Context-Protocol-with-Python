@@ -1,9 +1,11 @@
+"""low-level サーバー（server.py）に SSE で接続し、tool と prompt を試すクライアント。"""
 from mcp import ClientSession, types
 from mcp.client.sse import sse_client
 
 
 
-async def run():
+async def run() -> None:
+    """SSE でサーバーに接続し、tool と prompt を順に試す。"""
     async with sse_client(url="http://127.0.0.1:8000/sse") as (read, write):
         async with ClientSession(
             read, write

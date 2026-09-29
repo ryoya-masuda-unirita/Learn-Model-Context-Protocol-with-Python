@@ -59,9 +59,8 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
   "tools": [
     {
       "name": "get_orders",
-      "description": "すべての注文を取得する",
+      "description": "すべての注文を取得する。\n\nParameters\n----------\ncustomer_id : int, optional\n    絞り込む顧客の ID。0 ならすべての注文を返す。デフォルトは 0。\n\nReturns\n-------\nList[Order]\n    条件に合う注文のリスト。\n\nRaises\n------\nValueError\n    存在しない顧客の ID が指定された場合。\n",
       "inputSchema": {
-        "type": "object",
         "properties": {
           "customer_id": {
             "default": 0,
@@ -69,24 +68,13 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
             "type": "integer"
           }
         },
-        "title": "get_ordersArguments"
+        "title": "get_ordersArguments",
+        "type": "object"
       },
       "outputSchema": {
-        "type": "object",
-        "properties": {
-          "result": {
-            "items": {
-              "$ref": "#/$defs/Order"
-            },
-            "title": "Result",
-            "type": "array"
-          }
-        },
-        "required": [
-          "result"
-        ],
         "$defs": {
           "Order": {
+            "description": "注文。",
             "properties": {
               "id": {
                 "format": "uuid",
@@ -106,14 +94,26 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
             "type": "object"
           }
         },
-        "title": "get_ordersOutput"
+        "properties": {
+          "result": {
+            "items": {
+              "$ref": "#/$defs/Order"
+            },
+            "title": "Result",
+            "type": "array"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "get_ordersOutput",
+        "type": "object"
       }
     },
     {
       "name": "get_order",
-      "description": "ID で注文を取得する",
+      "description": "ID で注文を取得する。\n\nParameters\n----------\norder_id : int\n    取得する注文の ID。\n\nReturns\n-------\nOrder | None\n    見つかった注文。見つからなければ None。\n",
       "inputSchema": {
-        "type": "object",
         "properties": {
           "order_id": {
             "title": "Order Id",
@@ -123,96 +123,108 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
         "required": [
           "order_id"
         ],
-        "title": "get_orderArguments"
+        "title": "get_orderArguments",
+        "type": "object"
       },
       "outputSchema": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "uuid",
-            "title": "Id",
-            "type": "string"
-          },
-          "customer_id": {
-            "title": "Customer Id",
-            "type": "integer"
+        "$defs": {
+          "Order": {
+            "description": "注文。",
+            "properties": {
+              "id": {
+                "format": "uuid",
+                "title": "Id",
+                "type": "string"
+              },
+              "customer_id": {
+                "title": "Customer Id",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "id",
+              "customer_id"
+            ],
+            "title": "Order",
+            "type": "object"
           }
         },
-        "required": [
-          "id",
-          "customer_id"
-        ],
-        "title": "Order"
-      }
-    },
-    {
-      "name": "place_order",
-      "description": "注文する",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "customer_id": {
-            "title": "Customer Id",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "customer_id"
-        ],
-        "title": "place_orderArguments"
-      },
-      "outputSchema": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "uuid",
-            "title": "Id",
-            "type": "string"
-          },
-          "customer_id": {
-            "title": "Customer Id",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "id",
-          "customer_id"
-        ],
-        "title": "Order"
-      }
-    },
-    {
-      "name": "get_cart",
-      "description": "カートを1つ取得する",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "customer_id": {
-            "title": "Customer Id",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "customer_id"
-        ],
-        "title": "get_cartArguments"
-      },
-      "outputSchema": {
-        "type": "object",
         "properties": {
           "result": {
-            "items": {
-              "$ref": "#/$defs/Cart"
-            },
-            "title": "Result",
-            "type": "array"
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Order"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
           "result"
         ],
+        "title": "get_orderOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "place_order",
+      "description": "注文する。\n\nParameters\n----------\ncustomer_id : int\n    注文する顧客の ID。\n\nReturns\n-------\nOrder\n    作成した注文。\n\nRaises\n------\nValueError\n    存在しない顧客の ID が指定された場合。\n",
+      "inputSchema": {
+        "properties": {
+          "customer_id": {
+            "title": "Customer Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "customer_id"
+        ],
+        "title": "place_orderArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "description": "注文。",
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "customer_id": {
+            "title": "Customer Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "customer_id"
+        ],
+        "title": "Order",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_cart",
+      "description": "カートを1つ取得する。\n\nParameters\n----------\ncustomer_id : int\n    カートを持つ顧客の ID。\n\nReturns\n-------\nCart | None\n    見つかったカート。見つからなければ None。\n\nRaises\n------\nValueError\n    存在しない顧客の ID が指定された場合。\n",
+      "inputSchema": {
+        "properties": {
+          "customer_id": {
+            "title": "Customer Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "customer_id"
+        ],
+        "title": "get_cartArguments",
+        "type": "object"
+      },
+      "outputSchema": {
         "$defs": {
           "Cart": {
+            "description": "顧客のカート。",
             "properties": {
               "id": {
                 "title": "Id",
@@ -231,14 +243,29 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
             "type": "object"
           }
         },
-        "title": "get_cartOutput"
+        "properties": {
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Cart"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "get_cartOutput",
+        "type": "object"
       }
     },
     {
       "name": "get_cart_items",
-      "description": "カートの中身を取得する",
+      "description": "カートの中身を取得する。\n\nParameters\n----------\ncart_id : int\n    中身を取得するカートの ID。\n\nReturns\n-------\nList[CartItem]\n    カートに入っている商品のリスト。\n",
       "inputSchema": {
-        "type": "object",
         "properties": {
           "cart_id": {
             "title": "Cart Id",
@@ -248,24 +275,13 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
         "required": [
           "cart_id"
         ],
-        "title": "get_cart_itemsArguments"
+        "title": "get_cart_itemsArguments",
+        "type": "object"
       },
       "outputSchema": {
-        "type": "object",
-        "properties": {
-          "result": {
-            "items": {
-              "$ref": "#/$defs/CartItem"
-            },
-            "title": "Result",
-            "type": "array"
-          }
-        },
-        "required": [
-          "result"
-        ],
         "$defs": {
           "CartItem": {
+            "description": "カートに入っている商品。",
             "properties": {
               "id": {
                 "title": "Id",
@@ -295,14 +311,26 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
             "type": "object"
           }
         },
-        "title": "get_cart_itemsOutput"
+        "properties": {
+          "result": {
+            "items": {
+              "$ref": "#/$defs/CartItem"
+            },
+            "title": "Result",
+            "type": "array"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "get_cart_itemsOutput",
+        "type": "object"
       }
     },
     {
       "name": "add_to_cart",
-      "description": "カートに追加する",
+      "description": "カートに追加する。\n\nParameters\n----------\ncart_id : int\n    追加先のカートの ID。\nproduct_id : int\n    追加する商品の ID。\nquantity : int\n    数量。\n\nReturns\n-------\nCartItem\n    追加したカートの商品。\n",
       "inputSchema": {
-        "type": "object",
         "properties": {
           "cart_id": {
             "title": "Cart Id",
@@ -322,10 +350,11 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
           "product_id",
           "quantity"
         ],
-        "title": "add_to_cartArguments"
+        "title": "add_to_cartArguments",
+        "type": "object"
       },
       "outputSchema": {
-        "type": "object",
+        "description": "カートに入っている商品。",
         "properties": {
           "id": {
             "title": "Id",
@@ -351,33 +380,22 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
           "product_id",
           "quantity"
         ],
-        "title": "CartItem"
+        "title": "CartItem",
+        "type": "object"
       }
     },
     {
       "name": "get_all_products",
-      "description": "すべての商品を取得する",
+      "description": "すべての商品を取得する。\n\nReturns\n-------\nList[Product]\n    すべての商品のリスト。\n",
       "inputSchema": {
-        "type": "object",
         "properties": {},
-        "title": "get_all_productsArguments"
+        "title": "get_all_productsArguments",
+        "type": "object"
       },
       "outputSchema": {
-        "type": "object",
-        "properties": {
-          "result": {
-            "items": {
-              "$ref": "#/$defs/Product"
-            },
-            "title": "Result",
-            "type": "array"
-          }
-        },
-        "required": [
-          "result"
-        ],
         "$defs": {
           "Product": {
+            "description": "商品。",
             "properties": {
               "id": {
                 "title": "Id",
@@ -406,14 +424,26 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
             "type": "object"
           }
         },
-        "title": "get_all_productsOutput"
+        "properties": {
+          "result": {
+            "items": {
+              "$ref": "#/$defs/Product"
+            },
+            "title": "Result",
+            "type": "array"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "get_all_productsOutput",
+        "type": "object"
       }
     },
     {
       "name": "get_product",
-      "description": "ID で商品を取得する",
+      "description": "ID で商品を取得する。\n\nParameters\n----------\nproduct_id : int\n    取得する商品の ID。\n\nReturns\n-------\nProduct | None\n    見つかった商品。見つからなければ None。\n",
       "inputSchema": {
-        "type": "object",
         "properties": {
           "product_id": {
             "title": "Product Id",
@@ -423,61 +453,72 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
         "required": [
           "product_id"
         ],
-        "title": "get_productArguments"
+        "title": "get_productArguments",
+        "type": "object"
       },
       "outputSchema": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "title": "Id",
-            "type": "integer"
-          },
-          "name": {
-            "title": "Name",
-            "type": "string"
-          },
-          "price": {
-            "title": "Price",
-            "type": "number"
-          },
-          "description": {
-            "title": "Description",
-            "type": "string"
+        "$defs": {
+          "Product": {
+            "description": "商品。",
+            "properties": {
+              "id": {
+                "title": "Id",
+                "type": "integer"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "price": {
+                "title": "Price",
+                "type": "number"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "price",
+              "description"
+            ],
+            "title": "Product",
+            "type": "object"
           }
         },
-        "required": [
-          "id",
-          "name",
-          "price",
-          "description"
-        ],
-        "title": "Product"
-      }
-    },
-    {
-      "name": "get_all_categories",
-      "description": "すべてのカテゴリーを取得する",
-      "inputSchema": {
-        "type": "object",
-        "properties": {},
-        "title": "get_all_categoriesArguments"
-      },
-      "outputSchema": {
-        "type": "object",
         "properties": {
           "result": {
-            "items": {
-              "$ref": "#/$defs/Category"
-            },
-            "title": "Result",
-            "type": "array"
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Product"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
           "result"
         ],
+        "title": "get_productOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_all_categories",
+      "description": "すべてのカテゴリーを取得する。\n\nReturns\n-------\nList[Category]\n    すべてのカテゴリーのリスト。\n",
+      "inputSchema": {
+        "properties": {},
+        "title": "get_all_categoriesArguments",
+        "type": "object"
+      },
+      "outputSchema": {
         "$defs": {
           "Category": {
+            "description": "商品カテゴリー。",
             "properties": {
               "id": {
                 "format": "uuid",
@@ -502,23 +543,10 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
             "type": "object"
           }
         },
-        "title": "get_all_categoriesOutput"
-      }
-    },
-    {
-      "name": "get_all_customers",
-      "description": "すべての顧客を取得する",
-      "inputSchema": {
-        "type": "object",
-        "properties": {},
-        "title": "get_all_customersArguments"
-      },
-      "outputSchema": {
-        "type": "object",
         "properties": {
           "result": {
             "items": {
-              "$ref": "#/$defs/Customer"
+              "$ref": "#/$defs/Category"
             },
             "title": "Result",
             "type": "array"
@@ -527,8 +555,22 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
         "required": [
           "result"
         ],
+        "title": "get_all_categoriesOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_all_customers",
+      "description": "すべての顧客を取得する。\n\nReturns\n-------\nList[Customer]\n    すべての顧客のリスト。\n",
+      "inputSchema": {
+        "properties": {},
+        "title": "get_all_customersArguments",
+        "type": "object"
+      },
+      "outputSchema": {
         "$defs": {
           "Customer": {
+            "description": "顧客。",
             "properties": {
               "id": {
                 "title": "Id",
@@ -552,7 +594,20 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
             "type": "object"
           }
         },
-        "title": "get_all_customersOutput"
+        "properties": {
+          "result": {
+            "items": {
+              "$ref": "#/$defs/Customer"
+            },
+            "title": "Result",
+            "type": "array"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "get_all_customersOutput",
+        "type": "object"
       }
     }
   ]

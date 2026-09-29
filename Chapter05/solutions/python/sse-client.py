@@ -1,3 +1,7 @@
+"""SSE で MCP サーバー（sse-server.py）に接続するクライアント。
+
+tool を呼び出し、処理中に届くログの通知も表示する。
+"""
 from mcp.client.sse import sse_client
 from mcp import ClientSession
 import asyncio
@@ -17,15 +21,31 @@ from mcp.types import (
 from mcp.shared.session import RequestResponder
 
 class LoggingCollector:
-    def __init__(self):
+    """サーバーから届いたログの通知を集める。
+
+    Attributes
+    ----------
+    log_messages : list[LoggingMessageNotificationParams]
+        受け取ったログの通知のリスト。
+    """
+
+    def __init__(self) -> None:
+        """空のリストで初期化する。"""
         self.log_messages: list[LoggingMessageNotificationParams] = []
 
     async def __call__(self, params: LoggingMessageNotificationParams) -> None:
+        """ログの通知を受け取って保存する。
+
+        Parameters
+        ----------
+        params : LoggingMessageNotificationParams
+            サーバーから届いたログの通知。
+        """
         self.log_messages.append(params)
 
-logging_collector = LoggingCollector()
+logging_collector: LoggingCollector = LoggingCollector()
 
-port = 8000
+port: int = 8000
 
 # 通常のメッセージ、通知、例外を受け取る
 async def message_handler(
@@ -33,6 +53,18 @@ async def message_handler(
         | types.ServerNotification
         | Exception,
     ) -> None:
+        """サーバーから届いたメッセージを種類ごとに表示する。
+
+        Parameters
+        ----------
+        message : RequestResponder[types.ServerRequest, types.ClientResult] | types.ServerNotification | Exception
+            サーバーからのリクエスト、通知、または受信中に発生した例外。
+
+        Raises
+        ------
+        Exception
+            受け取ったのが例外だった場合は、そのまま送出する。
+        """
         print("メッセージを受信:", message)
         if isinstance(message, Exception):
             raise message
@@ -44,7 +76,8 @@ async def message_handler(
             else:
                 print("サーバーからのリクエスト:", message)
 
-async def main():
+async def main() -> None:
+    """サーバーに接続し、セッションを初期化して tool を呼び出す。"""
     print("クライアントを起動しています...")
     # Streamable HTTP サーバーに接続する
     async with sse_client(f"http://localhost:{port}/sse") as (
@@ -73,7 +106,7 @@ async def main():
             print("セッションを初期化しました。tool を呼び出せます。")
           
             # tool を呼び出す
-            results = []
+            results: list[Any] = []
             tool_result = await session.call_tool("echo", {"message": "こんにちは"})
 
             gen = None

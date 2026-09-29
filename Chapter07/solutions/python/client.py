@@ -1,14 +1,20 @@
+"""MCP サーバー（server.py）に stdio で接続し、コマンドで tool を呼び出す対話型クライアント。"""
 from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
 
 # stdio 接続用のサーバーパラメーターを作る
-server_params = StdioServerParameters(
+server_params: StdioServerParameters = StdioServerParameters(
     command="mcp",  # 実行ファイル
     args=["run", "server.py"],  # コマンドライン引数（任意）
     env=None,  # 環境変数（任意）
 )
 
-async def run():
+async def run() -> None:
+    """サーバーに接続し、入力されたコマンドに応じて tool を呼び出す。
+
+    tool 名を入力すると、その tool の引数を1つずつ入力させてから呼び出す。
+    'quit' と入力すると終了する。
+    """
     async with stdio_client(server_params) as (read, write):
         async with ClientSession(
             read, write

@@ -1,14 +1,15 @@
+"""OAuth 2.1 の認可コードフローを、認可サーバーとリソースサーバーに対して順に実行するクライアント。"""
 import requests
 from urllib.parse import urlparse, parse_qs
 
 # 設定
-AUTH_SERVER = "http://localhost:5000"
-RESOURCE_SERVER = "http://localhost:5001"
-CLIENT_ID = "abc"
-REDIRECT_URI = "http://localhost:3000/callback"
-STATE = "xyz"
-CODE_CHALLENGE = "123"
-CODE_VERIFIER = "123"
+AUTH_SERVER: str = "http://localhost:5000"
+RESOURCE_SERVER: str = "http://localhost:5001"
+CLIENT_ID: str = "abc"
+REDIRECT_URI: str = "http://localhost:3000/callback"
+STATE: str = "xyz"
+CODE_CHALLENGE: str = "123"
+CODE_VERIFIER: str = "123"
 
 
 # TODO: 1a. 既存のトークンがある場合の処理を追加する

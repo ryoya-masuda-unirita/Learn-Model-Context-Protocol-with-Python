@@ -1,7 +1,10 @@
+"""/stream に initialize を POST し、返ってきたストリームを表示するテスト用クライアント。"""
+from typing import Any
+
 import requests
 import json
 
-message = {
+message: dict[str, Any] = {
         "jsonrpc": "2.0",
         "id": 1,
         "method": "initialize",
@@ -20,7 +23,7 @@ message = {
         }
     }
 
-headers = {
+headers: dict[str, str] = {
         'Accept': 'application/json, text/event-stream',
         'Content-Type': 'application/json'
     }

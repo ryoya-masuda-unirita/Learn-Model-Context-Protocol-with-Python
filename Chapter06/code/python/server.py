@@ -1,18 +1,40 @@
+"""low-level の Server クラスで作り、SSE で公開する MCP サーバー。
+
+`python server.py` でポート 8000 で起動する。
+"""
+from typing import Any
+
 import mcp.types as types
+from pydantic import BaseModel
 from mcp.server.lowlevel import NotificationOptions, Server
 from mcp.server.models import InitializationOptions
 
 from mcp.server.sse import SseServerTransport
 from starlette.applications import Starlette
+from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Mount, Route
 
 import tools
 
 # サーバーのインスタンスを作る
-server = Server("low-level-server")
+server: Server = Server("low-level-server")
 
-def pydantic_to_json(model_cls: type) -> dict:
+def pydantic_to_json(model_cls: type[BaseModel]) -> dict[str, Any]:
+    """入力を表す pydantic モデルから、tool の inputSchema 用の JSON Schema を作る。
+
+    各プロパティは型（type）だけを残した簡易的なスキーマにする。
+
+    Parameters
+    ----------
+    model_cls : type[BaseModel]
+        入力を表す pydantic モデルのクラス。
+
+    Returns
+    -------
+    dict[str, Any]
+        type、properties、required を持つ JSON Schema。
+    """
     schema = model_cls.schema()
     properties = {}
     required = schema.get("required", [])
@@ -26,6 +48,13 @@ def pydantic_to_json(model_cls: type) -> dict:
 
 @server.list_tools()
 async def handle_list_tools() -> list[types.Tool]:
+    """登録されている tool（tools パッケージ）の一覧を返す。
+
+    Returns
+    -------
+    list[types.Tool]
+        公開する tool の定義のリスト。
+    """
     tool_list = []
     print(tools)
 
@@ -43,7 +72,25 @@ async def handle_list_tools() -> list[types.Tool]:
 async def handle_call_tool(
     name: str, arguments: dict[str, str] | None
 ) -> list[types.TextContent]:
-    
+    """指定された tool のハンドラーを呼び出し、結果をテキストで返す。
+
+    Parameters
+    ----------
+    name : str
+        呼び出す tool の名前。
+    arguments : dict[str, str] | None
+        tool に渡す引数。
+
+    Returns
+    -------
+    list[types.TextContent]
+        tool の結果を文字列にしたテキスト。
+
+    Raises
+    ------
+    ValueError
+        tool が存在しない場合、または tool の呼び出しでエラーが発生した場合。
+    """
     # tools は tool 名をキーにした辞書
     if name not in tools.tools:
         raise ValueError(f"不明な tool です: {name}")
@@ -62,6 +109,13 @@ async def handle_call_tool(
 
 @server.list_prompts()
 async def handle_list_prompts() -> list[types.Prompt]:
+    """公開する prompt の一覧を返す。
+
+    Returns
+    -------
+    list[types.Prompt]
+        example-prompt の定義。
+    """
     return [
         types.Prompt(
             name="example-prompt",
@@ -79,6 +133,25 @@ async def handle_list_prompts() -> list[types.Prompt]:
 async def handle_get_prompt(
     name: str, arguments: dict[str, str] | None
 ) -> types.GetPromptResult:
+    """指定された prompt の内容を返す。
+
+    Parameters
+    ----------
+    name : str
+        取得する prompt の名前。
+    arguments : dict[str, str] | None
+        prompt に渡す引数（このサンプルでは使わない）。
+
+    Returns
+    -------
+    types.GetPromptResult
+        prompt の説明とメッセージ。
+
+    Raises
+    ------
+    ValueError
+        prompt が存在しない場合。
+    """
     if name != "example-prompt":
         raise ValueError(f"不明な prompt です: {name}")
 
@@ -92,9 +165,21 @@ async def handle_get_prompt(
         ],
     )
 
-sse = SseServerTransport("/messages/")
+sse: SseServerTransport = SseServerTransport("/messages/")
 
-async def handle_sse(request):
+async def handle_sse(request: Request) -> Response:
+    """SSE の接続を受け付け、接続が続く間 MCP サーバーを動かす。
+
+    Parameters
+    ----------
+    request : Request
+        /sse への HTTP リクエスト。
+
+    Returns
+    -------
+    Response
+        接続が終わった後に返す空のレスポンス。
+    """
     async with sse.connect_sse(
         request.scope, request.receive, request._send
     ) as streams:
@@ -103,7 +188,7 @@ async def handle_sse(request):
         )
     return Response()
 
-starlette_app = Starlette(
+starlette_app: Starlette = Starlette(
     debug=True,
     routes=[
         Route("/sse", endpoint=handle_sse),
@@ -113,7 +198,7 @@ starlette_app = Starlette(
 
 import uvicorn
 
-port = 8000
+port: int = 8000
 
 uvicorn.run(starlette_app, host="127.0.0.1", port=port)
 

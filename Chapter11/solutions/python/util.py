@@ -1,14 +1,26 @@
+"""テスト用の JWT を生成・検証するユーティリティ。
+
+`python util.py` で実行すると、生成したトークンを .env に書き出す。
+"""
 # pip install PyJWT
 
 # トークンを作る
 import jwt
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 import datetime
+from typing import Any
 
 # JWT の署名に使う秘密鍵
-secret_key = 'your-secret-key'
+secret_key: str = 'your-secret-key'
 
-def generate_token():
+def generate_token() -> str:
+    """テスト用の JWT を生成する。
+
+    Returns
+    -------
+    str
+        HS256 で署名した、有効期限1時間の JWT。
+    """
     header = {
         "alg": "HS256",
         "typ": "JWT"
@@ -28,7 +40,19 @@ def generate_token():
     print("エンコードした JWT:", encoded_jwt)
     return encoded_jwt   
 
-def validate_token(token: str) -> str | None:
+def validate_token(token: str) -> dict[str, Any] | None:
+    """JWT を検証してデコードする。
+
+    Parameters
+    ----------
+    token : str
+        検証する JWT。
+
+    Returns
+    -------
+    dict[str, Any] | None
+        デコードした claim。有効期限切れや不正なトークンなら None。
+    """
     try:
         decoded = jwt.decode(token, secret_key, algorithms=["HS256"])
         # print("✅ トークンは有効です。")

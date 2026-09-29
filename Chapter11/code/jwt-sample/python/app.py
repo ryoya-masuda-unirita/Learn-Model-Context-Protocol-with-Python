@@ -1,20 +1,22 @@
+"""PyJWT で JWT を作成し、検証するサンプル。"""
 # pip install PyJWT
 
 # トークンを作る
 import jwt
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 import datetime
+from typing import Any
 
 # JWT の署名に使う秘密鍵
-secret_key = 'your-secret-key'
+secret_key: str = 'your-secret-key'
 
-header = {
+header: dict[str, str] = {
     "alg": "HS256",
     "typ": "JWT"
 }
 
 # ユーザー情報と、その claim と有効期限
-payload = {
+payload: dict[str, Any] = {
     "sub": "1234567890",               # サブジェクト（ユーザー ID）
     "name": "User Userson",                # カスタム claim
     "admin": True,                     # カスタム claim
@@ -23,7 +25,7 @@ payload = {
 }
 
 # エンコードする
-encoded_jwt = jwt.encode(payload, secret_key, algorithm="HS256", headers=header)
+encoded_jwt: str = jwt.encode(payload, secret_key, algorithm="HS256", headers=header)
 
 print("エンコードした JWT:", encoded_jwt) 
 

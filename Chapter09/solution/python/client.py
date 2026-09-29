@@ -1,4 +1,5 @@
-"""
+"""MCP サーバー（server.py）に stdio で接続し、サンプリングのリクエストに LLM で応えるクライアント。
+
 `examples/snippets/clients` ディレクトリに移動して、次を実行する：
     uv run client
 """
@@ -16,12 +17,26 @@ import os
 from openai import OpenAI
 
 # stdio 接続用のサーバーパラメーターを作る
-server_params = StdioServerParameters(
+server_params: StdioServerParameters = StdioServerParameters(
     command="python",  # python でサーバーを実行する
     args=["server.py"]
 )
 
 async def call_llm(prompt: str, system_prompt: str) -> str:
+    """LLM にプロンプトを送り、生成されたテキストを返す。
+
+    Parameters
+    ----------
+    prompt : str
+        ユーザーのプロンプト。
+    system_prompt : str
+        システムプロンプト。
+
+    Returns
+    -------
+    str
+        LLM が生成したテキスト。
+    """
     client = OpenAI(
     base_url="https://models.github.ai/inference",
     api_key=os.environ["GITHUB_TOKEN"],
@@ -51,6 +66,20 @@ async def call_llm(prompt: str, system_prompt: str) -> str:
 async def handle_sampling_message(
     context: RequestContext[ClientSession, None], params: types.CreateMessageRequestParams
 ) -> types.CreateMessageResult:
+    """サーバーからのサンプリングのリクエストを、LLM を呼び出して処理する。
+
+    Parameters
+    ----------
+    context : RequestContext[ClientSession, None]
+        リクエストのコンテキスト。
+    params : types.CreateMessageRequestParams
+        サーバーから届いたサンプリングのリクエスト。
+
+    Returns
+    -------
+    types.CreateMessageResult
+        LLM が生成したテキストを含む応答。
+    """
     print(f"サンプリングのリクエスト: {params.messages}")
 
     message = params.messages[0].content.text
@@ -70,7 +99,8 @@ async def handle_sampling_message(
     )
 
 
-async def run():
+async def run() -> None:
+    """サーバーに接続し、tool を呼び出して結果を表示する。"""
     async with stdio_client(server_params) as (read, write):
         async with ClientSession(read, write, sampling_callback=handle_sampling_message) as session:
             # 接続を初期化する
@@ -82,7 +112,7 @@ async def run():
             print("結果:", result.content[0].text)
 
 
-def main():
+def main() -> None:
     """クライアントスクリプトのエントリーポイント。"""
     asyncio.run(run())
 

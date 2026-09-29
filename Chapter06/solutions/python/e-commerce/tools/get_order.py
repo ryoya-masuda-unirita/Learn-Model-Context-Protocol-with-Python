@@ -1,3 +1,4 @@
+"""ID で注文を取得する tool の定義（未実装。旧版のコードをコメントとして残している）。"""
 # @mcp.tool()
 # def get_order(order_id:int) -> Order:
 #     """ID で注文を取得する"""

@@ -1,10 +1,15 @@
+"""SDK を使わず、requests で Streamable HTTP の MCP サーバーとやり取りするクライアント。"""
 import requests
 
 import json
-port = 8000
+port: int = 8000
 
-def consume_stream():
-    headers = {
+def consume_stream() -> None:
+    """initialize、initialized、tools/list、tools/call を順に POST し、応答を表示する。
+
+    最初の応答ヘッダーで受け取った mcp-session-id を、以降のリクエストに付ける。
+    """
+    headers: dict[str, str] = {
         'Accept': 'application/json, text/event-stream',
         'Content-Type': 'application/json'
     }

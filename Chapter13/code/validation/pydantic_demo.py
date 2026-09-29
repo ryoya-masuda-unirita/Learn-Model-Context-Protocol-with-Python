@@ -1,18 +1,25 @@
+"""入れ子の pydantic モデルで、辞書との変換を行うサンプル。"""
+from typing import Any
+
 from pydantic import BaseModel
 from typing import List, Dict 
 import pydantic
 
 class OfficeHour(BaseModel):
+    """オフィスアワー（曜日と時間帯）。"""
+
     day: str
     from_: int
     to_: int
 
 class Professor(BaseModel):
+    """教授。"""
+
     id: int
     name: str
     office_hours: List[OfficeHour]
 
-professor_dict = {
+professor_dict: dict[str, Any] = {
     "id": 1,
     "name": "Dr. Smith",
     "office_hours": [

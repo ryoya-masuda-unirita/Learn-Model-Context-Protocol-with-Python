@@ -1,3 +1,4 @@
+"""固定のトークンで認証する middleware を付けた、Streamable HTTP の MCP サーバー。"""
 from pydantic import AnyHttpUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -5,12 +6,15 @@ from mcp.server.auth.settings import AuthSettings
 from mcp.server.fastmcp.server import FastMCP
 from typing import Any, Literal
 from starlette.middleware import Middleware
+from starlette.applications import Starlette
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import RequestResponseEndpoint
+from starlette.requests import Request
 from starlette.responses import Response
 import asyncio
 import datetime
 
-settings = {
+settings: dict[str, Any] = {
     "host": "localhost",
     "port": 8000,
     "auth_server_url": AnyHttpUrl("http://localhost:8001"),
@@ -19,6 +23,18 @@ settings = {
 }
 
 def valid_token(token: str) -> bool:
+    """有効なトークンかどうかを、Authorization ヘッダーの値で判定する。
+
+    Parameters
+    ----------
+    token : str
+        Authorization ヘッダーの値（"Bearer <トークン>"）。
+
+    Returns
+    -------
+    bool
+        トークンが "secret-token" なら True。
+    """
     # "Bearer " という接頭辞を取り除く
     if token.startswith("Bearer "):
         token = token[7:]
@@ -26,8 +42,23 @@ def valid_token(token: str) -> bool:
     return False
 
 class CustomHeaderMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request, call_next):
+    """Authorization ヘッダーのトークンを検証する middleware。"""
 
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
+        """トークン（Authorization ヘッダー）を検証してから、次の処理に渡す。
+
+        Parameters
+        ----------
+        request : Request
+            受け取った HTTP リクエスト。
+        call_next : RequestResponseEndpoint
+            次の middleware またはアプリケーションを呼び出す関数。
+
+        Returns
+        -------
+        Response
+            検証に失敗した場合は 401 / 403 のレスポンス。成功した場合は後続の処理のレスポンス。
+        """
         has_header = request.headers.get("Authorization")
         if not has_header:
             print("-> Authorization ヘッダーがありません！")
@@ -44,7 +75,7 @@ class CustomHeaderMiddleware(BaseHTTPMiddleware):
         return response
 
 
-app = FastMCP(
+app: FastMCP = FastMCP(
     name="MCP Resource Server",
     instructions="認可サーバーの introspection でトークンを検証するリソースサーバー",
     host=settings["host"],
@@ -59,8 +90,12 @@ async def get_time() -> dict[str, Any]:
 
     この tool は、システム情報を OAuth 認証で保護できることを示す。
     アクセスするには、ユーザーが認証されている必要がある。
-    """
 
+    Returns
+    -------
+    dict[str, Any]
+        現在時刻（ISO 形式）、タイムゾーン、UNIX タイムスタンプ、整形した日時。
+    """
     now = datetime.datetime.now()
 
     return {
@@ -70,14 +105,30 @@ async def get_time() -> dict[str, Any]:
         "formatted": now.strftime("%Y-%m-%d %H:%M:%S"),
     }
 
-async def setup(app) -> None:
-    """StreamableHTTP transport でサーバーを実行する。"""
-    
+async def setup(app: FastMCP) -> Starlette:
+    """StreamableHTTP transport 用の Starlette アプリケーションを作る。
 
+    Parameters
+    ----------
+    app : FastMCP
+        公開する MCP サーバー。
+
+    Returns
+    -------
+    Starlette
+        Streamable HTTP で MCP サーバーを公開する ASGI アプリケーション。
+    """
     starlette_app = app.streamable_http_app()
     return starlette_app
 
-async def run(starlette_app):
+async def run(starlette_app: Starlette) -> None:
+    """指定した ASGI アプリケーションを uvicorn で起動する。
+
+    Parameters
+    ----------
+    starlette_app : Starlette
+        起動する ASGI アプリケーション。
+    """
     import uvicorn
     config = uvicorn.Config(
             starlette_app,
@@ -89,11 +140,12 @@ async def run(starlette_app):
     await server.serve()
 
 
-middleware = [
+middleware: list[Middleware] = [
     Middleware(CustomHeaderMiddleware, header_value='Customized')
 ]
 
-async def main():
+async def main() -> None:
+    """アプリケーションを作り、トークンを検証する middleware を追加してから起動する。"""
     print("MCP リソースサーバーを実行しています...")
     starlette_app = await setup(app)
     print("カスタム middleware を追加しています...")

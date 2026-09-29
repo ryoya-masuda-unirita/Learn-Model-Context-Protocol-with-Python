@@ -1,3 +1,4 @@
+"""EC サイトのサンプルデータ（カテゴリー、顧客、商品、カート、注文）。"""
 from pydantic import BaseModel
 
 from tools.schema import AddCartInputModel, CategoryModel, CustomerModel, ProductModel, CartItemModel, OrderModel

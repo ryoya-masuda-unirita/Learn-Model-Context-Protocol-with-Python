@@ -1,3 +1,4 @@
+"""util.py で生成した JWT を Authorization ヘッダーに付けて、MCP サーバーに接続するクライアント。"""
 # client.py
 from mcp.client.streamable_http import streamablehttp_client
 from mcp import ClientSession
@@ -10,7 +11,7 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-token = os.getenv("TOKEN")
+token: str | None = os.getenv("TOKEN")
 if not token:
     print(".env ファイルに TOKEN が見つかりません。util.py を実行して生成してください。")
     raise ValueError(".env ファイルに TOKEN が見つかりません")
@@ -21,23 +22,51 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
-logger = logging.getLogger('mcp_client')
+logger: logging.Logger = logging.getLogger('mcp_client')
 
 class LoggingCollector:
-    def __init__(self):
+    """サーバーから届いたログの通知を集めて、ログに出力する。
+
+    Attributes
+    ----------
+    log_messages : list[types.LoggingMessageNotificationParams]
+        受け取ったログの通知のリスト。
+    """
+
+    def __init__(self) -> None:
+        """空のリストで初期化する。"""
         self.log_messages: list[types.LoggingMessageNotificationParams] = []
     async def __call__(self, params: types.LoggingMessageNotificationParams) -> None:
+        """ログの通知を受け取って保存し、ログに出力する。
+
+        Parameters
+        ----------
+        params : types.LoggingMessageNotificationParams
+            サーバーから届いたログの通知。
+        """
         self.log_messages.append(params)
         logger.info("MCP ログ: %s - %s", params.level, params.data)
 
-logging_collector = LoggingCollector()
-port = 8000
+logging_collector: LoggingCollector = LoggingCollector()
+port: int = 8000
 
 async def message_handler(
     message: RequestResponder[types.ServerRequest, types.ClientResult]
     | types.ServerNotification
     | Exception,
 ) -> None:
+    """サーバーから届いたメッセージを種類ごとにログに出力する。
+
+    Parameters
+    ----------
+    message : RequestResponder[types.ServerRequest, types.ClientResult] | types.ServerNotification | Exception
+        サーバーからのリクエスト、通知、または受信中に発生した例外。
+
+    Raises
+    ------
+    Exception
+        受け取ったのが例外だった場合は、そのまま送出する。
+    """
     logger.info("メッセージを受信: %s", message)
     if isinstance(message, Exception):
         logger.error("例外を受信しました！")
@@ -49,7 +78,8 @@ async def message_handler(
     else:
         logger.info("サーバーからのメッセージ: %s", message)
 
-async def main():
+async def main() -> None:
+    """トークンを Authorization ヘッダーに付けてサーバーに接続し、get_time tool を呼び出す。"""
     logger.info("クライアントを起動しています...")
     async with streamablehttp_client(
         url = f"http://localhost:{port}/mcp",
@@ -78,7 +108,16 @@ async def main():
                 for log in logging_collector.log_messages:
                     logger.info("ログ: %s", log)
 
-def stream_progress(message="こんにちは", url="http://localhost:8000/stream"):
+def stream_progress(message: str = "こんにちは", url: str = "http://localhost:8000/stream") -> None:
+    """HTTP のストリームに接続し、受け取った内容を表示する。
+
+    Parameters
+    ----------
+    message : str, optional
+        クエリパラメーターとして送るメッセージ。デフォルトは "こんにちは"。
+    url : str, optional
+        接続するストリームの URL。デフォルトは "http://localhost:8000/stream"。
+    """
     params = {"message": message}
     logger.info("%s に接続しています（メッセージ: %s）", url, message)
     try:

@@ -1,3 +1,4 @@
+"""注文を取得する get_orders tool の定義。"""
 # @mcp.tool()
 # def get_orders(customer_id:int = 0) -> [Order]:
 #     """すべての注文を取得する"""
@@ -11,10 +12,24 @@
 
 #     return [{"type": "text", "name": f"ID: {order.order_id},customer: {order.customer_id}"} for order in filtered_orders]
 
+from typing import Any
+
 from data import orders
 from .schema import OrderModel, GetOrderInputModel
 
-async def handler(args) -> list[OrderModel]:
+async def handler(args: dict[str, Any]) -> list[OrderModel]:
+    """注文を返す。customer_id が指定されていれば、その顧客の注文に絞り込む。
+
+    Parameters
+    ----------
+    args : dict[str, Any]
+        tool に渡された引数。customer_id を持つ。0 ならすべての注文を返す。
+
+    Returns
+    -------
+    list[OrderModel]
+        条件に合う注文のリスト。
+    """
     # 注文を取得する
     input = GetOrderInputModel(**args)
     # customer_id が指定されていれば、それで注文を絞り込む
@@ -28,7 +43,7 @@ async def handler(args) -> list[OrderModel]:
     # 絞り込んだ注文を返す
     return filtered_orders
 
-tool_get_orders = {
+tool_get_orders: dict[str, Any] = {
     "name": "get_orders",
     "description": "すべての注文を取得する",
     "input_schema": GetOrderInputModel,

@@ -1,3 +1,7 @@
+"""Streamable HTTP で公開する MCP サーバー。
+
+`python server.py` で起動すると、ポート 8000 の /mcp で待ち受ける。
+"""
 # server.py
 from mcp.server.fastmcp import FastMCP, Context
 from typing import Optional, Dict, Any, List, AsyncGenerator
@@ -7,11 +11,24 @@ from mcp.types import (
 )
 
 # MCP サーバーを作る
-mcp = FastMCP("Streamable DEMO")
+mcp: FastMCP = FastMCP("Streamable DEMO")
 
 @mcp.tool(description="ファイルの内容を返すシンプルな tool")
 async def echo(message: str, ctx: Context) -> str:
+    """ファイルを処理しているふりをして、進捗をログで通知しながらメッセージを返す。
 
+    Parameters
+    ----------
+    message : str
+        返すメッセージ。
+    ctx : Context
+        MCP のリクエストコンテキスト。ログの通知を送るのに使う。
+
+    Returns
+    -------
+    str
+        メッセージを含むファイルの内容。
+    """
     # ctx2 = mcp.get_context()
     # print(f"コンテキスト ID: {ctx2}")
 

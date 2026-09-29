@@ -1,16 +1,30 @@
-from flask import Flask, request, redirect, jsonify
+"""OAuth 2.1 の認可コードフローをシミュレートする認可サーバー（Flask）。
+
+/authorize、/token、/introspect、/logout を提供する。`python auth-server.py` でポート 5000 で起動する。
+"""
+from typing import Any
+
+from flask import Flask, Response, request, redirect, jsonify
+from werkzeug.wrappers import Response as WerkzeugResponse
 import uuid
 import requests
 
-app = Flask(__name__)
+app: Flask = Flask(__name__)
 
 # インメモリのストア
-auth_codes = {}
-access_tokens = {}
+auth_codes: dict[str, dict[str, Any]] = {}
+access_tokens: dict[str, dict[str, str]] = {}
 
 
 @app.route("/introspect", methods=["POST"])
-def introspect():
+def introspect() -> Response:
+    """トークンが有効かを調べ、その情報を返す（トークン introspection）。
+
+    Returns
+    -------
+    Response
+        トークンが有効なら active=True とユーザー情報、無効なら active=False の JSON。
+    """
     token = request.form.get("token")
     token_data = access_tokens.get(token)
 
@@ -29,7 +43,14 @@ def introspect():
 
 
 @app.route("/authorize")
-def authorize():
+def authorize() -> WerkzeugResponse:
+    """ログインと同意をシミュレートし、認可コードを付けてリダイレクトする。
+
+    Returns
+    -------
+    WerkzeugResponse
+        redirect_uri に code と state を付けたリダイレクトのレスポンス。
+    """
     client_id = request.args.get("client_id")
     redirect_uri = request.args.get("redirect_uri")
     state = request.args.get("state")
@@ -46,7 +67,14 @@ def authorize():
     return redirect(f"{redirect_uri}?code={code}&state={state}")
 
 @app.route("/token", methods=["POST"])
-def token():
+def token() -> Response | tuple[Response, int]:
+    """認可コードをアクセストークンと交換する。
+
+    Returns
+    -------
+    Response | tuple[Response, int]
+        成功すればアクセストークンの JSON。認可コードや code_verifier が不正なら、エラーの JSON とステータスコード 400。
+    """
     code = request.form.get("code")
     code_verifier = request.form.get("code_verifier")
 
@@ -67,7 +95,14 @@ def token():
     })
 
 @app.route("/logout")
-def logout():
+def logout() -> tuple[str, int]:
+    """ログアウトをシミュレートする。
+
+    Returns
+    -------
+    tuple[str, int]
+        ログアウトしたことを伝えるメッセージと、ステータスコード 200。
+    """
     return "ログアウトしました（シミュレーション）", 200
 
 if __name__ == "__main__":

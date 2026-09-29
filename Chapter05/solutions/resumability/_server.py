@@ -1,3 +1,7 @@
+"""resumability に対応した Streamable HTTP の MCP サーバー（MCP SDK のサンプルを元にしたもの）。
+
+click のコマンドとして、ポートやログレベルを指定して起動できる。
+"""
 import contextlib
 import logging
 from collections.abc import AsyncIterator
@@ -12,12 +16,12 @@ from pydantic import AnyUrl
 from starlette.applications import Starlette
 from starlette.middleware.cors import CORSMiddleware
 from starlette.routing import Mount
-from starlette.types import Receive, Scope, Send
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 from event_store import InMemoryEventStore
 
 # ログを設定する
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 @click.command()
@@ -38,6 +42,22 @@ def main(
     log_level: str,
     json_response: bool,
 ) -> int:
+    """ポートとログレベルを指定して、resumability に対応した Streamable HTTP の MCP サーバーを起動する。
+
+    Parameters
+    ----------
+    port : int
+        HTTP で待ち受けるポート。
+    log_level : str
+        ログレベル（DEBUG、INFO、WARNING、ERROR、CRITICAL）。
+    json_response : bool
+        True なら SSE ストリームの代わりに JSON レスポンスを返す。
+
+    Returns
+    -------
+    int
+        終了コード（常に 0）。
+    """
     # ログを設定する
     logging.basicConfig(
         level=getattr(logging, log_level.upper()),
@@ -48,6 +68,20 @@ def main(
 
     @app.call_tool()
     async def call_tool(name: str, arguments: dict[str, Any]) -> list[types.ContentBlock]:
+        """指定した件数の通知を、指定した間隔で送る。
+
+        Parameters
+        ----------
+        name : str
+            呼び出された tool の名前。
+        arguments : dict[str, Any]
+            tool に渡された引数。interval（秒）、count（件数）、caller（呼び出し元）を使う。
+
+        Returns
+        -------
+        list[types.ContentBlock]
+            送った通知の件数と間隔を伝えるテキスト。
+        """
         ctx = app.request_context
         interval = arguments.get("interval", 1.0)
         count = arguments.get("count", 5)
@@ -84,6 +118,13 @@ def main(
 
     @app.list_tools()
     async def list_tools() -> list[types.Tool]:
+        """公開する tool の一覧を返す。
+
+        Returns
+        -------
+        list[types.Tool]
+            start-notification-stream tool の定義。
+        """
         return [
             types.Tool(
                 name="start-notification-stream",
@@ -128,11 +169,33 @@ def main(
 
     # Streamable HTTP 接続用の ASGI ハンドラー
     async def handle_streamable_http(scope: Scope, receive: Receive, send: Send) -> None:
+        """Streamable HTTP のリクエストをセッションマネージャーに渡す。
+
+        Parameters
+        ----------
+        scope : Scope
+            ASGI のスコープ。
+        receive : Receive
+            ASGI の受信関数。
+        send : Send
+            ASGI の送信関数。
+        """
         await session_manager.handle_request(scope, receive, send)
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette) -> AsyncIterator[None]:
-        """セッションマネージャーのライフサイクルを管理するコンテキストマネージャー。"""
+        """セッションマネージャーのライフサイクルを管理するコンテキストマネージャー。
+
+        Parameters
+        ----------
+        app : Starlette
+            対象の Starlette アプリケーション。
+
+        Yields
+        ------
+        None
+            セッションマネージャーが動いている間、制御をアプリケーションに渡す。
+        """
         async with session_manager.run():
             logger.info("StreamableHTTP セッションマネージャー付きでアプリケーションを起動しました！")
             try:
@@ -141,7 +204,7 @@ def main(
                 logger.info("アプリケーションを終了しています...")
 
     # transport を使って ASGI アプリケーションを作る
-    starlette_app = Starlette(
+    starlette_app: ASGIApp = Starlette(
         debug=True,
         routes=[
             Mount("/mcp", app=handle_streamable_http),

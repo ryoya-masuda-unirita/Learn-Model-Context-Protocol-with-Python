@@ -68,7 +68,21 @@ python client.py
 コードの一部を見てみましょう。elicitation 用のクライアントのハンドラーです。ここではサーバーへの応答をハードコードしています：
 
 ```python
-async def elicitation_callback_handler(context: RequestContext[ClientSession, None], params: ElicitRequestParams):
+async def elicitation_callback_handler(context: RequestContext[ClientSession, None], params: ElicitRequestParams) -> ElicitResult:
+    """サーバーからの elicitation のリクエストに、決まった内容で応答する。
+
+    Parameters
+    ----------
+    context : RequestContext[ClientSession, None]
+        リクエストのコンテキスト。
+    params : ElicitRequestParams
+        サーバーから届いた elicitation のリクエスト。
+
+    Returns
+    -------
+    ElicitResult
+        ユーザーの入力の代わりにハードコードした応答。
+    """
     print(f"[CLIENT] elicitation のデータを受信しました: {params.message}")
  
     # 1. 別の日付を選ぶのを断る

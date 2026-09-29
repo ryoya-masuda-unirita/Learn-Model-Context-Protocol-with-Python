@@ -1,11 +1,17 @@
-list_tools_message = {
+"""クライアントとサーバーでやり取りする JSON-RPC メッセージの定義。
+
+MCP の initialize / initialized / tools/list などのメッセージを、辞書として定義する。
+"""
+from typing import Any
+
+list_tools_message: dict[str, Any] = {
     "jsonrpc": "2.0",
     "id": 1,
     "method": "tools/list",
     "params": {}
 };
 
-initialize_message = {
+initialize_message: dict[str, Any] = {
   "jsonrpc": "2.0",
   "id": 1,
   "method": "initialize",
@@ -24,10 +30,10 @@ initialize_message = {
   }
 };
 
-server_name = "ExampleServer"
-server_version = "1.0.0"
+server_name: str = "ExampleServer"
+server_version: str = "1.0.0"
 
-initializeResponse = {
+initializeResponse: dict[str, Any] = {
     "jsonrpc": "2.0",
     "id": 1,
     "result": {
@@ -52,7 +58,7 @@ initializeResponse = {
     }
 };
 
-initialized_message = {
+initialized_message: dict[str, Any] = {
     "jsonrpc": "2.0",
     "method": "notifications/initialized",
     "params": {}
