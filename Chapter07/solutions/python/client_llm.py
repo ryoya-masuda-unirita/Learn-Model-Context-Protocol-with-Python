@@ -5,6 +5,7 @@
 from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
 from openai import OpenAI
+from openai.types.chat import ChatCompletionFunctionToolParam, ChatCompletionMessageFunctionToolCall
 
 # LLM
 import os
@@ -18,14 +19,14 @@ server_params: StdioServerParameters = StdioServerParameters(
     env=None,  # 環境変数（任意）
 )
 
-def call_llm(prompt: str, functions: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def call_llm(prompt: str, functions: list[ChatCompletionFunctionToolParam]) -> list[dict[str, Any]]:
     """LLM にプロンプトと tool の定義を渡し、呼び出すべき tool を決めてもらう。
 
     Parameters
     ----------
     prompt : str
         ユーザーが入力したプロンプト。
-    functions : list[dict[str, Any]]
+    functions : list[ChatCompletionFunctionToolParam]
         LLM に渡す tool の定義（OpenAI の function calling 形式）のリスト。
 
     Returns
@@ -70,6 +71,9 @@ def call_llm(prompt: str, functions: list[dict[str, Any]]) -> list[dict[str, Any
 
     if response_message.tool_calls:
         for tool_call in response_message.tool_calls:
+            # function 形式以外（custom tool）の呼び出しは、このサンプルでは扱わない
+            if not isinstance(tool_call, ChatCompletionMessageFunctionToolCall):
+                continue
             # print("tool: ", tool_call)
             name = tool_call.function.name
             print("tool 名: ", name)
@@ -78,7 +82,7 @@ def call_llm(prompt: str, functions: list[dict[str, Any]]) -> list[dict[str, Any
 
     return functions_to_call
 
-def convert_to_llm_tool(tool: types.Tool) -> dict[str, Any]:
+def convert_to_llm_tool(tool: types.Tool) -> ChatCompletionFunctionToolParam:
     """MCP の tool の定義を、OpenAI の function calling 形式に変換する。
 
     Parameters
@@ -88,15 +92,14 @@ def convert_to_llm_tool(tool: types.Tool) -> dict[str, Any]:
 
     Returns
     -------
-    dict[str, Any]
+    ChatCompletionFunctionToolParam
         OpenAI の Chat Completions API の tools に渡せる形式の定義。
     """
-    tool_schema = {
+    tool_schema: ChatCompletionFunctionToolParam = {
         "type": "function",
         "function": {
             "name": tool.name,
-            "description": tool.description,
-            "type": "function",
+            "description": tool.description or "",
             "parameters": {
                 "type": "object",
                 "properties": tool.inputSchema["properties"]
@@ -125,7 +128,7 @@ async def run() -> None:
             tools = await session.list_tools()
             print("tool の一覧")
 
-            functions = []
+            functions: list[ChatCompletionFunctionToolParam] = []
 
             for tool in tools.tools:
                 print("tool: ", tool.name)

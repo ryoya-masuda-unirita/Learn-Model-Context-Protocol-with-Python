@@ -141,7 +141,7 @@ async def run(starlette_app: Starlette) -> None:
 
 
 middleware: list[Middleware] = [
-    Middleware(CustomHeaderMiddleware, header_value='Customized')
+    Middleware(CustomHeaderMiddleware)
 ]
 
 async def main() -> None:

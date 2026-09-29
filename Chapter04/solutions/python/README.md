@@ -130,7 +130,7 @@ npx @modelcontextprotocol/inspector --cli http://localhost:3000/sse --method too
     },
     {
       "name": "add_product_to_cart",
-      "description": "カートに商品を追加する。\n\nParameters\n----------\nproduct_name : str\n    追加する商品の名前（例: \"商品 1\"）。\n\nReturns\n-------\nCartItem\n    追加したカートの商品。\n",
+      "description": "カートに商品を追加する。\n\nParameters\n----------\nproduct_name : str\n    追加する商品の名前（例: \"商品 1\"）。\n\nReturns\n-------\nCartItem\n    追加したカートの商品。\n\nRaises\n------\nValueError\n    指定した名前の商品が見つからない場合。\n",
       "inputSchema": {
         "properties": {
           "product_name": {

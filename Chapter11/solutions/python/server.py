@@ -66,13 +66,12 @@ def has_scope(token: str, scope: str) -> bool:
     bool
         JWT が有効で、scopes に scope が含まれていれば True。
     """
-    token = token[7:]
-    token = validate_token(token)
+    decoded = validate_token(token[7:])
 
-    if not token:
+    if not decoded:
         return False
     # とても単純な scope のチェック。実際にはトークンをきちんと解析して scope を確認する
-    return  scope in token["scopes"]
+    return  scope in decoded["scopes"]
 
 def validate_jwt(token: str) -> bool:
     """JWT が有効かを判定する。

@@ -27,13 +27,13 @@ class EventEntry:
         イベントの一意な ID。
     stream_id : StreamId
         イベントが属するストリームの ID。
-    message : JSONRPCMessage
-        イベントとして送った JSON-RPC メッセージ。
+    message : JSONRPCMessage | None
+        イベントとして送った JSON-RPC メッセージ。中身のないイベント（接続の確立時などに送る）は None。
     """
 
     event_id: EventId
     stream_id: StreamId
-    message: JSONRPCMessage
+    message: JSONRPCMessage | None
 
 
 class InMemoryEventStore(EventStore):
@@ -69,15 +69,15 @@ class InMemoryEventStore(EventStore):
         # event_id -> EventEntry（素早く検索するため）
         self.event_index: dict[EventId, EventEntry] = {}
 
-    async def store_event(self, stream_id: StreamId, message: JSONRPCMessage) -> EventId:
+    async def store_event(self, stream_id: StreamId, message: JSONRPCMessage | None) -> EventId:
         """生成したイベント ID と一緒にイベントを保存する。
 
         Parameters
         ----------
         stream_id : StreamId
             イベントを保存するストリームの ID。
-        message : JSONRPCMessage
-            保存する JSON-RPC メッセージ。
+        message : JSONRPCMessage | None
+            保存する JSON-RPC メッセージ。中身のないイベントなら None。
 
         Returns
         -------
@@ -135,7 +135,9 @@ class InMemoryEventStore(EventStore):
         found_last = False
         for event in stream_events:
             if found_last:
-                await send_callback(EventMessage(event.message, event.event_id))
+                # 中身のないイベントは再生しても意味がないので飛ばす
+                if event.message is not None:
+                    await send_callback(EventMessage(event.message, event.event_id))
             elif event.event_id == last_event_id:
                 found_last = True
 

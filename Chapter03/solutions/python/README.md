@@ -77,9 +77,8 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
             "description": "注文。",
             "properties": {
               "id": {
-                "format": "uuid",
                 "title": "Id",
-                "type": "string"
+                "type": "integer"
               },
               "customer_id": {
                 "title": "Customer Id",
@@ -132,9 +131,8 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
             "description": "注文。",
             "properties": {
               "id": {
-                "format": "uuid",
                 "title": "Id",
-                "type": "string"
+                "type": "integer"
               },
               "customer_id": {
                 "title": "Customer Id",
@@ -188,9 +186,8 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
         "description": "注文。",
         "properties": {
           "id": {
-            "format": "uuid",
             "title": "Id",
-            "type": "string"
+            "type": "integer"
           },
           "customer_id": {
             "title": "Customer Id",
@@ -288,9 +285,8 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
                 "type": "integer"
               },
               "cart_id": {
-                "format": "uuid",
                 "title": "Cart Id",
-                "type": "string"
+                "type": "integer"
               },
               "product_id": {
                 "title": "Product Id",
@@ -361,9 +357,8 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
             "type": "integer"
           },
           "cart_id": {
-            "format": "uuid",
             "title": "Cart Id",
-            "type": "string"
+            "type": "integer"
           },
           "product_id": {
             "title": "Product Id",

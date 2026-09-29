@@ -87,10 +87,16 @@ def add_product_to_cart(product_name: str) -> CartItem:
     -------
     CartItem
         追加したカートの商品。
+
+    Raises
+    ------
+    ValueError
+        指定した名前の商品が見つからない場合。
     """
     product = next((p for p in products if p["name"] == product_name), None)
     if not product:
-        return {"type": "text", "name": f"商品 [{product_name}] が見つかりません"}
+        # tool 内で送出した例外は、MCP のエラー応答（isError=True）としてクライアントに返る
+        raise ValueError(f"商品 [{product_name}] が見つかりません")
     cart_item = CartItem(cart_id=1, product_id=product["id"], quantity=1)
     cart.append(cart_item)
 

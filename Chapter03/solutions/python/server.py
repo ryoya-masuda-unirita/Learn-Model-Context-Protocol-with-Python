@@ -61,28 +61,27 @@ class CartItem(BaseModel):
     """カートに入っている商品。"""
 
     id: int
-    cart_id: uuid.UUID
+    cart_id: int
     product_id: int
     quantity: int
 
-    def __init__(self, cart_id: uuid.UUID, product_id: int, quantity: int) -> None:
-        """カートの商品を作る。
+    def __init__(self, cart_id: int, product_id: int, quantity: int) -> None:
+        """カートの商品を作る。id は採番する。
 
         Parameters
         ----------
-        cart_id : uuid.UUID
-            カートの ID。uuid.UUID(int=0) を渡すと新しい ID を生成する。
+        cart_id : int
+            カートの ID。0 を渡すと新しいカートの ID を採番する。
         product_id : int
             商品の ID。
         quantity : int
             数量。
         """
-        if cart_id != uuid.UUID(int=0):
-            self.cart_id = cart_id
-        else:
-            self.cart_id = uuid.uuid4()
-        self.product_id = product_id
-        self.quantity = quantity
+        # pydantic のモデルは super().__init__() でフィールドを設定する必要がある
+        # （先に self.xxx へ代入すると、初期化前のモデルとしてエラーになる）
+        if cart_id == 0:
+            cart_id = max((item.cart_id for item in cart_items), default=0) + 1
+        super().__init__(id=len(cart_items) + 1, cart_id=cart_id, product_id=product_id, quantity=quantity)
 
 class Cart(BaseModel):
     """顧客のカート。"""
@@ -91,7 +90,7 @@ class Cart(BaseModel):
     customer_id: int
 
     def __init__(self, **data: Any) -> None:
-        """カートを作る。id が指定されていなければ生成する。
+        """カートを作る。id が指定されていなければ採番する。
 
         Parameters
         ----------
@@ -99,25 +98,25 @@ class Cart(BaseModel):
             各フィールドの値。
         """
         if 'id' not in data:
-            data['id'] = uuid.uuid4()
+            data['id'] = len(carts) + 1
         super().__init__(**data)
 
 class Order(BaseModel):
     """注文。"""
 
-    id: uuid.UUID
+    id: int
     customer_id: int
 
     def __init__(self, **data: Any) -> None:
-        """注文を作る。id が UUID でなければ生成する。
+        """注文を作る。id が指定されていなければ採番する。
 
         Parameters
         ----------
         **data : Any
             各フィールドの値。
         """
-        if 'id' not in data or not isinstance(data['id'], uuid.UUID):
-            data['id'] = uuid.uuid4()
+        if 'id' not in data:
+            data['id'] = max((order.id for order in orders), default=0) + 1
         super().__init__(**data)
 
 
@@ -129,8 +128,8 @@ products: list[Product] = [
 
 orders: list[Order] = [
     Order(id=1, customer_id=101),
-    Order(id=uuid.uuid4(), customer_id=101),
-    Order(id=uuid.uuid4(), customer_id=102)
+    Order(id=2, customer_id=101),
+    Order(id=3, customer_id=102)
 ]
 
 carts: list[Cart] = []
@@ -214,7 +213,7 @@ def get_order(order_id:int) -> Order | None:
         見つかった注文。見つからなければ None。
     """
     for order in orders:
-        if order.order_id == order_id:
+        if order.id == order_id:
             return order
     return None
 
@@ -241,7 +240,7 @@ def place_order(customer_id:int) -> Order:
     if customer_id != 0 and not any(customer.id == customer_id for customer in customers):
         raise ValueError(f"customer_id が不正です: {customer_id}")
 
-    new_order = Order(0, customer_id)
+    new_order = Order(customer_id=customer_id)
     orders.append(new_order)
     return new_order
 

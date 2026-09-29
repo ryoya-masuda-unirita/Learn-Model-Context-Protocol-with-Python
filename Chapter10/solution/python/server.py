@@ -21,7 +21,7 @@ class MemberPreferences(BaseModel):
     name: str = Field(
         default="",
         description="あなたの名前"
-    ),
+    )
     email: str = Field(
         default="",
         description="あなたのメールアドレス"

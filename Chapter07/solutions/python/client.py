@@ -1,4 +1,6 @@
 """MCP サーバー（server.py）に stdio で接続し、コマンドで tool を呼び出す対話型クライアント。"""
+from typing import Any
+
 from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
 
@@ -26,14 +28,14 @@ async def run() -> None:
             mcp_tools = await session.list_tools()
             print("tool の一覧")
 
-            tools = []
+            tools: list[dict[str, Any]] = []
 
-            for tool in mcp_tools.tools:
-                print("tool: ", tool.name)
+            for mcp_tool in mcp_tools.tools:
+                print("tool: ", mcp_tool.name)
                 tools.append({
-                    "name": tool.name,
-                    "description": tool.description,
-                    "parameters": tool.inputSchema
+                    "name": mcp_tool.name,
+                    "description": mcp_tool.description,
+                    "parameters": mcp_tool.inputSchema
                 })
 
             while True:
@@ -45,18 +47,18 @@ async def run() -> None:
                 # コマンドが tool 名なら、その tool を呼び出す
                 if command in [tool["name"] for tool in tools]:
                     # tool を探す
-                    tool = next((t for t in tools if t["name"] == command), None)
-                    if tool:
-                        print(f"使用する tool: {tool['name']}")
+                    selected = next((t for t in tools if t["name"] == command), None)
+                    if selected:
+                        print(f"使用する tool: {selected['name']}")
 
                         # tool に渡す引数を用意する
-                        arguments = {}
-                        print("tool の引数:", tool["parameters"])
-                        for param in tool["parameters"]["properties"]:
+                        arguments: dict[str, Any] = {}
+                        print("tool の引数:", selected["parameters"])
+                        for param in selected["parameters"]["properties"]:
                             print(f"パラメーター: {param}")
                             arguments[param] = input(f"{param} を入力してください: ")
 
-                        result = await session.call_tool(tool["name"], arguments=arguments)
+                        result = await session.call_tool(selected["name"], arguments=arguments)
 
                         print("結果: ", result.content)
 

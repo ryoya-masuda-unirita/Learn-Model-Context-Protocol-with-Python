@@ -26,7 +26,8 @@ def introspect() -> Response:
         トークンが有効なら active=True とユーザー情報、無効なら active=False の JSON。
     """
     token = request.form.get("token")
-    token_data = access_tokens.get(token)
+    # token が送られてこなかった場合は、無効なトークンとして扱う
+    token_data = access_tokens.get(token) if token is not None else None
 
     if not token_data:
         return jsonify({"active": False})

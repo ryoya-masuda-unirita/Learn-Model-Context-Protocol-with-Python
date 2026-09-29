@@ -5,7 +5,7 @@ import asyncio
 
 from mcp import ClientSession
 from mcp.client.sse import sse_client
-from mcp.types import ElicitRequestParams, ElicitResult, TextContent
+from mcp.types import CallToolResult, ElicitRequestParams, ElicitResult, TextContent
 from mcp.shared.context import RequestContext
 
 async def elicitation_callback_handler(context: RequestContext[ClientSession, None], params: ElicitRequestParams) -> ElicitResult:
@@ -45,6 +45,30 @@ async def elicitation_callback_handler(context: RequestContext[ClientSession, No
 
     
 
+def first_text(result: CallToolResult) -> str:
+    """呼び出した tool の結果から、最初のコンテンツのテキストを取り出す。
+
+    Parameters
+    ----------
+    result : CallToolResult
+        tool の呼び出し結果。
+
+    Returns
+    -------
+    str
+        最初のコンテンツのテキスト。
+
+    Raises
+    ------
+    ValueError
+        最初のコンテンツがテキストでない場合（画像などが返ってきた場合）。
+    """
+    content = result.content[0]
+    if not isinstance(content, TextContent):
+        raise ValueError(f"テキスト以外のコンテンツには対応していません: {content.type}")
+    return content.text
+
+
 async def main() -> None:
     """サーバーに接続し、tool の一覧を表示してから book_trip を呼び出す。"""
     # Server-Sent Events (SSE) サーバーに接続する
@@ -68,7 +92,7 @@ async def main() -> None:
                 "date": "2025-01-02",
                 "member_id": "guest"
             })
-            print("結果: ", result.content[0].text)
+            print("結果: ", first_text(result))
 
 
 if __name__ == "__main__":

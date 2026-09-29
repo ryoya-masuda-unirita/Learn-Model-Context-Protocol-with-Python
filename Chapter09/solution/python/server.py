@@ -40,6 +40,11 @@ async def talk_to(name: str, topic: str, ctx: Context[ServerSession, None]) -> s
     -------
     str
         キャラクターとして LLM が生成した応答。
+
+    Raises
+    ------
+    ValueError
+        指定した名前のキャラクターが見つからない場合。
     """
     # characters からキャラクターを読み込む
     # characters をループして、"name" プロパティが name と一致するキャラクターを探す
@@ -48,6 +53,8 @@ async def talk_to(name: str, topic: str, ctx: Context[ServerSession, None]) -> s
         if c["name"] == name:
             character = c
             break
+    if character is None:
+        raise ValueError(f"キャラクター {name} が見つかりません")
 
     system_prompt = f"あなたは {character['name']} です。{character['description']}。{character['personality']}"
 

@@ -36,6 +36,11 @@ async def call_llm(prompt: str, system_prompt: str) -> str:
     -------
     str
         LLM が生成したテキスト。
+
+    Raises
+    ------
+    RuntimeError
+        LLM から本文が返ってこなかった場合。
     """
     client = OpenAI(
     base_url="https://models.github.ai/inference",
@@ -59,7 +64,10 @@ async def call_llm(prompt: str, system_prompt: str) -> str:
         top_p=1
     )
 
-    return response.choices[0].message.content
+    content = response.choices[0].message.content
+    if content is None:
+        raise RuntimeError("LLM から本文が返ってきませんでした")
+    return content
 
 
 # 任意：サンプリングのコールバックを作る
@@ -79,10 +87,18 @@ async def handle_sampling_message(
     -------
     types.CreateMessageResult
         LLM が生成したテキストを含む応答。
+
+    Raises
+    ------
+    ValueError
+        リクエストの内容がテキストでない場合。
     """
     print(f"サンプリングのリクエスト: {params.messages}")
 
-    message = params.messages[0].content.text
+    request_content = params.messages[0].content
+    if not isinstance(request_content, types.TextContent):
+        raise ValueError("テキスト以外のサンプリングのリクエストには対応していません")
+    message = request_content.text
     system_prompt = params.systemPrompt or "あなたは親切なアシスタントです。話題から外れず、話を作りすぎないようにしつつ、必ず魅力的な商品説明を作成してください"
 
     # TODO: 実際の LLM を呼び出すように、以下を変更する
@@ -99,6 +115,30 @@ async def handle_sampling_message(
     )
 
 
+def first_text(result: types.CallToolResult) -> str:
+    """呼び出した tool の結果から、最初のコンテンツのテキストを取り出す。
+
+    Parameters
+    ----------
+    result : types.CallToolResult
+        tool の呼び出し結果。
+
+    Returns
+    -------
+    str
+        最初のコンテンツのテキスト。
+
+    Raises
+    ------
+    ValueError
+        最初のコンテンツがテキストでない場合（画像などが返ってきた場合）。
+    """
+    content = result.content[0]
+    if not isinstance(content, types.TextContent):
+        raise ValueError(f"テキスト以外のコンテンツには対応していません: {content.type}")
+    return content.text
+
+
 async def run() -> None:
     """サーバーに接続し、tool を呼び出して結果を表示する。"""
     async with stdio_client(server_params) as (read, write):
@@ -109,7 +149,7 @@ async def run() -> None:
 
             # tool を呼び出す（fastmcp_quickstart の create_product tool）
             result = await session.call_tool("talk_to", arguments={"name": "Monsieur Lestrange", "topic": "あなた自身について教えて"})
-            print("結果:", result.content[0].text)
+            print("結果:", first_text(result))
 
 
 def main() -> None:

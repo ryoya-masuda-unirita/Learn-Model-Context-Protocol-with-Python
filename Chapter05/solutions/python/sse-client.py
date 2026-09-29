@@ -79,11 +79,10 @@ async def message_handler(
 async def main() -> None:
     """サーバーに接続し、セッションを初期化して tool を呼び出す。"""
     print("クライアントを起動しています...")
-    # Streamable HTTP サーバーに接続する
+    # SSE サーバーに接続する（Streamable HTTP と違い、セッション ID を返す関数はない）
     async with sse_client(f"http://localhost:{port}/sse") as (
         read_stream,
         write_stream,
-        session_callback,
     ): 
         # クライアントのストリームを使ってセッションを作る
         async with ClientSession(
@@ -93,15 +92,8 @@ async def main() -> None:
             message_handler=message_handler,
         ) as session:
 
-            # まだ初期化していないので None のはず
-            id = session_callback()
-            print("ID: ", id)
-
             # 接続を初期化する
             await session.initialize()
-
-            id = session_callback()
-            print("ID: ", id)
 
             print("セッションを初期化しました。tool を呼び出せます。")
           

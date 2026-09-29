@@ -45,7 +45,7 @@ async def echo(message: str, ctx: Context) -> str:
     #         logger_name="Obi Wan",
     #     )
 
-    return TextContent(type="text", text=f"ファイルの内容です: {message}")
+    return f"ファイルの内容です: {message}"
 
 app: Starlette = Starlette(
     routes=[

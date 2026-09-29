@@ -34,7 +34,8 @@ except ValidationError as e:
 # 例外が発生する
 try:
    product_crashable = { "id": "1", "name": "商品 1" }
-   product_that_will_crash = Product(**product_crashable)
+   # price がないので検証エラーになることを示すための意図的な呼び出し
+   product_that_will_crash = Product(**product_crashable)  # type: ignore[arg-type]
 except ValidationError as e:
     print(f"検証エラー: {e}")
 

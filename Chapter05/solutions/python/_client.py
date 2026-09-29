@@ -78,7 +78,10 @@ def consume_stream() -> None:
     # session_id = response.headers.get('mcp-session-id')
     # print("セッション ID:", session_id)
 
-    headers['mcp-session-id'] = response.headers.get('mcp-session-id')
+    session_id = response.headers.get('mcp-session-id')
+    if session_id is None:
+        raise RuntimeError("サーバーからセッション ID（mcp-session-id ヘッダー）が返ってきませんでした")
+    headers['mcp-session-id'] = session_id
 
     print("initialized を送信しています...")
     response = requests.post(
