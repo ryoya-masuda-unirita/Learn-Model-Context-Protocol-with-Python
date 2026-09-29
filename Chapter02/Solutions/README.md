@@ -1,3 +1,3 @@
-Here's the solution to the MCP protocol assignment.
+MCP プロトコルの課題の解答です。
 
 - [Python](./python/README.md)

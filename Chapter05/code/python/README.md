@@ -1,59 +1,59 @@
-# Running this sample
+# このサンプルの実行
 
-There are two types of streaming servers available in this sample:
+このサンプルには2種類のストリーミングサーバーがあります：
 
 - SSE (Server-Sent Events)
 - Streaming HTTP
 
-## Create a virtual environment
+## 仮想環境の作成
 
 ```bash
 python -m venv venv
 ```
 
-## Activate the virtual environment
+## 仮想環境の有効化
 
-**On Windows**
+**Windows の場合**
 
 ```bash
 .\venv\Scripts\activate
 ```
 
-**On macOS/Linux**
+**macOS / Linux の場合**
 
 
 ```bash
 source venv/bin/activate
 ```
 
-## Install dependencies
+## 依存関係のインストール
 
 ```bash
 pip install Flask requests
 ```
 
-## Run the SSE sample
+## SSE サンプルの実行
 
-Start the server:
+サーバーを起動します：
 
 ```bash
 python sse.py
 ```
 
-Here's what you should see in the server console once the client is connected:
+クライアントが接続すると、サーバーのコンソールに次のように表示されます：
 
 ```text
 HTTP streaming server running on port 8000
 Starting SSE server on port 8000...
 ```
 
-In a separate terminal, start the client:
+別のターミナルでクライアントを起動します：
 
 ```bash
 python sse_client.py 
 ```
 
-You should see output similar to this in the client console:
+クライアントのコンソールには次のような出力が表示されます：
 
 ```text
 Received SSE: data: Sun Jun  1 18:48:42 2025
@@ -64,27 +64,27 @@ Received SSE: data: Sun Jun  1 18:48:46 2025
 Received SSE: data: 5 messages sent, closing connection.
 ```
 
-## Run the Streaming HTTP sample
+## Streaming HTTP サンプルの実行
 
-Start the server:
+サーバーを起動します：
 
 ```bash
 python streaming_http_server.py
 ```
 
-Here's what you should see in the server console once the client is connected:
+クライアントが接続すると、サーバーのコンソールに次のように表示されます：
 
 ```text
 Streaming HTTP server running on port 8000
 Streaming HTTP connection established
 ```
 
-In a separate terminal, start the client:
+別のターミナルでクライアントを起動します：
 
 ```bash
 python streaming_http_client.py
 ```
-You should see output similar to this in the client console:
+クライアントのコンソールには次のような出力が表示されます：
 
 ```text
 2025-06-01T15:10:43.193Z

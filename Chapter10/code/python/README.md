@@ -1,21 +1,21 @@
-# Run the code
+# コードの実行
 
-This sample demonstrates the use of Elicitation
+このサンプルでは Elicitation の使い方を示します。
 
-## Set up environment
+## 環境のセットアップ
 
 ```sh
 python -m venv venv
 source ./venv/bin/activate
 ```
 
-## Run server
+## サーバーの実行
 
 ```sh
 uvicorn server:app
 ```
 
-You should see:
+次のように表示されます：
 
 ```text
 INFO:     Started server process [5016]
@@ -24,11 +24,11 @@ INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 ```
 
-This should start a server on port 8000.
+ポート 8000 でサーバーが起動します。
 
-## Test out the server in VS Code
+## VS Code でサーバーを試す
 
-Add an entry like so to *mcp.json*:
+*mcp.json* に次のようなエントリを追加します：
 
 ```json
 "server": {
@@ -38,25 +38,25 @@ Add an entry like so to *mcp.json*:
 }
 ```
 
-and start the server. Now try typing the following prompt in the chat:
+サーバーを起動したら、チャットで次のプロンプトを入力してみてください：
 
 ```text
 Book trip on 2025-02-01
 ```
 
-This prompt should trigger an Elicitation scenario where you're asked for more input. Typing "2025-01-01" should lead to a successful booking:
+このプロンプトで Elicitation のシナリオが始まり、追加の入力を求められます。"2025-01-01" と入力すると予約が成功します：
 
-![Elicitation example VS Code](../../assets/elicitation.png)
+![VS Code での Elicitation の例](../../assets/elicitation.png)
 
-## Run client
+## クライアントの実行
 
-Run the following command:
+次のコマンドを実行します：
 
 ```sh
 python client.py
 ```
 
-It should start the client and you should see the following output:
+クライアントが起動し、次のような出力になります：
 
 ```text
 Available tools: ['book_trip']
@@ -65,7 +65,7 @@ Available tools: ['book_trip']
 Result:  [SUCCESS] Booked for 2025-01-01
 ```
 
-Let's highlight a piece of code, the client handler for elicitation as we're hardcoding the responses back to the server:
+コードの一部を見てみましょう。elicitation 用のクライアントのハンドラーです。ここではサーバーへの応答をハードコードしています：
 
 ```python
 async def elicitation_callback_handler(context: RequestContext[ClientSession, None], params: ElicitRequestParams):
@@ -88,6 +88,6 @@ async def elicitation_callback_handler(context: RequestContext[ClientSession, No
     }) # should book 1 jan instead of initial 2nd Jan
 ```
 
-Here we are hardcoding back an "accept" response with a prefilled alternate date that the server will accept. We have also provided other response types like 1) User refuses to select a date which should lead to a response saying no booking has been made. 2) This response is more like the user dismisses the whole dialogue and also this leads to no booking taking place.
+ここでは、サーバーが受け付ける代わりの日付をあらかじめ入れた "accept" 応答をハードコードして返しています。ほかの応答パターンも用意しています。1) ユーザーが日付の選択を断る場合で、予約は行われなかったという応答になります。2) ユーザーがやり取り自体を取りやめる場合で、こちらも予約は行われません。
 
-You're encouraged to improve this code by making this user-driven instead of hardcoded and also to try out the different responses to see the difference.
+ハードコードではなくユーザーの入力で決まるようにこのコードを改良したり、別の応答を試して違いを確かめたりしてみてください。

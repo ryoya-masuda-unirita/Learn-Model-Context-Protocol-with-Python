@@ -1,25 +1,25 @@
-# Run sample
+# サンプルの実行
 
-## Set up environment
+## 環境のセットアップ
 
 ```sh
 python -m venv
 source ./venv/bin/activate
 ```
 
-## Install dependencies
+## 依存関係のインストール
 
 ```sh
 pip install PyJWT
 ```
 
-## Run code
+## コードの実行
 
 ```sh
 python app.py
 ```
 
-You should see output similar to:
+次のような出力になります：
 
 ```text
 Encoded JWT: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlVzZXIgVXNlcnNvbiIsImFkbWluIjp0cnVlLCJpYXQiOjE3NTkxNjgzMDEsImV4cCI6MTc1OTE3MTkwMX0.tz0UYNNtGVC61DWjVDF8xlhpNkp5XBtxmQH3m_RNwe8

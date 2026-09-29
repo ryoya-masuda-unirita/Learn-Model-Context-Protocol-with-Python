@@ -1,8 +1,8 @@
-# Running this sample
+# このサンプルの実行
 
-## Install dependencies
+## 依存関係のインストール
 
-First, create a virtual environment:
+まず、仮想環境を作成します：
 
 ```sh
 python -m venv venv
@@ -13,24 +13,24 @@ source ./venv/bin/activate
 pip install "mcp[cli]"
 ```
 
-## Test the server out
+## サーバーを試す
 
-Start up the server:
+サーバーを起動します：
 
 ```
 cd e-commerce
 python server.py
 ```
 
-In a separate terminal:
+別のターミナルで次を実行します。
 
-Place order
+注文する
 
 ```
 npx @modelcontextprotocol/inspector --cli http://localhost:8000/sse --method tools/call --tool-name place_order --tool-arg order_id=0 --tool-arg customer_id=1 --tool-arg quantity=1 --tool-arg total_price=100
 ```
 
-Get orders (all orders)
+注文を取得する（全件）
 
 ```sh
 npx @modelcontextprotocol/inspector --cli http://localhost:8000/sse --method tools/call --tool-name get_orders --tool-arg customer_id=0

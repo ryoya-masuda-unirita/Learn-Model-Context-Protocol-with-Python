@@ -1,20 +1,20 @@
-# Run sample
+# サンプルの実行
 
-## Install
+## インストール
 
-Make sure you have the correct version of Pydantic installed. You can install it using pip:
+正しいバージョンの Pydantic がインストールされていることを確認してください。pip でインストールできます：
 
 ```sh
 pip install pydantic==2.5.3
 ```
 
-## Run examples
+## サンプルの実行
 
 ```powershell
 python .\pydantic_demo.py
 ```
 
-You should see output similar to:
+次のような出力になります：
 
 ```text
 Running pydantic version:  2.5.3

@@ -1,58 +1,58 @@
-# Running this sample
+# このサンプルの実行
 
-You're recommended to install `uv` but it's not a must, see [instructions](https://docs.astral.sh/uv/#highlights)
+`uv` のインストールを推奨しますが、必須ではありません。[手順](https://docs.astral.sh/uv/#highlights)を参照してください。
 
-## -0- Create a virtual environment
+## -0- 仮想環境の作成
 
 ```bash
 python -m venv venv
 ```
 
-## -1- Activate the virtual environment
+## -1- 仮想環境の有効化
 
 ```bash
 venv\Scrips\activate
 ```
 
-## -2- Install the dependencies
+## -2- 依存関係のインストール
 
 ```bash
 pip install "mcp[cli]"
 ```
 
-## -3- Run the sample
+## -3- サンプルの実行
 
 
 ```bash
 mcp run server.py
 ```
 
-## -4- Test the sample
+## -4- サンプルのテスト
 
-With the server running in one terminal, open another terminal and run the following command:
+1つのターミナルでサーバーを動かしたまま、別のターミナルを開いて次のコマンドを実行します：
 
 ```bash
 mcp dev server.py
 ```
 
-This should start a web server with a visual interface allowing you to test the sample.
+サンプルを画面上でテストできる Web サーバーが起動します。
 
-Once the server is connected: 
+サーバーに接続できたら：
 
-- try listing tools and run `add`, with args 2 and 4, you should see 6 in the result.
-- go to resources and resource template and call get_greeting, type in a name and you should see a greeting with the name you provided.
+- tool の一覧を表示して `add` を引数 2 と 4 で実行してみてください。結果に 6 と表示されます。
+- resources と resource template を開いて get_greeting を呼び出し、名前を入力してください。入力した名前入りの挨拶が表示されます。
 
-### Testing in ClI mode
+### CLI モードでのテスト
 
-The inspector you ran is actually a Node.js app and `mcp dev` is a wrapper around it. 
+実行した Inspector は実は Node.js のアプリで、`mcp dev` はそのラッパーです。
 
-You can launch it directly in CLI mode by running the following command:
+次のコマンドで、Inspector を直接 CLI モードで起動できます：
 
 ```bash
 npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
 ```
 
-This will list all the tools available in the server. You should see the following output:
+サーバーで使えるすべての tool が一覧表示されます。次のような出力になります：
 
 ```text
 {
@@ -559,13 +559,13 @@ This will list all the tools available in the server. You should see the followi
 }
 ```
 
-To invoke a tool type:
+tool を呼び出すには次のように入力します：
 
 ```bash
 npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/call --tool-name get_all_categories
 ```
 
-You should see the following output:
+次のような出力になります：
 
 ```text
 {
@@ -607,5 +607,5 @@ You should see the following output:
 ```
 
 > ![!TIP]
-> It's usually a lot faster to run the ispector in CLI mode than in the browser.
-> Read more about the inspector [here](https://github.com/modelcontextprotocol/inspector).
+> 通常、Inspector はブラウザより CLI モードで実行する方がずっと速いです。
+> Inspector の詳細は[こちら](https://github.com/modelcontextprotocol/inspector)を参照してください。

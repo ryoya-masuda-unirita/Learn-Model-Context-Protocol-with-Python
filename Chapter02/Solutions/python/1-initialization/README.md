@@ -1,10 +1,10 @@
-# Run
+# サンプルの実行
 
-Running this sample
+このサンプルを実行します。
 
-> You're recommended to run Python version 3.10 or above
+> Python 3.10 以上での実行を推奨します
 
-## Run the code
+## コードの実行
 
 ```sh
 python client.py

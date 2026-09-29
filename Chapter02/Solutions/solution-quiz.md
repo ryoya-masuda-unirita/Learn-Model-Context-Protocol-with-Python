@@ -1,5 +1,5 @@
-- A: Client needs to first send "initialize", wait for the server response and then send "initialized".
-- B: Client and server can call for example list tools right away.
-- C: Client needs to send "initialized" to the server. 
+- A: クライアントはまず "initialize" を送り、サーバーの応答を待ってから "initialized" を送る必要がある
+- B: クライアントとサーバーは、たとえば tool の一覧取得をすぐに呼び出せる
+- C: クライアントはサーバーに "initialized" を送る必要がある
 
-**C** This is all that's needed. However AI is recommended as it allows client and server exchance capabilities.
+**C** 必要なのはこれだけです。ただし、クライアントとサーバーが capabilities を交換できるので、A の手順を推奨します。

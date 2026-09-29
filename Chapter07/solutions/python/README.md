@@ -1,33 +1,33 @@
-# Running this sample
+# このサンプルの実行
 
-You're recommended to install `uv` but it's not a must, see [instructions](https://docs.astral.sh/uv/#highlights)
+`uv` のインストールを推奨しますが、必須ではありません。[手順](https://docs.astral.sh/uv/#highlights)を参照してください。
 
-## -0- Create a virtual environment
+## -0- 仮想環境の作成
 
 ```bash
 python -m venv venv
 ```
 
-## -1- Activate the virtual environment
+## -1- 仮想環境の有効化
 
 ```bash
 venv\Scrips\activate
 ```
 
-## -2- Install the dependencies
+## -2- 依存関係のインストール
 
 ```bash
 pip install "mcp[cli]"
 ```
 
-## -3- Run the sample
+## -3- サンプルの実行
 
 
 ```bash
 python client.py
 ```
 
-You should see the following output:
+次のような出力になります：
 
 ```text
 LISTING TOOLS
@@ -37,11 +37,11 @@ Tool:  get_products
 Enter command (or 'quit' to exit):
 ```
 
-## -4- Test the sample
+## -4- サンプルのテスト
 
-Test the sample through below input. We assume you have the app running at this point.
+次の入力でサンプルをテストします。この時点でアプリが起動している前提です。
 
-1. Type the following command **get_products**, you should see the following output
+1. コマンド **get_products** を入力します。次のような出力になります：
 
   ```text
   Using tool: get_products
@@ -50,16 +50,16 @@ Test the sample through below input. We assume you have the app running at this 
   Result:  [TextContent(type='text', text='{\n  "type": "text",\n  "name": "Name: Product 1"\n}', annotations=None), TextContent(type='text', text='{\n  "type": "text",\n  "name": "Name: Product 2"\n}', annotations=None), TextContent(type='text', text='{\n  "type": "text",\n  "name": "Name: Product 3"\n}', annotations=None)]
   ```
 
-  This tells you that there's a list of products to choose from
+  選べる商品の一覧があることが分かります。
 
-1. Add an item to the cart like by typing **add_product_to_cart**. You should see another prompt asking you to "Enter product name", type **Product 2**. You should see a response like so:
+1. **add_product_to_cart** と入力して、カートに商品を追加します。"Enter product name"（商品名の入力）を求められるので、**Product 2** と入力します。次のような応答が返ってきます：
 
   ```text
   [05/22/25 15:19:51] INFO     Processing request of type CallToolRequest                                        server.py:551
   Result:  [TextContent(type='text', text='{\n  "type": "text",\n  "name": "ID: 45eef588-3a29-4798-b1ae-44dbfa92075d,product: 2,quantity: 1"\n}', annotations=None)]
   ```
 
- 1. List cart content with the command **list_cart**, you should see the following response:
+ 1. コマンド **list_cart** でカートの中身を一覧表示します。次のような応答が返ってきます：
 
   ```text
   Using tool: list_cart
@@ -68,23 +68,23 @@ Test the sample through below input. We assume you have the app running at this 
   Result:  [TextContent(type='text', text='{\n  "type": "text",\n  "name": "ID: 45eef588-3a29-4798-b1ae-44dbfa92075d,product: 2,quantity: 1"\n}', annotations=None)]
   ``` 
 
-  This correctly shows us the item we just added.
+  今追加した商品が正しく表示されています。
 
-## Test the LLm sample
+## LLM サンプルのテスト
 
-1. Install dependencies (we need to support calling an LLM)
+1. 依存関係をインストールします（LLM を呼び出せるようにするため）
 
   ```sh
   pip install openai
   ```
 
-1. Run the LLM client by typing the following:
+1. 次のように入力して、LLM クライアントを実行します：
 
   ```sh
   python client_llm.py
   ```
 
-  You should see the following output:
+  次のような出力になります：
 
   ```text
   LISTING TOOLS
@@ -95,13 +95,13 @@ Test the sample through below input. We assume you have the app running at this 
   Enter prompt:
   ```
 
-1. Type **show me products**, like so:
+1. 次のように **show me products** と入力します：
 
   ```text
   Enter prompt: show me products
   ```
 
-  You should see the following output:
+  次のような出力になります：
 
   ```text
   ALLING LLM
@@ -111,7 +111,7 @@ Test the sample through below input. We assume you have the app running at this 
   Waiting for input... (type 'quit' to exit)
   ```
 
-1. Now add a product by typing the following **Add Product 1 to the cart**, you should see the following output:
+1. 次に **Add Product 1 to the cart** と入力して商品を追加します。次のような出力になります：
 
   ```text
   CALLING LLM
@@ -121,7 +121,7 @@ Test the sample through below input. We assume you have the app running at this 
   Waiting for input... (type 'quit' to exit)
   ```
 
-1. Let's double check by typing **show me cart content**, you should see the following output:
+1. **show me cart content** と入力して確認してみましょう。次のような出力になります：
 
   ```text
   CALLING LLM
@@ -131,4 +131,4 @@ Test the sample through below input. We assume you have the app running at this 
   Waiting for input... (type 'quit' to exit)
   ````
 
-  As you can see, your added product is in the cart.
+  追加した商品がカートに入っていることが分かります。

@@ -1,13 +1,13 @@
-# Run this code
+# このコードの実行
 
-This code simulates an OAuth 2.1 authorization code flow. It consists of the following:
+このコードは OAuth 2.1 の認可コードフローをシミュレートします。次の要素で構成されています：
 
-- Client, this client interacts with both an authorization server and a resource server.
-- Authorization Server, this server is responsible for authenticating the user and issuing access tokens.
-- Resource Server, this server hosts the protected resources and validates access tokens.
+- クライアント：認可サーバーとリソースサーバーの両方とやり取りします。
+- 認可サーバー：ユーザーの認証とアクセストークンの発行を担当します。
+- リソースサーバー：保護されたリソースを持ち、アクセストークンを検証します。
 
-## Runtime
+## ランタイム
 
-Choose your runtime:
+ランタイムを選んでください：
 
 - [Python](./python/README.md)

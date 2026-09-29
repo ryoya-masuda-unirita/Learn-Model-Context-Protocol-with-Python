@@ -1,15 +1,15 @@
-What is the SSE transport used for?
+SSE transport は何に使われますか？
 
-- A: To expose a server via HTTP
-- B: To expose a server via stdio
-- C: To enable streaming of responses from LLMs
+- A: HTTP 経由でサーバーを公開するため
+- B: stdio 経由でサーバーを公開するため
+- C: LLM の応答をストリーミングできるようにするため
 
-**Answer**: A and C
+**答え**：A と C
 
-Which routes are used for SSE?
+SSE で使われるルートはどれですか？
 
 - A: `/mcp`
 - B: `/sse`
 - C: `/messages`
 
-**Answer**: B and C
+**答え**：B と C

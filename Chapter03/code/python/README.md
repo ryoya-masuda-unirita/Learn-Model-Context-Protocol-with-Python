@@ -1,45 +1,45 @@
-# Run sample
+# サンプルの実行
 
-## Set up virtual environment
+## 仮想環境のセットアップ
 
 ```bash
 python -m venv venv
 ```
 
-activate virtual environment:
+仮想環境を有効化します：
 
 ```bash
 source venv/bin/activate
 ```
 
-or on Windows type:
+Windows の場合は次のように入力します：
 
 ```bash
 venv\Scripts\activate
 ```
 
-## Install dependencies
+## 依存関係のインストール
 
 ```bash
 pip install "mcp[cli]"
 ```
 
-## Run code
+## コードの実行
 
 ```bash
 mcp run server.py
 ```
 
-## Run inspector
+## Inspector の実行
 
 ```bash
 mcp dev server.py
 ```
 
-You should see a web interface open up. Ensure you select:
+Web 画面が開くはずです。次のように選択してください：
 
-- transport with value "stdio":
-- command: **mcp**
-- arguments: **run server.py**
+- transport は "stdio"
+- command：**mcp**
+- arguments：**run server.py**
 
-Then select the "Connect" button.
+その後、"Connect" ボタンを押します。

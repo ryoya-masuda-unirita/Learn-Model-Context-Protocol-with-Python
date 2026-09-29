@@ -1,25 +1,25 @@
-# Run sample
+# サンプルの実行
 
-## Set up virtual environment
+## 仮想環境のセットアップ
 
 ```sh
 python -m venv venv
 source venv/bin/activate
 ```
 
-## Install dependencies
+## 依存関係のインストール
 
 ```bash
 pip install "mcp[cli]"
 ```
 
-## Run the server
+## サーバーの実行
 
 ```sh
 uvicorn server:app
 ```
 
-## Test the server
+## サーバーのテスト
 
 ```bash
 mcp dev server.py

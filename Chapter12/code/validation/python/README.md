@@ -1,6 +1,6 @@
-# Run sample
+# サンプルの実行
 
-## Set up
+## セットアップ
 
 ```sh
 python -m venv venv
@@ -8,23 +8,23 @@ source venv/bin/activate
 pip install "mcp[cli]"
 ```
 
-## Run server
+## サーバーの実行
 
 ```sh
 python server.py
 ```
 
-## Run client
+## クライアントの実行
 
 ```sh
 npx @modelcontextprotocol/inspector server.py
 ```
 
-Connect to the server and run the tool `create_user`.
+サーバーに接続し、tool `create_user` を実行します。
 
-Try the two different tool payloads to see different validation scenarios.
+2種類の payload を試して、検証結果の違いを確認してください。
 
-1 Success case (provides all mandatory fields):
+1. 成功する場合（必須フィールドをすべて指定）：
 
    ```json
    {
@@ -34,7 +34,7 @@ Try the two different tool payloads to see different validation scenarios.
    }
    ```
 
-2. Validation error (shows that your validation works as we omit the email):
+2. 検証エラーになる場合（email を省略しているので、検証が働いていることが分かります）：
 
    ```json
    {

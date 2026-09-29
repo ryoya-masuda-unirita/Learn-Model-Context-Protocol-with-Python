@@ -1,7 +1,7 @@
-How do you install an MCP Server?
+MCP サーバーはどうやってインストールしますか？
 
-- A: You can install them the way you install extensions in Visual Studio Code. 
-- B: You run `mcp install <server name>` in the terminal.
-- C: Servers are installed by adding text entries to `mcp.json`. You also need to specify type how to start it or where the server resides. 
+- A: Visual Studio Code で拡張機能をインストールするのと同じ方法でインストールできる
+- B: ターミナルで `mcp install <server name>` を実行する
+- C: `mcp.json` にエントリを追加してインストールする。起動方法やサーバーの場所も指定する必要がある
 
-**A and C**. Thanks to the official registry just being added to Visual Studio Code Insider, you can type "@mcp" and install servers like you would an extension. You can also add servers via the command palette or adding it as entries in a `mcp.json` file.
+**A と C** です。Visual Studio Code Insider に公式レジストリが追加されたので、"@mcp" と入力すれば拡張機能と同じようにサーバーをインストールできます。コマンドパレットから追加したり、`mcp.json` ファイルにエントリとして追加したりすることもできます。

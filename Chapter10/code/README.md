@@ -1,3 +1,3 @@
-Choose your runtime:
+ランタイムを選んでください：
 
 - [Python](./python/README.md)

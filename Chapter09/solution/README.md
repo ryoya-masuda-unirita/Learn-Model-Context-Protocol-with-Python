@@ -1,3 +1,3 @@
-Here's solutions for different tech stacks:
+技術スタックごとの解答です：
 
 - [Python](./python/README.md)

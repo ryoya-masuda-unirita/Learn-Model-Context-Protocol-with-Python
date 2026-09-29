@@ -1,16 +1,16 @@
-What can a client access on an MCP server?
+クライアントは MCP サーバーの何にアクセスできますか？
 
-A: Prompts, Tools and Resources.
-B: Tools, Prompts and Services.
-C: Tools and Prompts.
+A: Prompts、Tools、Resources
+B: Tools、Prompts、Services
+C: Tools と Prompts
 
 
-**A**, prompts, tools and resources are the three key features an MCP server can provide. Services are not a feature of MCP.
+**A** です。prompts、tools、resources は MCP サーバーが提供できる3つの主要な機能です。Services は MCP の機能ではありません。
 
-What's the benefit of adding an LLM to your client?
+クライアントに LLM を追加する利点は何ですか？
 
-A: It's better to place the LLM on the Server.
-B: It makes the client faster.
-C: an LLM on the client allows the end user to use prompts to interact with the server which makes for a much better user experience.
+A: LLM はサーバーに置く方がよい
+B: クライアントが速くなる
+C: クライアントに LLM があれば、エンドユーザーはプロンプトでサーバーとやり取りでき、ユーザー体験が大きく向上する
 
-**C** is correct. The idea is that the client acts as an agent that can talk to many different servers and the MCP servers merely provide features that the client/agent can use. The role of LLM is to make the client easier to use by being able to understand natural language requests. Therefore, the LLM belongs on the client.
+**C** が正解です。クライアントは多くのサーバーとやり取りできるエージェントとして振る舞い、MCP サーバーはクライアント（エージェント）が使える機能を提供するだけ、という考え方です。LLM の役割は、自然言語のリクエストを理解できるようにして、クライアントを使いやすくすることです。したがって、LLM はクライアント側に置きます。

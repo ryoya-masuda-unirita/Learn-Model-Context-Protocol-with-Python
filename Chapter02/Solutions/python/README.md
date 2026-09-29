@@ -1,9 +1,9 @@
-# Run the solutions
+# 解答の実行
 
-You are given the solution in steps:
+解答は段階ごとに用意されています。
 
-- [Simple solution](./0-vanilla/README.md), this solution only exchanges message between a client and a server
-- [Initialization](./1-initialization/README.md), this solution initializes a connection between client and server using JSON-RPC messages.
-- [Features](./2-features/README.md), here it adds features like listing tools.
-- [Notifications](./3-notifications/README.md), in this section, it sends notifications from the server.
-- [Sampling](./4-sampling/README.md), in this final section, it supports sampling that originates from the server, sent to the client and back.
+- [シンプルな解答](./0-vanilla/README.md)：クライアントとサーバー間でメッセージをやり取りするだけの解答です
+- [初期化](./1-initialization/README.md)：JSON-RPC メッセージを使って、クライアントとサーバー間の接続を初期化する解答です
+- [機能](./2-features/README.md)：tool の一覧取得などの機能を追加します
+- [通知](./3-notifications/README.md)：サーバーから通知を送ります
+- [サンプリング](./4-sampling/README.md)：最後のセクションです。サーバーから始まり、クライアントに送られて、また戻ってくるサンプリングに対応します

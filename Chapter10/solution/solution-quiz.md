@@ -1,7 +1,7 @@
-An elicitation process is technically initiated when:
+elicitation のプロセスが厳密に開始されるのはどのようなときですか？
 
-- A: The server determines that it needs more information from the user to complete a request.
-- B: The user provides input that requires further clarification or details.
-- C: The system needs to confirm user intent before proceeding.
+- A: リクエストを完了するのに、ユーザーからの追加情報が必要だとサーバーが判断したとき
+- B: さらなる確認や詳細が必要な入力をユーザーが与えたとき
+- C: 処理を進める前に、システムがユーザーの意図を確認する必要があるとき
 
-**Answer**: A
+**答え**：A

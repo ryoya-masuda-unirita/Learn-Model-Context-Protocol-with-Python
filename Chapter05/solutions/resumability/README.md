@@ -1,14 +1,14 @@
-# Run the code
+# コードの実行
 
-this is the SDK sample on resumeability
+resumability（再開可能性）に関する SDK のサンプルです。
 
-## Start the server
+## サーバーの起動
 
 ```bash
 python server.py
 ```
 
-## Test it with a client
+## クライアントでのテスト
 
 ```bash
 npx @modelcontextprotocol/inspector

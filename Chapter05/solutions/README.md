@@ -1,3 +1,3 @@
-Select the solution for your chosen runtime. 
+使用するランタイムの解答を選んでください。
 
 - [Python](./python/README.md)

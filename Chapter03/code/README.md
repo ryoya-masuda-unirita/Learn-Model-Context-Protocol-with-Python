@@ -1,5 +1,5 @@
-# Samples
+# サンプル
 
-Run samples:
+サンプルの実行：
 
 - [Python](./python/README.md)

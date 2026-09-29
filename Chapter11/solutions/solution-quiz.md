@@ -1,15 +1,15 @@
-What is the most secure approach of the following?
+次のうち、最も安全な方式はどれですか？
 
-- A: Basic authentication over HTTP
-- B: JWT over HTTP
+- A: HTTP 上の Basic 認証
+- B: HTTP 上の JWT
 - C: OAuth 2.1
 
-**Answer**: C, OAuth 2.1 is the most secure approach as it provides a robust framework for managing access tokens, including how they are issued, validated, and revoked. 
+**答え**：C です。OAuth 2.1 は、アクセストークンの発行・検証・失効を含めて管理するための堅牢な仕組みを提供するので、最も安全な方式です。
 
-Which of the following best describes a "scope" in the context of authentication and authorization?
+認証・認可の文脈における「scope」の説明として、最も適切なものはどれですか？
 
-- A: The specific permissions or access rights that a client application is requesting from a resource server.
-- B: A unique identifier for a user session.
-- C: A type of encryption algorithm used to secure tokens.
+- A: クライアントアプリケーションがリソースサーバーに要求している、具体的な権限やアクセス権
+- B: ユーザーセッションの一意な識別子
+- C: トークンを保護するための暗号化アルゴリズムの一種
 
-**Correct answer:** A. A scope defines the specific permissions or access rights that a client application is requesting from a resource server.
+**正解：** A です。scope は、クライアントアプリケーションがリソースサーバーに要求している、具体的な権限やアクセス権を定義します。

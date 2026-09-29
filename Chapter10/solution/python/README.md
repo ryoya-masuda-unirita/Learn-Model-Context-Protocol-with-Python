@@ -1,27 +1,27 @@
-# Run sample
+# サンプルの実行
 
-## Set up environment
+## 環境のセットアップ
 
 ```sh
 python -m venv venv
 source ./venv/bin/activate
 ```
 
-## Start server
+## サーバーの起動
 
 ```sh
 uvicorn server:app --port 3000
 ```
 
-## Run client
+## クライアントの実行
 
-In a different terminal, run the following command:
+別のターミナルで次のコマンドを実行します：
 
 ```sh
 python client.py
 ```
 
-You should see output similar to:
+次のような出力になります：
 
 ```text
 Available tools: ['book_trip']

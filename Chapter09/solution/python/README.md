@@ -1,31 +1,31 @@
-## Run sample
+## サンプルの実行
 
-Here's the solution for the assignment.
+課題の解答です。
 
-## Setup
+## セットアップ
 
-Make sure you have set up a virtual machine like so:
+次のように仮想環境をセットアップしておいてください：
 
 ```sh
 python -m venv venv
 source ./venv/bin/activate
 ```
 
-## Install
+## インストール
 
 ```sh
 pip install "mcp[cli]" openai
 ```
 
-## Run
+## 実行
 
-Run it with the following command:
+次のコマンドで実行します：
 
 ```sh
 python client.py
 ```
 
-You should see a result similar to:
+次のような結果になります：
 
 ```text
 result: Ah, bonsoir, my dear interlocutor! It is a pleasure to make your acquaintance. As you may have surmised, I am Monsieur Lestrange, a vampire of some six centuries in age. One could say that I have had ample time to observe the intricacies of life, even from the peculiar vantage of my somewhat... unique existence.

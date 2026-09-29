@@ -2,11 +2,11 @@
 
 <h1 align="center">
 Learn Model Context Protocol with Python, First Edition</h1>
-<p align="center">This is the code repository for <a href ="https://www.packtpub.com/en-us/product/learn-model-context-protocol-with-python-first-edition/9781806103232"> Learn Model Context Protocol with Python, First Edition</a>, published by Packt.
+<p align="center">Packt から出版された <a href ="https://www.packtpub.com/en-us/product/learn-model-context-protocol-with-python-first-edition/9781806103232"> Learn Model Context Protocol with Python, First Edition</a> のコードリポジトリです。
 </p>
 
 <h2 align="center">
-Build agentic systems in Python with the new standard for AI capabilities
+AI 機能の新しい標準で、Python によるエージェントシステムを構築する
 </h2>
 <p align="center">
 Christoffer Noring</p>
@@ -20,64 +20,64 @@ Christoffer Noring</p>
   &#8287;&#8287;&#8287;&#8287;&#8287;
 </p>
 <details open> 
-  <summary><h2>About the book</summary>
+  <summary><h2>本書について</summary>
 <a href="https://www.packtpub.com/product/unity-cookbook-fifth-edition/9781805123026">
 <img src="https://content.packt.com/B34121/cover_image_small.jpg" alt="Unity Cookbook, Fifth Edition" height="256px" align="right">
 </a>
 
-_Learn Model Context Protocol with Python_ introduces developers, architects, and AI practitioners to the transformative capabilities of Model Context Protocol (MCP), an emerging protocol designed to standardize, distribute, and scale AI-driven applications. Through the lens of a practical project, the book tackles the modern challenges of resource management, client-server interaction, and deployment at scale.</br>
-Drawing from Christoffer's expertise as a published author and tutor at the University of Oxford, you’ll explore the components of MCP and how they streamline server and client development. Next, you’ll progress from building robust backends and integrating LLMs into intelligent clients to interacting with servers via tools such as Claude for desktop and Visual Studio Code agents. The chapters help you understand how to describe the capabilities of hosts, clients, and servers, facilitating better interoperability, easier integration, and clearer communication between different components.</br>
-The book also covers security best practices and building for the cloud, ensuring that you're ready to deploy your MCP-based apps. Each chapter enables you to develop hands-on skills for building and operating MCP-based agentic apps. The Python primer at the end rounds out the practical toolkit, making this book essential for any team building AI-native applications today.</details>
+_Learn Model Context Protocol with Python_ は、開発者、アーキテクト、AI 実務者に向けて、Model Context Protocol (MCP) がもたらす変革的な機能を紹介します。MCP は、AI を活用したアプリケーションを標準化し、分散させ、スケールさせるために設計された新しいプロトコルです。本書は実践的なプロジェクトを通じて、リソース管理、クライアントとサーバーのやり取り、大規模なデプロイといった現代的な課題に取り組みます。</br>
+著書を持ち、オックスフォード大学のチューターでもある Christoffer の知見をもとに、MCP の構成要素と、それらがサーバーとクライアントの開発をどう効率化するかを学びます。続いて、堅牢なバックエンドの構築や、LLM を組み込んだ賢いクライアントの作成から、Claude for desktop や Visual Studio Code のエージェントといったツールを使ったサーバーとのやり取りへと進みます。各章を通じて、ホスト・クライアント・サーバーの機能をどう記述するかを理解でき、相互運用性の向上、統合の容易化、各コンポーネント間の明確なやり取りにつながります。</br>
+セキュリティのベストプラクティスやクラウド向けの構築も扱っているので、MCP ベースのアプリをデプロイする準備が整います。各章で、MCP ベースのエージェントアプリを構築・運用する実践的なスキルが身につきます。巻末の Python 入門で実践的なツールキットが完成し、AI ネイティブなアプリケーションを構築するすべてのチームにとって必携の一冊となっています。</details>
 <details open> 
-  <summary><h2>Key learnings</summary>
+  <summary><h2>本書で学べること</summary>
 <ul>
 
-<li>Understand the MCP protocol and its core components</li>
+<li>MCP プロトコルとその中核となる構成要素を理解する</li>
 
-<li>Build MCP servers that expose tools and resources to a variety of clients</li>
+<li>さまざまなクライアントに tools と resources を公開する MCP サーバーを構築する</li>
 
-<li>Test and debug servers using the interactive inspector tools</li>
+<li>対話型の Inspector ツールでサーバーをテスト・デバッグする</li>
 
-<li>Consume servers using Claude Desktop and Visual Studio Code Agents</li>
+<li>Claude Desktop や Visual Studio Code のエージェントからサーバーを利用する</li>
 
-<li>Secure MCP apps, as well as managing and mitigating common threats</li>
+<li>MCP アプリを保護し、よくある脅威を管理・軽減する</li>
 
-<li>Build and deploy MCP apps using cloud-based strategies</li>
+<li>クラウドを活用した方法で MCP アプリを構築・デプロイする</li>
 
 </ul>
 
   </details>
 
 <details open> 
-  <summary><h2>Chapters</summary>
+  <summary><h2>目次</summary>
      <img src="https://cliply.co/wp-content/uploads/2020/02/372002150_DOCUMENTS_400px.gif" alt="Unity Cookbook, Fifth Edition" height="556px" align="right">
 <ol>
 
-  <li>Introduction to the Model Context Protocol</li>
+  <li>Model Context Protocol 入門</li>
 
-  <li>Explaining the Model Context Protocol</li>
+  <li>Model Context Protocol の解説</li>
 
-  <li>Building and Testing Servers</li>
+  <li>サーバーの構築とテスト</li>
 
-  <li>Building SSE Servers</li>
+  <li>SSE サーバーの構築</li>
 
   <li>Streamable HTTP</li>
 
-  <li>Advanced Servers</li>
+  <li>高度なサーバー</li>
 
-  <li>Building Clients</li>
+  <li>クライアントの構築</li>
 
-  <li>Consuming Servers</li>
+  <li>サーバーの利用</li>
 
-  <li>Sampling</li>
+  <li>サンプリング</li>
 
   <li>Elicitation</li>
 
-  <li>Securing Your Application</li>
+  <li>アプリケーションの保護</li>
 
-  <li>Bringing MCP Apps to Production</li>
+  <li>MCP アプリを本番環境へ</li>
 
-  <liAppendix: Building for the Web with Modern Python</li>
+  <li付録：モダン Python による Web 開発</li>
 
 </ol>
 
@@ -85,30 +85,30 @@ The book also covers security best practices and building for the cloud, ensurin
 
 
 <details open> 
-  <summary><h2>Requirements for this book</summary>
-To follow along with the examples and exercises in this book, you’ll need the following:
+  <summary><h2>本書に必要なもの</summary>
+本書の例や演習を進めるには、次のものが必要です：
 <ul>
-  <li>Python 3.8 or later installed on your system</li>
-  <li>A code editor or IDE (VS Code is recommended)</li>
-  <li>Basic familiarity with command-line interfaces</li>
-  <li>An understanding of HTTP, JSON, and basic networking concepts</li>
-  <li>Access to modern AI tools such as Claude or ChatGPT for testing examples</li>
+  <li>Python 3.8 以降がインストールされたシステム</li>
+  <li>コードエディターまたは IDE（VS Code を推奨）</li>
+  <li>コマンドラインの基本的な操作</li>
+  <li>HTTP、JSON、ネットワークの基本的な概念の理解</li>
+  <li>例を試すための、Claude や ChatGPT などの最新 AI ツールへのアクセス</li>
 </ul>
-    All the code examples are designed to run on Windows, macOS, and Linux. The book includes specific installation instructions and setup guidance for each major platform.
+    すべてのコード例は Windows、macOS、Linux で動くように作られています。主要なプラットフォームごとに、具体的なインストール手順とセットアップの案内を載せています。
   </details>
     
 
 
 <details> 
-  <summary><h2>Get to know the author</h2></summary>
+  <summary><h2>著者について</h2></summary>
 
-_Christoffer Noring_ is a passionate developer and educator who specializes in modern web technologies and AI integrations and works as an engineer at Microsoft. He’s also a tutor at the University of Oxford and is a published author on Angular, RxJs, generative AI, and now MCP. Christoffer has almost two decades of experience in software development and is a frequent speaker at tech conferences worldwide. According to his manager, his best quality is being able to break down complex technical concepts into simple, understandable terms. He hopes you agree! ;)
-When not coding or writing, Christoffer is probably growing another user community, mentoring developers, or spending time with his family.
+_Christoffer Noring_ は、モダンな Web 技術と AI の統合を専門とする情熱的な開発者・教育者で、Microsoft でエンジニアとして働いています。オックスフォード大学のチューターでもあり、Angular、RxJs、生成 AI、そして今回の MCP に関する著書があります。ソフトウェア開発の経験は20年近くにおよび、世界各地の技術カンファレンスで頻繁に登壇しています。上司いわく、彼の一番の長所は、複雑な技術的概念をシンプルで分かりやすい言葉に分解できることだそうです。あなたもそう感じてくれることを願っています！ ;)
+コードを書いたり執筆したりしていないときは、新しいユーザーコミュニティを育てたり、開発者のメンターをしたり、家族と過ごしたりしているはずです。
 
 
 </details>
 <details> 
-  <summary><h2>Other related books</h2></summary>
+  <summary><h2>関連書籍</h2></summary>
 <ul>
 
   <li><a href="https://www.packtpub.com/en-us/product/nodejs-design-patterns-fourth-edition/9781803238944">Node.js Design Patterns, Fourth Edition</a></li>

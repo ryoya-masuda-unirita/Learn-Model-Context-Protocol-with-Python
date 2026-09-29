@@ -1,43 +1,43 @@
-# Run sample
+# サンプルの実行
 
-## Configure environment
+## 環境の設定
 
 ```sh
 python -m venv venv
 source ./venv/bin/activate
 ```
 
-## Install dependencies
+## 依存関係のインストール
 
 ```bash
 pip install "mcp[cli]" dotenv PyJWT
 ```
 
-## Generate token
+## トークンの生成
 
-We will use a simple script to generate a JWT token for testing.
+テスト用の JWT トークンを、簡単なスクリプトで生成します。
 
 ```bash
 python util.py
 ```
 
-This should write a token to `.env` file. The client will use this token to authenticate against the server, through using dotenv to load the token from the `.env` file.
+トークンが `.env` ファイルに書き出されます。クライアントは dotenv で `.env` ファイルからこのトークンを読み込み、サーバーへの認証に使います。
 
-## Start server
+## サーバーの起動
 
 ```bash
 python server.py
 ```
 
-## Start client
+## クライアントの起動
 
-In a separate terminal, run:
+別のターミナルで次を実行します：
 
 ```bash
 python client.py
 ```
 
-You should see output similar to:
+次のような出力になります：
 
 ```text
 Valid token, proceeding...
@@ -45,7 +45,7 @@ User exists, proceeding...
 User has required scope, proceeding...
 ```
 
-If you want to see a scenario where the token is invalid, you can change `util.py` and its payload to generate an invalid token, e.g. change the scopes to something else, like so, i.e to "User.Write" instead of "Admin.Write" that the server expects:
+トークンが無効な場合の動きを見たいときは、`util.py` の payload を変えて無効なトークンを生成します。たとえば次のように、scopes をサーバーが期待する "Admin.Write" ではなく "User.Write" に変えます：
 
 ```python
 payload = {

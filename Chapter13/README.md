@@ -1,1 +1,1 @@
-Appendxix A
+付録 A

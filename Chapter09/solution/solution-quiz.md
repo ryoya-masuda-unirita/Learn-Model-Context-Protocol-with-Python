@@ -1,17 +1,17 @@
-What's the reason for using sampling?
+サンプリングを使う理由は何ですか？
 
-- A: That you want to sample smaller piece of information from a large dataset.
-- B: The server needs help with a generative AI type task and the client can use its LLM to generate a response.
-- C: The client needs the servers help with a task.
+- A: 大きなデータセットから小さな情報を抜き出したい（サンプリングしたい）から
+- B: サーバーが生成 AI 的なタスクで助けを必要としていて、クライアントが自分の LLM を使って応答を生成できるから
+- C: クライアントがタスクでサーバーの助けを必要としているから
 
-**Answer:** B
+**答え：** B
 
-What party initiates the sampling request?
+サンプリングのリクエストを開始するのはどちらですか？
 
-- A: Either of them.
-- B: The client.
-- C: The server.
+- A: どちらでもよい
+- B: クライアント
+- C: サーバー
 
-**Answer:** C
+**答え：** C
 
-It could be argued that the a user starts the bigger scenario, like for example drafting a blog post but the party that actually sends out the sampling request is the server.
+たとえばブログ記事の下書きのように、より大きなシナリオを始めるのはユーザーだという見方もできます。しかし、実際にサンプリングのリクエストを送るのはサーバーです。

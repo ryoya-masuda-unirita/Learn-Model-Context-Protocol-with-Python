@@ -1,7 +1,7 @@
-# Run sample
+# サンプルの実行
 
-This code shows how you can add valdidation to input for your MCP requests.
+MCP リクエストの入力に検証を追加する方法を示すコードです。
 
-Choose your runtime:
+ランタイムを選んでください：
 
 - [Python](./python/README.md)

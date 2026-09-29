@@ -1,6 +1,6 @@
-# Running this code
+# このコードの実行
 
-There are two different code projects:
+2つのコードプロジェクトがあります：
 
-- [Validation](./validation/README.md), showing how to validate incoming MCP requests.
-- [OAuth](./oauth/README.md), showing how a basic OAuth 2.1 authorization code flow works, it does not use MCP SDK but is meant to give you the knowledge needed to leverage what's in the MCP SDK.
+- [Validation](./validation/README.md)：受け取った MCP リクエストを検証する方法を示します。
+- [OAuth](./oauth/README.md)：基本的な OAuth 2.1 の認可コードフローの仕組みを示します。MCP SDK は使っていませんが、MCP SDK の機能を活用するのに必要な知識が身につくようになっています。

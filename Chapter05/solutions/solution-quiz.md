@@ -1,15 +1,15 @@
-What is the primary benefit of using streaming HTTP?
+Streaming HTTP を使う主な利点は何ですか？
 
-- A: It allows for faster access to data.
-- B: It requires less server resources.
-- C: It is more secure than other protocols.
+- A: データにより速くアクセスできる
+- B: 必要なサーバーリソースが少ない
+- C: 他のプロトコルより安全である
 
-**Answer: A**
+**答え：A**
 
-How does HTTP streaming differ from Server-Sent Events (SSE)?
+HTTP ストリーミングは Server-Sent Events (SSE) とどう違いますか？
 
-- A: HTTP streaming uses a text-based format, while SSE uses JSON.
-- B: HTTP streaming can send binary data, while SSE is limited to text.
-- C: HTTP streaming is unidirectional, while SSE is bidirectional.
+- A: HTTP ストリーミングはテキスト形式を使い、SSE は JSON を使う
+- B: HTTP ストリーミングはバイナリデータを送れるが、SSE はテキストに限られる
+- C: HTTP ストリーミングは単方向で、SSE は双方向である
 
-**Answer: B**
+**答え：B**

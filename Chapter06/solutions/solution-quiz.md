@@ -1,10 +1,10 @@
-What are some benefits using a low level server?
+low-level サーバーを使う利点は何ですか？
 
-A: You use less memory 
-B: You have better control over how requests are processed.
-C: You can define your own transports
+A: メモリ使用量が少ない
+B: リクエストの処理方法をより細かく制御できる
+C: 独自の transport を定義できる
 
-**Answer**: B
+**答え**：B
 
-A, is not true
-C, you can define a new transport type with high-level API too, or well the transport isn't related to the server class.
+A は正しくありません。
+C は、high-level API でも新しい transport を定義できます。そもそも transport はサーバーのクラスとは関係ありません。

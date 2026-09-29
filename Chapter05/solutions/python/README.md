@@ -1,33 +1,33 @@
-# Running this sample
+# このサンプルの実行
 
-## Installing dependencies
+## 依存関係のインストール
 
 ```sh
 pip install "mcp[cli]"
 ```
 
-## Starting the server
+## サーバーの起動
 
-First, create a virtual environment and activate it:
+まず、仮想環境を作成して有効化します：
 
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 ```
 
-Start the server by running the following command in the terminal:
+ターミナルで次のコマンドを実行して、サーバーを起動します：
 
 ```bash
 python server.py
 ```
 
-Now run the client in a separate terminal:
+次に、別のターミナルでクライアントを実行します：
 
 ```bash
 python client.py
 ```
 
-You will see an output similar to this:
+次のような出力が表示されます：
 
 ```text
 Starting client...
@@ -43,4 +43,4 @@ NOTIFICATION: root=LoggingMessageNotification(method='notifications/message', pa
 Tool result: meta=None content=[TextContent(type='text', text="Here's the file content: hello", annotations=None)] isError=False
 ```
 
-This out shows you all your notifications and the result of the tool call.
+この出力には、すべての通知と tool 呼び出しの結果が表示されています。

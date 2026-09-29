@@ -1,3 +1,3 @@
-Solutions
+解答
 
 - [Python](./python/README.md)

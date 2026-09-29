@@ -1,31 +1,31 @@
-# Run sample
+# サンプルの実行
 
-## Install dependencies
+## 依存関係のインストール
 
 ```sh
 npm install
 ```
 
-## Build the solution
+## 解答のビルド
 
 ```sh
 npm run build
 ```
 
 
-## Run server
+## サーバーの実行
 
 ```sh
 npm start
 ```
 
-## Run client
+## クライアントの実行
 
 ```sh
 npm run client
 ```
 
-You should see an output similar to:
+次のような出力になります：
 
 ```text
 Would you like to be a member?

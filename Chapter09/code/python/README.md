@@ -1,25 +1,25 @@
-# Run sample
+# サンプルの実行
 
-## Set up environment
+## 環境のセットアップ
 
 ```sh
 python -m venv venv
 source ./venv/bin/activate
 ```
 
-## Install dependencies
+## 依存関係のインストール
 
 ```sh
 pip install "mcp[cli]" openai
 ```
 
-## Run
+## 実行
 
 ```sh
 python sample-client.py
 ```
 
-You should see an output similar to:
+次のような出力になります：
 
 ```text
 [08/16/25 19:31:40] INFO     Processing request of type CallToolRequest               server.py:624

@@ -1,60 +1,60 @@
-# Running this sample
+# このサンプルの実行
 
-You're recommended to install `uv` but it's not a must, see [instructions](https://docs.astral.sh/uv/#highlights)
+`uv` のインストールを推奨しますが、必須ではありません。[手順](https://docs.astral.sh/uv/#highlights)を参照してください。
 
-## -0- Create a virtual environment
+## -0- 仮想環境の作成
 
 ```bash
 python -m venv venv
 ```
 
-## -1- Activate the virtual environment
+## -1- 仮想環境の有効化
 
 ```bash
 venv\Scrips\activate
 ```
 
-## -2- Install the dependencies
+## -2- 依存関係のインストール
 
 ```bash
 pip install "mcp[cli]"
 ```
 
-## -3- Run the sample
+## -3- サンプルの実行
 
 
 ```bash
 uvicorn server:app --port 3000
 ```
 
-## -4- Test the sample
+## -4- サンプルのテスト
 
-With the server running in one terminal, open another terminal and run the following command:
+1つのターミナルでサーバーを動かしたまま、別のターミナルを開いて次のコマンドを実行します：
 
 ```bash
 curl http://127.0.0.1:3000/sse
 ```
 
-You should see a response similar to:
+次のような応答が返ってきます：
 
 ```text
 event: endpoint
 data: /messages/?session_id=262edd9eb4ba4185abe28756eba2c7f1
 ```
 
-That is, something that shows you a `session_id`. Great, that means our SSE Server is responding and carrying out a handshake.
+つまり、`session_id` が表示されれば OK です。SSE サーバーが応答し、ハンドシェイクを行っていることを意味します。
 
-### Testing in ClI mode
+### CLI モードでのテスト
 
-The inspector you ran is actually a Node.js app and `mcp dev` is a wrapper around it. 
+Inspector は実は Node.js のアプリで、`mcp dev` はそのラッパーです。
 
-You can launch it directly in CLI mode by running the following command:
+次のコマンドで、Inspector を直接 CLI モードで起動できます：
 
 ```bash
 npx @modelcontextprotocol/inspector --cli http://localhost:3000/sse --method tools/list
 ```
 
-This will list all the tools available in the server. You should see the following output:
+サーバーで使えるすべての tool が一覧表示されます。次のような出力になります：
 
 ```text
 {
@@ -149,13 +149,13 @@ This will list all the tools available in the server. You should see the followi
 }
 ```
 
-To invoke a tool type:
+tool を呼び出すには次のように入力します：
 
 ```bash
 npx @modelcontextprotocol/inspector --cli http://127.0.0.1:3000/sse --method tools/call --tool-name list_cart
 ```
 
-You should see the following output:
+次のような出力になります：
 
 ```text
 {
@@ -167,15 +167,15 @@ You should see the following output:
 }
 ```
 
-Which is to be expected since we haven't added any products to the cart yet.
+まだカートに商品を追加していないので、これは想定どおりの結果です。
 
-To add a product to the cart, run the following command:
+カートに商品を追加するには、次のコマンドを実行します：
 
 ```bash
 npx @modelcontextprotocol/inspector --cli http://127.0.0.1:3000/sse --method tools/call --tool-name add_product_to_cart --tool-arg product_name="Product 1"
 ```
 
-You should see an output similar to:
+次のような出力になります：
 
 ```text
 {
@@ -194,13 +194,13 @@ You should see an output similar to:
 }
 ```
 
-What you're seeing is a response from the server that contains the ID of the product you just added to the cart. You can now list the cart items again by running the following command:
+これは、今カートに追加した商品の ID を含むサーバーからの応答です。次のコマンドで、もう一度カートの中身を一覧表示できます：
 
 ```bash
 npx @modelcontextprotocol/inspector --cli http://127.0.0.1:3000/sse --method tools/call --tool-name list_cart
 ```
 
-and you should now see:
+今度は次のように表示されます：
 
 ```text
 {
