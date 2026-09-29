@@ -5,5 +5,5 @@
 ## 実行
 
 ```sh
-python client.py
+uv run python client.py
 ```

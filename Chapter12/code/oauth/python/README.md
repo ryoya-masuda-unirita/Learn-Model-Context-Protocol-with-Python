@@ -1,23 +1,20 @@
 # OAuth サンプルの実行
 
 
-## -0- セットアップ
+## -0- 環境のセットアップ
 
-仮想環境を作成して有効化します。
+[uv](https://docs.astral.sh/uv/) で依存関係をインストールします（初回のみ）。リポジトリ内のどのディレクトリで実行しても、リポジトリ直下の `.venv` にインストールされます：
 
-```sh
-python -m venv venv
-source venv/bin/activate
+```bash
+uv sync
 ```
 
-```sh
-pip install flask requests
-```
+以降のコマンドは `uv run` を付けて実行します。仮想環境を有効化する必要はありません。
 
 ## -1- 認可サーバーの起動
 
 ```sh
-python auth-server.py
+uv run python auth-server.py
 ```
 
 ポート 5050 で起動します。
@@ -27,7 +24,7 @@ python auth-server.py
 ## -2- リソースサーバーの起動
 
 ```sh
-python resource-server.py
+uv run python resource-server.py
 ```
 
 ポート 5051 で起動します。
@@ -35,7 +32,7 @@ python resource-server.py
 ## -3- クライアントの起動
 
 ```sh
-python client.py
+uv run python client.py
 ```
 
 次のような出力になります：

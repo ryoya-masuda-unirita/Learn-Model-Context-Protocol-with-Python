@@ -1,23 +1,25 @@
 # サンプルの実行
 
-## セットアップ
+## 環境のセットアップ
 
-```sh
-python -m venv venv
-source venv/bin/activate
-pip install "mcp[cli]"
+[uv](https://docs.astral.sh/uv/) で依存関係をインストールします（初回のみ）。リポジトリ内のどのディレクトリで実行しても、リポジトリ直下の `.venv` にインストールされます：
+
+```bash
+uv sync
 ```
+
+以降のコマンドは `uv run` を付けて実行します。仮想環境を有効化する必要はありません。
 
 ## サーバーの実行
 
 ```sh
-python server.py
+uv run python server.py
 ```
 
 ## クライアントの実行
 
 ```sh
-npx @modelcontextprotocol/inspector server.py
+npx @modelcontextprotocol/inspector uv run python server.py
 ```
 
 サーバーに接続し、tool `create_user` を実行します。

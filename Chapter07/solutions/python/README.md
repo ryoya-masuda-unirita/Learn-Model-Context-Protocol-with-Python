@@ -1,30 +1,22 @@
 # このサンプルの実行
 
-`uv` のインストールを推奨しますが、必須ではありません。[手順](https://docs.astral.sh/uv/#highlights)を参照してください。
+`uv` を使います。インストール方法は[手順](https://docs.astral.sh/uv/#highlights)を参照してください。
 
-## -0- 仮想環境の作成
+## -0- 環境のセットアップ
+
+[uv](https://docs.astral.sh/uv/) で依存関係をインストールします（初回のみ）。リポジトリ内のどのディレクトリで実行しても、リポジトリ直下の `.venv` にインストールされます：
 
 ```bash
-python -m venv venv
+uv sync
 ```
 
-## -1- 仮想環境の有効化
+以降のコマンドは `uv run` を付けて実行します。仮想環境を有効化する必要はありません。
 
-```bash
-venv\Scrips\activate
-```
-
-## -2- 依存関係のインストール
-
-```bash
-pip install "mcp[cli]"
-```
-
-## -3- サンプルの実行
+## -1- サンプルの実行
 
 
 ```bash
-python client.py
+uv run python client.py
 ```
 
 次のような出力になります：
@@ -37,7 +29,7 @@ tool:  get_products
 コマンドを入力してください（'quit' で終了）:
 ```
 
-## -4- サンプルのテスト
+## -2- サンプルのテスト
 
 次の入力でサンプルをテストします。この時点でアプリが起動している前提です。
 
@@ -72,16 +64,10 @@ tool:  get_products
 
 ## LLM サンプルのテスト
 
-1. 依存関係をインストールします（LLM を呼び出せるようにするため）
-
-  ```sh
-  pip install openai
-  ```
-
 1. 次のように入力して、LLM クライアントを実行します：
 
   ```sh
-  python client_llm.py
+  uv run python client_llm.py
   ```
 
   次のような出力になります：

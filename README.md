@@ -19,6 +19,16 @@ Christoffer Noring</p>
    <a href="https://www.amazon.com/Learn-Model-Context-Protocol-Python/dp/1806103230/"><img width="32px" alt="Amazon" title="Get your copy" src="https://cdn-icons-png.flaticon.com/512/15466/15466027.png"/></a>
   &#8287;&#8287;&#8287;&#8287;&#8287;
 </p>
+## サンプルコードの実行環境
+
+依存関係は [uv](https://docs.astral.sh/uv/) で管理しています。リポジトリ直下で次を実行すると、`.venv` に依存関係がインストールされます：
+
+```bash
+uv sync
+```
+
+各章のサンプルは、`uv run python client.py` のように `uv run` を付けて実行します（Python 3.10 以上が必要です）。
+
 <details open> 
   <summary><h2>本書について</summary>
 <a href="https://www.packtpub.com/product/unity-cookbook-fifth-edition/9781805123026">

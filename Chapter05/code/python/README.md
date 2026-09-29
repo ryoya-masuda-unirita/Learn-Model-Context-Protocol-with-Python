@@ -5,39 +5,22 @@
 - SSE (Server-Sent Events)
 - Streaming HTTP
 
-## 仮想環境の作成
+## 環境のセットアップ
+
+[uv](https://docs.astral.sh/uv/) で依存関係をインストールします（初回のみ）。リポジトリ内のどのディレクトリで実行しても、リポジトリ直下の `.venv` にインストールされます：
 
 ```bash
-python -m venv venv
+uv sync
 ```
 
-## 仮想環境の有効化
-
-**Windows の場合**
-
-```bash
-.\venv\Scripts\activate
-```
-
-**macOS / Linux の場合**
-
-
-```bash
-source venv/bin/activate
-```
-
-## 依存関係のインストール
-
-```bash
-pip install Flask requests
-```
+以降のコマンドは `uv run` を付けて実行します。仮想環境を有効化する必要はありません。
 
 ## SSE サンプルの実行
 
 サーバーを起動します：
 
 ```bash
-python sse.py
+uv run python sse.py
 ```
 
 クライアントが接続すると、サーバーのコンソールに次のように表示されます：
@@ -49,7 +32,7 @@ python sse.py
 別のターミナルでクライアントを起動します：
 
 ```bash
-python sse_client.py 
+uv run python sse_client.py 
 ```
 
 クライアントのコンソールには次のような出力が表示されます：
@@ -68,7 +51,7 @@ SSE を受信: data: 5 件のメッセージを送信しました。接続を閉
 サーバーを起動します：
 
 ```bash
-python streaming.py
+uv run python streaming.py
 ```
 
 クライアントが接続すると、サーバーのコンソールに次のように表示されます：
@@ -80,7 +63,7 @@ python streaming.py
 別のターミナルでクライアントを起動します：
 
 ```bash
-python streaming_client.py
+uv run python streaming_client.py
 ```
 クライアントのコンソールには次のような出力が表示されます：
 

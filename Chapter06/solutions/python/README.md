@@ -1,17 +1,14 @@
 # このサンプルの実行
 
-## 依存関係のインストール
+## 環境のセットアップ
 
-まず、仮想環境を作成します：
+[uv](https://docs.astral.sh/uv/) で依存関係をインストールします（初回のみ）。リポジトリ内のどのディレクトリで実行しても、リポジトリ直下の `.venv` にインストールされます：
 
-```sh
-python -m venv venv
-source ./venv/bin/activate
+```bash
+uv sync
 ```
 
-```sh
-pip install "mcp[cli]"
-```
+以降のコマンドは `uv run` を付けて実行します。仮想環境を有効化する必要はありません。
 
 ## サーバーを試す
 
@@ -19,7 +16,7 @@ pip install "mcp[cli]"
 
 ```
 cd e-commerce
-python server.py
+uv run python server.py
 ```
 
 別のターミナルで次を実行します。

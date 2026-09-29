@@ -2,21 +2,18 @@
 
 ## 環境のセットアップ
 
-```sh
-python -m venv
-source ./venv/bin/activate
+[uv](https://docs.astral.sh/uv/) で依存関係をインストールします（初回のみ）。リポジトリ内のどのディレクトリで実行しても、リポジトリ直下の `.venv` にインストールされます：
+
+```bash
+uv sync
 ```
 
-## 依存関係のインストール
-
-```sh
-pip install PyJWT
-```
+以降のコマンドは `uv run` を付けて実行します。仮想環境を有効化する必要はありません。
 
 ## コードの実行
 
 ```sh
-python app.py
+uv run python app.py
 ```
 
 次のような出力になります：

@@ -1,24 +1,21 @@
 # サンプルの実行
 
-## 環境の設定
+## 環境のセットアップ
 
-```sh
-python -m venv venv
-source ./venv/bin/activate
-```
-
-## 依存関係のインストール
+[uv](https://docs.astral.sh/uv/) で依存関係をインストールします（初回のみ）。リポジトリ内のどのディレクトリで実行しても、リポジトリ直下の `.venv` にインストールされます：
 
 ```bash
-pip install "mcp[cli]" python-dotenv PyJWT
+uv sync
 ```
+
+以降のコマンドは `uv run` を付けて実行します。仮想環境を有効化する必要はありません。
 
 ## トークンの生成
 
 テスト用の JWT トークンを、簡単なスクリプトで生成します。
 
 ```bash
-python util.py
+uv run python util.py
 ```
 
 トークンが `.env` ファイルに書き出されます。クライアントは dotenv で `.env` ファイルからこのトークンを読み込み、サーバーへの認証に使います。
@@ -26,7 +23,7 @@ python util.py
 ## サーバーの起動
 
 ```bash
-python server.py
+uv run python server.py
 ```
 
 ## クライアントの起動
@@ -34,7 +31,7 @@ python server.py
 別のターミナルで次を実行します：
 
 ```bash
-python client.py
+uv run python client.py
 ```
 
 次のような出力になります：

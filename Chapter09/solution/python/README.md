@@ -2,27 +2,22 @@
 
 課題の解答です。
 
-## セットアップ
+## 環境のセットアップ
 
-次のように仮想環境をセットアップしておいてください：
+[uv](https://docs.astral.sh/uv/) で依存関係をインストールします（初回のみ）。リポジトリ内のどのディレクトリで実行しても、リポジトリ直下の `.venv` にインストールされます：
 
-```sh
-python -m venv venv
-source ./venv/bin/activate
+```bash
+uv sync
 ```
 
-## インストール
-
-```sh
-pip install "mcp[cli]" openai
-```
+以降のコマンドは `uv run` を付けて実行します。仮想環境を有効化する必要はありません。
 
 ## 実行
 
 次のコマンドで実行します：
 
 ```sh
-python client.py
+uv run python client.py
 ```
 
 次のような結果になります：

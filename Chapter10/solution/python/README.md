@@ -2,15 +2,18 @@
 
 ## 環境のセットアップ
 
-```sh
-python -m venv venv
-source ./venv/bin/activate
+[uv](https://docs.astral.sh/uv/) で依存関係をインストールします（初回のみ）。リポジトリ内のどのディレクトリで実行しても、リポジトリ直下の `.venv` にインストールされます：
+
+```bash
+uv sync
 ```
+
+以降のコマンドは `uv run` を付けて実行します。仮想環境を有効化する必要はありません。
 
 ## サーバーの起動
 
 ```sh
-uvicorn server:app --port 3000
+uv run uvicorn server:app --port 3000
 ```
 
 ## クライアントの実行
@@ -18,7 +21,7 @@ uvicorn server:app --port 3000
 別のターミナルで次のコマンドを実行します：
 
 ```sh
-python client.py
+uv run python client.py
 ```
 
 次のような出力になります：

@@ -1,27 +1,24 @@
 # サンプルの実行
 
-## 仮想環境のセットアップ
+## 環境のセットアップ
 
-```sh
-python -m venv venv
-source venv/bin/activate
-```
-
-## 依存関係のインストール
+[uv](https://docs.astral.sh/uv/) で依存関係をインストールします（初回のみ）。リポジトリ内のどのディレクトリで実行しても、リポジトリ直下の `.venv` にインストールされます：
 
 ```bash
-pip install "mcp[cli]"
+uv sync
 ```
+
+以降のコマンドは `uv run` を付けて実行します。仮想環境を有効化する必要はありません。
 
 ## サーバーの実行
 
 ```sh
-uvicorn server:app
+uv run uvicorn server:app
 ```
 
 ## サーバーのテスト
 
 ```bash
-mcp dev server.py
+uv run mcp dev server.py
 ```
 

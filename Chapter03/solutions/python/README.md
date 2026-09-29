@@ -1,38 +1,30 @@
 # このサンプルの実行
 
-`uv` のインストールを推奨しますが、必須ではありません。[手順](https://docs.astral.sh/uv/#highlights)を参照してください。
+`uv` を使います。インストール方法は[手順](https://docs.astral.sh/uv/#highlights)を参照してください。
 
-## -0- 仮想環境の作成
+## -0- 環境のセットアップ
 
-```bash
-python -m venv venv
-```
-
-## -1- 仮想環境の有効化
+[uv](https://docs.astral.sh/uv/) で依存関係をインストールします（初回のみ）。リポジトリ内のどのディレクトリで実行しても、リポジトリ直下の `.venv` にインストールされます：
 
 ```bash
-venv\Scrips\activate
+uv sync
 ```
 
-## -2- 依存関係のインストール
+以降のコマンドは `uv run` を付けて実行します。仮想環境を有効化する必要はありません。
 
-```bash
-pip install "mcp[cli]"
-```
-
-## -3- サンプルの実行
+## -1- サンプルの実行
 
 
 ```bash
-mcp run server.py
+uv run mcp run server.py
 ```
 
-## -4- サンプルのテスト
+## -2- サンプルのテスト
 
 1つのターミナルでサーバーを動かしたまま、別のターミナルを開いて次のコマンドを実行します：
 
 ```bash
-mcp dev server.py
+uv run mcp dev server.py
 ```
 
 サンプルを画面上でテストできる Web サーバーが起動します。
@@ -49,7 +41,7 @@ mcp dev server.py
 次のコマンドで、Inspector を直接 CLI モードで起動できます：
 
 ```bash
-npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
+npx @modelcontextprotocol/inspector --cli uv run mcp run server.py --method tools/list
 ```
 
 サーバーで使えるすべての tool が一覧表示されます。次のような出力になります：
@@ -612,7 +604,7 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
 tool を呼び出すには次のように入力します：
 
 ```bash
-npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/call --tool-name get_all_categories
+npx @modelcontextprotocol/inspector --cli uv run mcp run server.py --method tools/call --tool-name get_all_categories
 ```
 
 次のような出力になります：
