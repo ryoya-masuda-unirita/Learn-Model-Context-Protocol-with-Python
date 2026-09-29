@@ -1,0 +1,35 @@
+[project]
+name = "learn-mcp-with-python"
+version = "0.1.0"
+description = "Sample code for Learn Model Context Protocol with Python"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    # mcp 2.x renamed FastMCP to MCPServer and removed several APIs used in this repo
+    # (RequestContext, streamablehttp_client, ...). 1.13.1 is the oldest version
+    # verified to provide every API used here (Streamable HTTP, elicitation).
+    "mcp[cli]>=1.13.1,<2",
+    # Transitive deps of mcp, declared explicitly because the samples import them directly
+    "anyio",
+    "click",
+    # [email] for EmailStr in Chapter10
+    "pydantic[email]",
+    "pydantic-settings",
+    "starlette",
+    "uvicorn",
+    # Chapter05 / Chapter11 / Chapter12 HTTP samples
+    "flask",
+    "requests",
+    # Chapter11 auth samples
+    "pyjwt",
+    "python-dotenv",
+    # Chapter07 / Chapter09 LLM clients (Amazon Bedrock via OpenAI-compatible API)
+    "openai",
+    "aws-bedrock-token-generator",
+    # Chapter13 web sample
+    "fastapi[standard]",
+]
+
+[tool.uv]
+# Collection of standalone sample scripts, not an installable package
+package = false

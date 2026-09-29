@@ -1,0 +1,11 @@
+# uv / Python
+.venv/
+__pycache__/
+*.pyc
+
+# Chapter11 writes an auth token here
+.env
+
+# Agent handoff notes (not part of the repo)
+.agent-handoff.md
+.serena/
