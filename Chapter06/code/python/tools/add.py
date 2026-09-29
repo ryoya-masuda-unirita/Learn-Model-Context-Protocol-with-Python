@@ -3,19 +3,19 @@ from .schema import AddInputModel
 async def add_handler(args) -> float:
 
     try:
-        # Validate input using Pydantic model
+        # Pydantic モデルで入力を検証する
         input_model = AddInputModel(**args)
     except Exception as e:
-        raise ValueError(f"Invalid input: {str(e)}")
+        raise ValueError(f"入力が不正です: {str(e)}")
 
-    # TODO: add Pydantic, so we can create an AddInputModel and validate args
+    # TODO: Pydantic を追加して AddInputModel を作り、引数を検証できるようにする
 
-    """Handler function for the add tool."""
+    """add tool のハンドラー関数。"""
     return float(input_model.a) + float(input_model.b)
 
 tool_add = {
     "name": "add",
-    "description": "Adds two numbers",
+    "description": "2つの数を足し算する",
     "input_schema": AddInputModel,
     "handler": add_handler 
 }

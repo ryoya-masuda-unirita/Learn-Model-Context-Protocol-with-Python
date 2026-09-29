@@ -7,11 +7,11 @@ mcp = FastMCP("My App")
 
 @mcp.tool()
 def add(a: int, b: int) -> int:
-    """calc"""
+    """2つの数を足し算する"""
     return a + b
     
 
-# Mount the SSE server to the existing ASGI server
+# 既存の ASGI サーバーに SSE サーバーをマウントする
 app = Starlette(
     routes=[
         Mount('/', app=mcp.sse_app()),

@@ -8,14 +8,14 @@ class DummyClientSession:
         self.write_stream = write_stream
 
     async def __aenter__(self):
-        print("Session started")
+        print("セッションを開始しました")
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
-        print("Session closed")
+        print("セッションを閉じました")
 
     async def initialize(self):
-        print("Initializing session...")
+        print("セッションを初期化しています...")
 
     async def list_tools(self):
         class Tool:
@@ -23,17 +23,17 @@ class DummyClientSession:
         return type("ToolList", (), {"tools": [Tool("ToolA"), Tool("ToolB")]})()
 
 async def streamablehttp_client(url):
-    print(f"Connecting to {url}")
+    print(f"{url} に接続しています")
     return DummyStream(), DummyStream(), None
 
-# Main async function
+# メインの非同期関数
 async def main():
     read_stream, write_stream, _ = await streamablehttp_client("http://localhost:8000/mcp")
     async with DummyClientSession(read_stream, write_stream) as session:
         await session.initialize()
         tools = await session.list_tools()
-        print(f"Available tools: {[tool.name for tool in tools.tools]}")
+        print(f"使える tool: {[tool.name for tool in tools.tools]}")
 
-# To run the async function
+# 非同期関数を実行する
 import asyncio
 asyncio.run(main())

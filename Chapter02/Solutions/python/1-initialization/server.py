@@ -9,21 +9,21 @@ while True:
     for line in sys.stdin:
         message = line.strip()
         if message == "hello":
-            print("hello there")
-            sys.stdout.flush()  # Ensure output is sent immediately
+            print("こんにちは")
+            sys.stdout.flush()  # 出力をすぐに送る
         elif message.startswith('{"jsonrpc":'):
             json_message = json.loads(message)
             method = json_message.get('method', '')
 
             if not initialized:
                 if method != "initialize" and method != "notifications/initialized":
-                    print(f"Server not initialized. Please send an 'initialized' notification first. You sent {method}")
+                    print(f"サーバーが初期化されていません。先に 'initialized' 通知を送ってください。送られたメソッド: {method}")
                     sys.stdout.flush()
                     continue
 
             match method:
                 case "notifications/initialized":
-                    # print("Server initialized successfully.")
+                    # print("サーバーの初期化に成功しました。")
                     sys.stdout.flush()
                     initialized = True
                     break
@@ -32,9 +32,9 @@ while True:
                     sys.stdout.flush()
                     # initialized = True
                     break
-                     # should return capabilities
+                     # capabilities を返すべき
                 case "tools/list":
-                
+
                     response = {
                         "jsonrpc": "2.0",
                         "id": json_message["id"],
@@ -44,13 +44,12 @@ while True:
                     sys.stdout.flush()
                     break
                 case _:
-                    print(f"Unknown method: {json_message['method']}")
+                    print(f"不明なメソッドです: {json_message['method']}")
                     sys.stdout.flush()
                     break
         elif message == "exit":
-            print("Exiting server.")
+            print("サーバーを終了します。")
             sys.stdout.flush()
             sys.exit(0)
         else:
-            print(f"Unknown message: {message}")
-   
+            print(f"不明なメッセージです: {message}")

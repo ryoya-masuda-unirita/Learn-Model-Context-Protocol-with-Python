@@ -1,9 +1,9 @@
 # @mcp.tool()
 # def get_orders(customer_id:int = 0) -> [Order]:
-#     """get all orders"""
+#     """すべての注文を取得する"""
 
 #     if customer_id != 0 and not any(customer.id == customer_id for customer in customers):
-#         raise ValueError(f"Invalid customer_id: {customer_id}")
+#         raise ValueError(f"customer_id が不正です: {customer_id}")
 
 #     filtered_orders = orders
 #     if customer_id != 0:
@@ -15,9 +15,9 @@ from data import orders
 from .schema import OrderModel, GetOrderInputModel
 
 async def handler(args) -> list[OrderModel]:
-    # get order by id
+    # 注文を取得する
     input = GetOrderInputModel(**args)
-    # filter orders based on customer_id if provided
+    # customer_id が指定されていれば、それで注文を絞り込む
     filtered_orders = []
     
     if input.customer_id != 0:
@@ -25,12 +25,12 @@ async def handler(args) -> list[OrderModel]:
     else:
         filtered_orders = orders
     
-    # return the filtered orders
+    # 絞り込んだ注文を返す
     return filtered_orders
 
 tool_get_orders = {
     "name": "get_orders",
-    "description": "Gets all orders",
+    "description": "すべての注文を取得する",
     "input_schema": GetOrderInputModel,
     "handler": handler
 }

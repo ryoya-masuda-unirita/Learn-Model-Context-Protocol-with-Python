@@ -1,4 +1,4 @@
-# TODO add python client
+# TODO: Python のクライアントを追加する
 
 import asyncio
 
@@ -8,51 +8,51 @@ from mcp.types import ElicitRequestParams, ElicitResult, TextContent
 from mcp.shared.context import RequestContext
 
 async def elicitation_callback_handler(context: RequestContext[ClientSession, None], params: ElicitRequestParams):
-    print(f"[CLIENT] Received elicitation data: {params.message}")
+    print(f"[CLIENT] elicitation のデータを受信しました: {params.message}")
 
-    # 1. refuses to become a member
+    # 1. 会員になるのを断る
     # return ElicitResult(action="accept", content={
     #    "become_member": False
-    # }) # should say no booking made, WORKS
+    # }) # 予約は行われなかったと返るはず（動作確認済み）
 
-    # 2. cancels booking, don't want to start elicit process
-    # return ElicitResult(action="decline") WORKS
+    # 2. 予約をキャンセルする（elicitation のやり取り自体を始めたくない）
+    # return ElicitResult(action="decline") 動作確認済み
 
-    print("[CLIENT]: Selecting alternative date: 2025-01-01")
+    print("[CLIENT]: 代わりの日付を選択します: 2025-01-01")
 
-    # 3. opts to select another date, 2025-01-01 which leads to a booking
+    # 3. 別の日付 2025-01-01 を選び、予約が成立する
     return ElicitResult(action="accept", content={
           "become_member": True,
           "name": "chris",
           "email": "chris@example.com"
-    }) # should book 1 jan instead of initial 2nd Jan
+    }) # 最初の 1月2日ではなく 1月1日で予約されるはず
 
 
     
 
 async def main():
-    # Connect to a Server-Sent Events (SSE) server
+    # Server-Sent Events (SSE) サーバーに接続する
     async with sse_client(url="http://localhost:3000/sse") as (
         read_stream,
         write_stream
     ):
-        # Create a session using the client streams
+        # クライアントのストリームを使ってセッションを作る
         async with ClientSession(
             read_stream, 
             write_stream,
             elicitation_callback=elicitation_callback_handler) as session:
-            # Initialize the connection
+            # 接続を初期化する
             await session.initialize()
-            # List available tools
+            # 使える tool の一覧を取得する
             tools = await session.list_tools()
-            print(f"Available tools: {[tool.name for tool in tools.tools]}")
+            print(f"使える tool: {[tool.name for tool in tools.tools]}")
 
-            # call tool
+            # tool を呼び出す
             result = await session.call_tool("book_trip", {
                 "date": "2025-01-02",
                 "member_id": "guest"
             })
-            print("Result: ", result.content[0].text)
+            print("結果: ", result.content[0].text)
 
 
 if __name__ == "__main__":

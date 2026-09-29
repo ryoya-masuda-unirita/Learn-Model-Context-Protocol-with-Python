@@ -8,42 +8,42 @@ async def run():
         async with ClientSession(
             read, write
         ) as session:
-            # Initialize the connection
+            # 接続を初期化する
             await session.initialize()
 
-            print("Session initialized")
+            print("セッションを初期化しました")
 
-            # # List available prompts
+            # # 使える prompt の一覧を取得する
             # prompts = await session.list_prompts()
 
-            # # Get a prompt
+            # # prompt を取得する
             # prompt = await session.get_prompt(
             #     "example-prompt", arguments={"arg1": "value"}
             # )
 
-            # # List available resources
+            # # 使える resource の一覧を取得する
             # resources = await session.list_resources()
 
-            # List available tools
+            # 使える tool の一覧を取得する
             tools = await session.list_tools()
             print(tools)
 
             result = await session.call_tool("add", arguments={"a": 1, "b": 2})
-            print("Tool result:", result)
+            print("tool の結果:", result)
 
             prompts = await session.list_prompts()
-            print("Available prompts:", prompts)
+            print("使える prompt:", prompts)
 
             prompt = await session.get_prompt(
                 "example-prompt"
             )
 
-            print("Prompt:", prompt)
+            print("prompt:", prompt)
 
-            # # Read a resource
+            # # resource を読み込む
             # content, mime_type = await session.read_resource("file://some/path")
 
-            # # Call a tool
+            # # tool を呼び出す
             # result = await session.call_tool("tool-name", arguments={"arg1": "value"})
 
 

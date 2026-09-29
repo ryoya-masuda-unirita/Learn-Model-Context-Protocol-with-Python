@@ -1,8 +1,8 @@
 """
-In-memory event store for demonstrating resumability functionality.
+resumability の機能を示すためのインメモリのイベントストア。
 
-This is a simple implementation intended for examples and testing,
-not for production use where a persistent storage solution would be more appropriate.
+サンプルやテスト向けのシンプルな実装であり、本番環境向けではない。
+本番環境では永続化ストレージを使う方が適切。
 """
 
 import logging
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class EventEntry:
     """
-    Represents an event entry in the event store.
+    イベントストア内の1件のイベントを表す。
     """
 
     event_id: EventId
@@ -29,41 +29,41 @@ class EventEntry:
 
 class InMemoryEventStore(EventStore):
     """
-    Simple in-memory implementation of the EventStore interface for resumability.
-    This is primarily intended for examples and testing, not for production use
-    where a persistent storage solution would be more appropriate.
+    resumability のための、EventStore インターフェースのシンプルなインメモリ実装。
+    主にサンプルやテスト向けであり、本番環境向けではない。
+    本番環境では永続化ストレージを使う方が適切。
 
-    This implementation keeps only the last N events per stream for memory efficiency.
+    メモリを節約するため、ストリームごとに直近 N 件のイベントだけを保持する。
     """
 
     def __init__(self, max_events_per_stream: int = 100):
-        """Initialize the event store.
+        """イベントストアを初期化する。
 
         Args:
-            max_events_per_stream: Maximum number of events to keep per stream
+            max_events_per_stream: ストリームごとに保持するイベントの最大数
         """
         self.max_events_per_stream = max_events_per_stream
-        # for maintaining last N events per stream
+        # ストリームごとに直近 N 件のイベントを保持する
         self.streams: dict[StreamId, deque[EventEntry]] = {}
-        # event_id -> EventEntry for quick lookup
+        # event_id -> EventEntry（素早く検索するため）
         self.event_index: dict[EventId, EventEntry] = {}
 
     async def store_event(self, stream_id: StreamId, message: JSONRPCMessage) -> EventId:
-        """Stores an event with a generated event ID."""
+        """生成したイベント ID と一緒にイベントを保存する。"""
         event_id = str(uuid4())
         event_entry = EventEntry(event_id=event_id, stream_id=stream_id, message=message)
 
-        # Get or create deque for this stream
+        # このストリーム用の deque を取得する（なければ作る）
         if stream_id not in self.streams:
             self.streams[stream_id] = deque(maxlen=self.max_events_per_stream)
 
-        # If deque is full, the oldest event will be automatically removed
-        # We need to remove it from the event_index as well
+        # deque がいっぱいなら、一番古いイベントは自動的に削除される
+        # そのため event_index からも削除する必要がある
         if len(self.streams[stream_id]) == self.max_events_per_stream:
             oldest_event = self.streams[stream_id][0]
             self.event_index.pop(oldest_event.event_id, None)
 
-        # Add new event
+        # 新しいイベントを追加する
         self.streams[stream_id].append(event_entry)
         self.event_index[event_id] = event_entry
 
@@ -74,17 +74,17 @@ class InMemoryEventStore(EventStore):
         last_event_id: EventId,
         send_callback: EventCallback,
     ) -> StreamId | None:
-        """Replays events that occurred after the specified event ID."""
+        """指定したイベント ID より後に発生したイベントを再生する。"""
         if last_event_id not in self.event_index:
-            logger.warning(f"Event ID {last_event_id} not found in store")
+            logger.warning(f"イベント ID {last_event_id} がストアに見つかりません")
             return None
 
-        # Get the stream and find events after the last one
+        # ストリームを取得し、最後に受け取ったイベントより後のイベントを探す
         last_event = self.event_index[last_event_id]
         stream_id = last_event.stream_id
         stream_events = self.streams.get(last_event.stream_id, deque())
 
-        # Events in deque are already in chronological order
+        # deque 内のイベントはすでに時系列順に並んでいる
         found_last = False
         for event in stream_events:
             if found_last:

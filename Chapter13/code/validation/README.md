@@ -17,7 +17,7 @@ python .\pydantic_demo.py
 次のような出力になります：
 
 ```text
-Running pydantic version:  2.5.3
-id=1 name='Dr. Smith' office_hours=[OfficeHour(day='Monday', from_=9, to_=12), OfficeHour(day='Wednesday', from_=14, to_=17)]
-{'id': 1, 'name': 'Dr. Smith', 'office_hours': [{'day': 'Monday', 'from_': 9, 'to_': 12}, {'day': 'Wednesday', 'from_': 14, 'to_': 17}]}
+pydantic のバージョン:  2.5.3
+id=1 name='Dr. Smith' office_hours=[OfficeHour(day='月曜日', from_=9, to_=12), OfficeHour(day='水曜日', from_=14, to_=17)]
+{'id': 1, 'name': 'Dr. Smith', 'office_hours': [{'day': '月曜日', 'from_': 9, 'to_': 12}, {'day': '水曜日', 'from_': 14, 'to_': 17}]}
 ```

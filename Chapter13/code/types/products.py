@@ -8,7 +8,7 @@ class Product:
 
 products: List[Product] = []
 
-products.append(Product(id="1", name="Product 1", price=10.0))
+products.append(Product(id="1", name="商品 1", price=10.0))
 
 if __name__ == "__main__":
    for p in products:

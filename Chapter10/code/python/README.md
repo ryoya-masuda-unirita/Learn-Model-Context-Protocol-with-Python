@@ -59,33 +59,33 @@ python client.py
 クライアントが起動し、次のような出力になります：
 
 ```text
-Available tools: ['book_trip']
-[CLIENT] Received elicitation data: No trips available on 2025-01-02. Would you like to try another date?
-[CLIENT]: Selecting alternative date: 2025-01-01
-Result:  [SUCCESS] Booked for 2025-01-01
+使える tool: ['book_trip']
+[CLIENT] elicitation のデータを受信しました: 2025-01-02 に予約できる旅行はありません。別の日付を試しますか？
+[CLIENT]: 代わりの日付を選択します: 2025-01-01
+結果:  [SUCCESS] 2025-01-01 で予約しました
 ```
 
 コードの一部を見てみましょう。elicitation 用のクライアントのハンドラーです。ここではサーバーへの応答をハードコードしています：
 
 ```python
 async def elicitation_callback_handler(context: RequestContext[ClientSession, None], params: ElicitRequestParams):
-    print(f"[CLIENT] Received elicitation data: {params.message}")
+    print(f"[CLIENT] elicitation のデータを受信しました: {params.message}")
  
-    # 1. refuses no select other date
+    # 1. 別の日付を選ぶのを断る
     # return ElicitResult(action="accept", content={
     #     "checkAlternative": False
-    # }) # should say no booking made, WORKS
+    # }) # 予約は行われなかったと返るはず（動作確認済み）
 
-    # 2. cancels booking
-    # return ElicitResult(action="decline"), WORKS
+    # 2. 予約をキャンセルする
+    # return ElicitResult(action="decline"), 動作確認済み
 
-    print("[CLIENT]: Selecting alternative date: 2025-01-01")
+    print("[CLIENT]: 代わりの日付を選択します: 2025-01-01")
 
-    # 3. opts to select another date, 2025-01-01 which leads to a booking
+    # 3. 別の日付 2025-01-01 を選び、予約が成立する
     return ElicitResult(action="accept", content={
          "checkAlternative": True,
          "alternativeDate": "2025-01-01"
-    }) # should book 1 jan instead of initial 2nd Jan
+    }) # 最初の 1月2日ではなく 1月1日で予約されるはず
 ```
 
 ここでは、サーバーが受け付ける代わりの日付をあらかじめ入れた "accept" 応答をハードコードして返しています。ほかの応答パターンも用意しています。1) ユーザーが日付の選択を断る場合で、予約は行われなかったという応答になります。2) ユーザーがやり取り自体を取りやめる場合で、こちらも予約は行われません。

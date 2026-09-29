@@ -39,12 +39,12 @@ def has_scope(token: str, scope: str) -> bool:
 
     if not token:
         return False
-    # very naive scope check, in real life parse the token and check scopes properly
+    # とても単純な scope のチェック。実際にはトークンをきちんと解析して scope を確認する
     return  scope in token["scopes"]
 
 def validate_jwt(token: str) -> bool:
     token = token[7:]
-    # print("Validating token:", token)
+    # print("トークンを検証しています:", token)
     return validate_token(token) != None
    
 
@@ -52,36 +52,36 @@ class CustomHeaderMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
 
         has_header = request.headers.get("Authorization")
-        # print("Authorization header:", has_header)
+        # print("Authorization ヘッダー:", has_header)
         if not has_header:
-            print("-> Missing Authorization header!")
-            return Response(status_code=401, content="Unauthorized")
+            print("-> Authorization ヘッダーがありません！")
+            return Response(status_code=401, content="認証されていません")
 
         if not validate_jwt(has_header):
-            print("-> Invalid token!")
-            return Response(status_code=403, content="Forbidden")
+            print("-> トークンが無効です！")
+            return Response(status_code=403, content="アクセスが拒否されました")
 
-        print("Valid token, proceeding...")
+        print("有効なトークンです。処理を続けます...")
 
         if not is_user(has_header):
-            print("-> User does not exist!")
-            return Response(status_code=403, content="Forbidden - user does not exist")
-        print("User exists, proceeding...")
+            print("-> ユーザーが存在しません！")
+            return Response(status_code=403, content="アクセスが拒否されました - ユーザーが存在しません")
+        print("ユーザーが存在します。処理を続けます...")
 
         if not has_scope(has_header, "Admin.Write"):
-            print("-> Missing required scope!")
-            return Response(status_code=403, content="Forbidden - insufficient scopes")
+            print("-> 必要な scope がありません！")
+            return Response(status_code=403, content="アクセスが拒否されました - scope が不足しています")
 
-        print("User has required scope, proceeding...")
+        print("ユーザーは必要な scope を持っています。処理を続けます...")
 
-        print(f"-> Received {request.method} {request.url}")
+        print(f"-> 受信: {request.method} {request.url}")
         response = await call_next(request)
         response.headers['Custom'] = 'Example'
         return response
 
 app = FastMCP(
     name="MCP Resource Server",
-    instructions="Resource Server that validates tokens via Authorization Server introspection",
+    instructions="認可サーバーの introspection でトークンを検証するリソースサーバー",
     host=settings["host"],
     port=settings["port"],
     debug=True
@@ -90,23 +90,23 @@ app = FastMCP(
 @app.tool()
 async def get_time() -> dict[str, Any]:
     """
-    Get the current server time.
+    サーバーの現在時刻を取得する。
 
-    This tool demonstrates that system information can be protected
-    by OAuth authentication. User must be authenticated to access it.
+    この tool は、システム情報を OAuth 認証で保護できることを示す。
+    アクセスするには、ユーザーが認証されている必要がある。
     """
 
     now = datetime.datetime.now()
 
     return {
         "current_time": now.isoformat(),
-        "timezone": "UTC",  # Simplified for demo
+        "timezone": "UTC",  # デモ用に簡略化している
         "timestamp": now.timestamp(),
         "formatted": now.strftime("%Y-%m-%d %H:%M:%S"),
     }
 
 async def setup(app) -> None:
-    """Run the server using StreamableHTTP transport."""
+    """StreamableHTTP transport でサーバーを実行する。"""
 
     starlette_app = app.streamable_http_app()
     return starlette_app
@@ -123,9 +123,9 @@ async def run(starlette_app):
     await server.serve()
 
 async def main():
-    print("Running MCP Resource Server...")
+    print("MCP リソースサーバーを実行しています...")
     starlette_app = await setup(app)
-    print("Adding custom middleware...")
+    print("カスタム middleware を追加しています...")
     starlette_app.add_middleware(CustomHeaderMiddleware)
 
     await run(starlette_app)

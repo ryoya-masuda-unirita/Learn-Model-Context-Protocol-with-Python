@@ -12,24 +12,24 @@ class Book(BaseModel):
     pages: int
     abstract: str | None = None
 
-product = { "id": "1", "name": "Product 1", "price": 10.0 }
-book = { "id": "1", "title": "Book 1", "author": "Author 1", "pages": 100 }
+product = { "id": "1", "name": "商品 1", "price": 10.0 }
+book = { "id": "1", "title": "本 1", "author": "著者 1", "pages": 100 }
 
-# 2. safer way to validate
+# 2. より安全な検証方法
 try:
    parsed_product = Product(**product)
    parsed_book = Book(**book)
-   print(f"Parsed product: {parsed_product}")
-   print(f"Parsed book: {parsed_book}")
+   print(f"解析した商品: {parsed_product}")
+   print(f"解析した本: {parsed_book}")
 except ValidationError as e:
-    print(f"Validation error: {e}")
+    print(f"検証エラー: {e}")
 
-# crashes
+# 例外が発生する
 try:
-   product_crashable = { "id": "1", "name": "Product 1" }
+   product_crashable = { "id": "1", "name": "商品 1" }
    product_that_will_crash = Product(**product_crashable)
 except ValidationError as e:
-    print(f"Validation error: {e}")
+    print(f"検証エラー: {e}")
 
 class ComplexUser(BaseModel):
     id: str
@@ -41,7 +41,7 @@ class ComplexUser(BaseModel):
 
 complex_user_data = { 
     "id": "1", 
-    "name": "User 1", 
+    "name": "ユーザー 1", 
     "age": 30, 
     "email": "user1@example.com", 
     "is_active": True, 
@@ -53,4 +53,4 @@ complex_user_data = {
 }
 
 complex = ComplexUser(**complex_user_data)
-print(f"Complex user: {complex}")
+print(f"複雑なユーザー: {complex}")

@@ -61,7 +61,7 @@ npx @modelcontextprotocol/inspector --cli http://localhost:3000/sse --method too
   "tools": [
     {
       "name": "add_product_to_cart",
-      "description": "Add product to cart",
+      "description": "カートに商品を追加する",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -83,7 +83,7 @@ npx @modelcontextprotocol/inspector --cli http://localhost:3000/sse --method too
     },
     {
       "name": "list_cart",
-      "description": "List all cart items",
+      "description": "カートの中身をすべて一覧表示する",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -115,7 +115,7 @@ npx @modelcontextprotocol/inspector --cli http://localhost:3000/sse --method too
     },
     {
       "name": "get_products",
-      "description": "Get all products",
+      "description": "すべての商品を取得する",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -172,7 +172,7 @@ npx @modelcontextprotocol/inspector --cli http://127.0.0.1:3000/sse --method too
 カートに商品を追加するには、次のコマンドを実行します：
 
 ```bash
-npx @modelcontextprotocol/inspector --cli http://127.0.0.1:3000/sse --method tools/call --tool-name add_product_to_cart --tool-arg product_name="Product 1"
+npx @modelcontextprotocol/inspector --cli http://127.0.0.1:3000/sse --method tools/call --tool-name add_product_to_cart --tool-arg product_name="商品 1"
 ```
 
 次のような出力になります：

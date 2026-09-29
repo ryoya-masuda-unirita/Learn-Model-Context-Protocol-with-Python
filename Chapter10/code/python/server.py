@@ -8,41 +8,41 @@ from starlette.routing import Mount, Host
 
 mcp = FastMCP(name="Elicitation Example")
 
-# todo: elicitation example, turn it into sse
+# TODO: elicitation のサンプル。SSE に対応させる
 
 class BookingPreferences(BaseModel):
-    """Schema for collecting user preferences."""
+    """ユーザーの希望を集めるためのスキーマ。"""
 
-    checkAlternative: bool = Field(description="Would you like to check another date?")
+    checkAlternative: bool = Field(description="別の日付を確認しますか？")
     alternativeDate: str = Field(
         default="2024-12-26",
-        description="Alternative date (YYYY-MM-DD)",
+        description="代わりの日付（YYYY-MM-DD）",
     )
 
 def not_available_date(date: str) -> bool:
-    # Simulate date availability check
+    # 日付が空いているかのチェックをシミュレートする
     return date != "2024-12-25"
 
 
 @mcp.tool()
 async def book_trip(date: str, ctx: Context[ServerSession, None]) -> str:
-    """Book a trip with date availability check."""
-    # Check if date is available
+    """日付の空きを確認して旅行を予約する。"""
+    # 日付が空いているか確認する
     if not_available_date(date):
-        # Date unavailable - ask user for alternative
+        # 日付が空いていない - ユーザーに代わりの日付を尋ねる
         result = await ctx.elicit(
-            message=(f"No trips available on {date}. Would you like to try another date?"),
+            message=(f"{date} に予約できる旅行はありません。別の日付を試しますか？"),
             schema=BookingPreferences,
         )
 
         if result.action == "accept" and result.data:
             if result.data.checkAlternative:
-                return f"[SUCCESS] Booked for {result.data.alternativeDate}"
-            return "[CANCELLED] No booking made"
-        return "[CANCELLED] Booking cancelled"
+                return f"[SUCCESS] {result.data.alternativeDate} で予約しました"
+            return "[CANCELLED] 予約は行われませんでした"
+        return "[CANCELLED] 予約はキャンセルされました"
 
-    # Date available
-    return f"[SUCCESS] Booked for {date}"
+    # 日付が空いている
+    return f"[SUCCESS] {date} で予約しました"
 
 app = Starlette(
     routes=[
@@ -51,5 +51,5 @@ app = Starlette(
 )
 
 if __name__ == "__main__":
-    print("Starting Elicitation Example MCP Server...")
+    print("Elicitation サンプルの MCP サーバーを起動しています...")
     mcp.run()

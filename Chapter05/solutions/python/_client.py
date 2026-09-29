@@ -9,7 +9,7 @@ def consume_stream():
         'Content-Type': 'application/json'
     }
 
-    # json rpc message with initialized
+    # initialized を含む JSON-RPC メッセージ
     message = {
         "jsonrpc": "2.0",
         "id": 1,
@@ -53,9 +53,9 @@ def consume_stream():
         }
     }
 
-    # post /mcp, gets us the session_id
-    # get should give the session back
-    # where to post the data?
+    # /mcp に POST すると session_id が得られる
+    # GET でセッションが返ってくるはず
+    # データはどこに POST する？
 
     response = requests.post(
         f'http://localhost:{port}/mcp', 
@@ -63,26 +63,26 @@ def consume_stream():
         headers=headers,
         data=json.dumps(message))
     
-    print("Session ID:", response.headers.get('mcp-session-id'))
+    print("セッション ID:", response.headers.get('mcp-session-id'))
     
     # for line in response.iter_lines():
     #     if line:
     #         print(line.decode('utf-8'))
 
-    # print("HEADERS: ",response.headers)
+    # print("ヘッダー: ",response.headers)
     # session_id = response.headers.get('mcp-session-id')
-    # print("Session ID:", session_id)
+    # print("セッション ID:", session_id)
 
     headers['mcp-session-id'] = response.headers.get('mcp-session-id')
 
-    print("Calling initialized...")
+    print("initialized を送信しています...")
     response = requests.post(
         f'http://localhost:{port}/mcp', 
         stream=True, 
         headers=headers,
         data=json.dumps(initialized))
 
-    print("Calling list tools...")
+    print("tool の一覧を取得しています...")
     response = requests.post(
         f'http://localhost:{port}/mcp', 
         stream=True, 
@@ -93,14 +93,14 @@ def consume_stream():
         if line:
             print(line.decode('utf-8'))
 
-    print("Calling tool: echo...")
+    print("tool を呼び出しています: echo...")
     response = requests.post(
         f'http://localhost:{port}/mcp', 
         stream=True, 
         headers=headers,
         data=json.dumps(callTool))
 
-    print("Tool call headers:", response.headers)
+    print("tool 呼び出しのヘッダー:", response.headers)
 
     for line in response.iter_lines():
         if line:

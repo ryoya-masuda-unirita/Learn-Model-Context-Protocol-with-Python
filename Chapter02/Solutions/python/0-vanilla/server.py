@@ -5,8 +5,8 @@ while True:
     for line in sys.stdin:
         message = line.strip()
         if message == "hello":
-            print("hello there")
-            sys.stdout.flush()  # Ensure output is sent immediately
+            print("こんにちは")
+            sys.stdout.flush()  # 出力をすぐに送る
         elif message.startswith('{"jsonrpc":'):
             json_message = json.loads(message)
             match json_message['method']:
@@ -20,13 +20,12 @@ while True:
                     sys.stdout.flush()
                     break
                 case _:
-                    print(f"Unknown method: {json_message['method']}")
+                    print(f"不明なメソッドです: {json_message['method']}")
                     sys.stdout.flush()
                     break
         elif message == "exit":
-            print("Exiting server.")
+            print("サーバーを終了します。")
             sys.stdout.flush()
             sys.exit(0)
         else:
-            print(f"Unknown message: {message}")
-   
+            print(f"不明なメッセージです: {message}")

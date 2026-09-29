@@ -27,32 +27,32 @@ logging_collector = LoggingCollector()
 
 port = 8000
 
-# I get normal messages, notifications, and exceptions
+# 通常のメッセージ、通知、例外を受け取る
 async def message_handler(
         message: RequestResponder[types.ServerRequest, types.ClientResult]
         | types.ServerNotification
         | Exception,
     ) -> None:
-        print("Received message:", message)
+        print("メッセージを受信:", message)
         if isinstance(message, Exception):
             raise message
         else:
             if isinstance(message, types.ServerNotification):
-                print("NOTIFICATION:", message)
+                print("通知:", message)
             elif isinstance(message, RequestResponder):
-                print("REQUEST_RESPONDER:", message)
+                print("リクエストへの応答:", message)
             else:
-                print("SERVER_REQUEST:", message)
+                print("サーバーからのリクエスト:", message)
 
 async def main():
-    print("Starting client...")
-    # Connect to a streamable HTTP server
+    print("クライアントを起動しています...")
+    # Streamable HTTP サーバーに接続する
     async with sse_client(f"http://localhost:{port}/sse") as (
         read_stream,
         write_stream,
         session_callback,
     ): 
-        # Create a session using the client streams
+        # クライアントのストリームを使ってセッションを作る
         async with ClientSession(
             read_stream, 
             write_stream,
@@ -60,30 +60,30 @@ async def main():
             message_handler=message_handler,
         ) as session:
 
-            # not initialized, should be None
+            # まだ初期化していないので None のはず
             id = session_callback()
             print("ID: ", id)
 
-            # Initialize the connection
+            # 接続を初期化する
             await session.initialize()
 
             id = session_callback()
             print("ID: ", id)
 
-            print("Session initialized, ready to call tools.")
+            print("セッションを初期化しました。tool を呼び出せます。")
           
-            # Call a tool
+            # tool を呼び出す
             results = []
-            tool_result = await session.call_tool("echo", {"message": "hello"})
+            tool_result = await session.call_tool("echo", {"message": "こんにちは"})
 
             gen = None
-            # If the tool_result is an async generator, print its items
+            # tool_result が非同期ジェネレーターなら、その要素を表示する
 
-            # Convert tool_result.text to an AsyncGenerator if it's awaitable or async iterable
+            # tool_result.text が awaitable か非同期イテラブルなら、AsyncGenerator に変換する
            
-            print("Tool result:", tool_result)
+            print("tool の結果:", tool_result)
             # log = logging_collector.log_messages[0]
-            # print("Log message:", log)
+            # print("ログメッセージ:", log)
 
             
 

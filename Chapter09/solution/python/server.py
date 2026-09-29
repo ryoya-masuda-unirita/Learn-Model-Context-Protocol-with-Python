@@ -13,26 +13,26 @@ import json
 
 mcp = FastMCP(name="Sampling Example")
 
-# read file characters.json
+# characters.json を読み込む
 with open("../characters.json") as f:
     characters = json.load(f)
 
 @mcp.tool()
 async def talk_to(name: str, topic: str, ctx: Context[ServerSession, None]) -> str:
-    """Talk to a character and get a response."""
+    """キャラクターと話して、応答を得る。"""
 
-    # load character from characters
-    # loop characters to find character with property "name" = name
+    # characters からキャラクターを読み込む
+    # characters をループして、"name" プロパティが name と一致するキャラクターを探す
     character = None
     for c in characters:
         if c["name"] == name:
             character = c
             break
 
-    system_prompt = f" You are {character['name']}, {character['description']}, {character['personality']}"
+    system_prompt = f"あなたは {character['name']} です。{character['description']}。{character['personality']}"
 
-    prompt = f"Talk to {name}."
-    prompt += f" Discuss the topic of {topic}."
+    prompt = f"{name} と話してください。"
+    prompt += f"話題は「{topic}」です。"
     
     result = await ctx.session.create_message(
         messages=[
@@ -49,5 +49,5 @@ async def talk_to(name: str, topic: str, ctx: Context[ServerSession, None]) -> s
     return result.content.text
 
 if __name__ == "__main__":
-    print("Starting server...")
+    print("サーバーを起動しています...")
     mcp.run()

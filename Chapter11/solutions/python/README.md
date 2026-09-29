@@ -40,20 +40,20 @@ python client.py
 次のような出力になります：
 
 ```text
-Valid token, proceeding...
-User exists, proceeding...
-User has required scope, proceeding...
+有効なトークンです。処理を続けます...
+ユーザーが存在します。処理を続けます...
+ユーザーは必要な scope を持っています。処理を続けます...
 ```
 
 トークンが無効な場合の動きを見たいときは、`util.py` の payload を変えて無効なトークンを生成します。たとえば次のように、scopes をサーバーが期待する "Admin.Write" ではなく "User.Write" に変えます：
 
 ```python
 payload = {
-        "sub": "1234567890",               # Subject (user ID)
-        "name": "User Userson",                # Custom claim
-        "admin": True,                     # Custom claim
-        "iat": datetime.datetime.utcnow(),# Issued at
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1),  # Expiry
-        "scopes": ["User.Write"]  # Custom claim for scopes/permissions
+        "sub": "1234567890",               # サブジェクト（ユーザー ID）
+        "name": "User Userson",                # カスタム claim
+        "admin": True,                     # カスタム claim
+        "iat": datetime.datetime.utcnow(),# 発行日時
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1),  # 有効期限
+        "scopes": ["User.Write"]  # scope（権限）用のカスタム claim
     }
 ```

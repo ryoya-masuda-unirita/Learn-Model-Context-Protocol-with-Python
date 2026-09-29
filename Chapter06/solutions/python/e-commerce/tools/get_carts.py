@@ -6,7 +6,7 @@ async def handler(args) -> list[AddCartInputModel]:
 
 tool_get_all_carts = {
     "name": "get_all_carts",
-    "description": "Gets all carts",
+    "description": "すべてのカートを取得する",
     "input_schema": None,
     "handler": handler
 }

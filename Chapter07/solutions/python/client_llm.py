@@ -2,15 +2,15 @@ from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
 from openai import OpenAI
 
-# llm
+# LLM
 import os
 import json
 
-# Create server parameters for stdio connection
+# stdio 接続用のサーバーパラメーターを作る
 server_params = StdioServerParameters(
-    command="mcp",  # Executable
-    args=["run", "server.py"],  # Optional command line arguments
-    env=None,  # Optional environment variables
+    command="mcp",  # 実行ファイル
+    args=["run", "server.py"],  # コマンドライン引数（任意）
+    env=None,  # 環境変数（任意）
 )
 
 def call_llm(prompt, functions):
@@ -24,12 +24,12 @@ def call_llm(prompt, functions):
         api_key=token,
     )
 
-    print("CALLING LLM")
+    print("LLM を呼び出しています")
     response = client.chat.completions.create(
         messages=[
             {
             "role": "system",
-            "content": "You are a helpful assistant.",
+            "content": "あなたは親切なアシスタントです。",
             },
             {
             "role": "user",
@@ -38,22 +38,22 @@ def call_llm(prompt, functions):
         ],
         model=model_name,
         tools = functions,
-        # Optional parameters
+        # 任意のパラメーター
         temperature=1.,
         max_tokens=1000,
         top_p=1.    
     )
 
-    # .content if we want just see the text response 
+    # テキストの応答だけを見たいなら .content を使う
     response_message = response.choices[0].message
     
     functions_to_call = []
 
     if response_message.tool_calls:
         for tool_call in response_message.tool_calls:
-            # print("TOOL: ", tool_call)
+            # print("tool: ", tool_call)
             name = tool_call.function.name
-            print("TOOL NAME: ", name)
+            print("tool 名: ", name)
             args = json.loads(tool_call.function.arguments)
             functions_to_call.append({ "name": name, "args": args })
 
@@ -80,36 +80,36 @@ async def run():
         async with ClientSession(
             read, write
         ) as session:
-            # Initialize the connection
+            # 接続を初期化する
             await session.initialize()
 
         
           
 
-            # List available tools
+            # 使える tool の一覧を取得する
             tools = await session.list_tools()
-            print("LISTING TOOLS")
+            print("tool の一覧")
 
             functions = []
 
             for tool in tools.tools:
-                print("Tool: ", tool.name)
+                print("tool: ", tool.name)
                 # print("Tool", tool.inputSchema["properties"])
                 functions.append(convert_to_llm_tool(tool))
             
             while True:
-                print("Waiting for input... (type 'quit' to exit)")
-                prompt = input("Enter prompt: ")
+                print("入力を待っています...（'quit' で終了）")
+                prompt = input("プロンプトを入力してください: ")
                 if prompt == "quit":
                     break
             
-                # ask LLM what tools to all, if any
+                # どの tool を呼ぶべきか（あれば）LLM に聞く
                 functions_to_call = call_llm(prompt, functions)
 
-                # call suggested functions
+                # 提案された関数を呼び出す
                 for f in functions_to_call:
                     result = await session.call_tool(f["name"], arguments=f["args"])
-                    print("TOOLS result: ", result.content)
+                    print("tool の結果: ", result.content)
 
 
 if __name__ == "__main__":

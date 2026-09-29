@@ -3,9 +3,9 @@
 __pycache__/
 *.pyc
 
-# Chapter11 writes an auth token here
+# Chapter11 が認証トークンをここに書き出す
 .env
 
-# Agent handoff notes (not part of the repo)
+# エージェントの引き継ぎメモ（リポジトリには含めない）
 .agent-handoff.md
 .serena/

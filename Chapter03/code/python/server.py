@@ -1,19 +1,19 @@
 # server.py
 from mcp.server.fastmcp import FastMCP
 
-# Create an MCP server
+# MCP サーバーを作る
 mcp = FastMCP("Demo")
 
 
-# Add a multiply tool
+# 掛け算の tool を追加する
 @mcp.tool()
 def multiply(first: int, second: int) -> int:
-    """Multiply two numbers"""
+    """2つの数を掛け算する"""
     return first * second
 
 
-# Add a dynamic greeting resource
+# 動的な挨拶の resource を追加する
 @mcp.resource("echo://{message}")
 def get_greeting(message: str) -> str:
-    """Echo out the message"""
-    return f"Resource echo, {message}!"
+    """メッセージをそのまま返す"""
+    return f"リソースのエコー: {message}!"

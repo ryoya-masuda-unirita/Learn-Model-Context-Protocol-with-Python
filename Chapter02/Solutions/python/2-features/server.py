@@ -6,7 +6,7 @@ from utils.messages import initializeResponse
 initialized = False
 
 def create_notification():
-    """Create a notification message."""
+    """通知メッセージを作る。"""
     return {
         "jsonrpc": "2.0",
         "method": "notifications/initialized",
@@ -17,21 +17,21 @@ while True:
     for line in sys.stdin:
         message = line.strip()
         if message == "hello":
-            print("hello there")
-            sys.stdout.flush()  # Ensure output is sent immediately
+            print("こんにちは")
+            sys.stdout.flush()  # 出力をすぐに送る
         elif message.startswith('{"jsonrpc":'):
             json_message = json.loads(message)
             method = json_message.get('method', '')
 
             if not initialized:
                 if method != "initialize" and method != "notifications/initialized":
-                    print(f"Server not initialized. Please send an 'initialized' notification first. You sent {method}")
+                    print(f"サーバーが初期化されていません。先に 'initialized' 通知を送ってください。送られたメソッド: {method}")
                     sys.stdout.flush()
                     continue
 
             match method:
                 case "notifications/initialized":
-                    # print("Server initialized successfully.")
+                    # print("サーバーの初期化に成功しました。")
                     sys.stdout.flush()
                     initialized = True
                     break
@@ -40,23 +40,23 @@ while True:
                     sys.stdout.flush()
                     # initialized = True
                     break
-                     # should return capabilities
+                     # capabilities を返すべき
                 case "tools/call":
 
 
 
                     tool_name = json_message['params']['name']
                     args = json_message['params']['args']
-                    # todo create a response for the tool call, i.e call the right tool
+                    # TODO: tool 呼び出しへの応答を作る（つまり、正しい tool を呼び出す）
                     response = {
                         "jsonrpc": "2.0",
                         "id": json_message["id"],
                         "result": {
                             "properties": {
                                 "content": {
-                                    "description": "description of the content",
+                                    "description": "コンテンツの説明",
                                     "items": [
-                                        { "type": "text", "text": f"Called tool {tool_name} with arguments {args}" }
+                                        { "type": "text", "text": f"tool {tool_name} を引数 {args} で呼び出しました" }
                                     ]
                                 }
                             }
@@ -66,7 +66,7 @@ while True:
                     sys.stdout.flush()
                     break
                 case "tools/list":
-                
+
                     response = {
                         "jsonrpc": "2.0",
                         "id": json_message["id"],
@@ -74,13 +74,13 @@ while True:
                             "tools": [
                                 {
                                     "name": "example_tool",
-                                    "description": "An example tool that does something.",
+                                    "description": "何かを行うサンプルの tool。",
                                     "inputSchema": {
                                         "type": "object",
                                         "properties": {
                                             "arg1": {
                                                 "type": "string",
-                                                "description": "An example argument."
+                                                "description": "サンプルの引数。"
                                             }
                                         },
                                         "required": ["arg1"]
@@ -93,13 +93,12 @@ while True:
                     sys.stdout.flush()
                     break
                 case _:
-                    print(f"Unknown method: {json_message['method']}")
+                    print(f"不明なメソッドです: {json_message['method']}")
                     sys.stdout.flush()
                     break
         elif message == "exit":
-            print("Exiting server.")
+            print("サーバーを終了します。")
             sys.stdout.flush()
             sys.exit(0)
         else:
-            print(f"Unknown message: {message}")
-   
+            print(f"不明なメッセージです: {message}")

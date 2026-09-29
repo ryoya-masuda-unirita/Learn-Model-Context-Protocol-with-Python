@@ -1,11 +1,11 @@
-# need to start a child process and send info to it via stdin
+# 子プロセスを起動し、stdin 経由で情報を送る必要がある
 
 import subprocess
 import json
 
-# Start the child process
+# 子プロセスを起動する
 proc = subprocess.Popen(
-    ['python3', 'server.py'],  # Replace with your child script
+    ['python3', 'server.py'],  # 起動する子スクリプトに置き換える
     stdin=subprocess.PIPE,
     stdout=subprocess.PIPE,
     text=True
@@ -21,33 +21,33 @@ list_tools_message = {
 message = 'hello\n'
 
 def send_message(message):
-    """Send a message to the child process."""
-    print(f'[CLIENT] Sending message to server... Message: {message.strip()}')
+    """子プロセスにメッセージを送る。"""
+    print(f'[CLIENT] サーバーにメッセージを送信中... メッセージ: {message.strip()}')
     proc.stdin.write(message)
     proc.stdin.flush()
 
 def serialize_message(message):
-    """Serialize a message to JSON format."""
+    """メッセージを JSON 形式にシリアライズする。"""
     return json.dumps(message) + '\n'
 
-# Send a message to the child
+# 子プロセスにメッセージを送る
 send_message(message)
 
-# Read response from child
+# 子プロセスからの応答を読む
 response = proc.stdout.readline()
 print('[SERVER]:', response.strip())
 
-# send a JSON-RPC message
+# JSON-RPC メッセージを送る
 send_message(serialize_message(list_tools_message))
 
 response = proc.stdout.readline()
 print('[SERVER]:', response.strip())
 
-# this closes down the child process aka server
+# 子プロセス（つまりサーバー）を終了させる
 send_message('exit\n')
 
 exit_code = proc.wait()
-print(f"Child exited with code {exit_code}")
+print(f"子プロセスが終了コード {exit_code} で終了しました")
 
 proc.stdin.close()
 proc.terminate()

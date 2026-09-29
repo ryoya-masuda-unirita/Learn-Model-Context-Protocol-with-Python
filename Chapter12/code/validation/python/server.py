@@ -15,16 +15,16 @@ users = []
 @mcp.tool()
 def create_user(user: User):
 
-    # Create user logic here
+    # ユーザーを作成する処理をここに書く
     user.id = len(users) + 1
     users.append(user)
     return user
 
 @mcp.tool()
 def sum(a: int, b: int) -> int:
-    """Add two numbers together."""
+    """2つの数を足し算する。"""
     return a + b
 
 if __name__ == "__main__":
-    print("Starting MCP server...")
+    print("MCP サーバーを起動しています...")
     mcp.run()

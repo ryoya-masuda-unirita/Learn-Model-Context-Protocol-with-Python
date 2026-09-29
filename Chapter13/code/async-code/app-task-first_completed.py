@@ -4,18 +4,18 @@ from typing import List, Optional
 
 async def search_task(name: str, delay: int, workload: List[int], find_value: int, stop: asyncio.Event) -> Optional[str]:
     try:
-        print(f"Task {name} started")
-        await asyncio.sleep(delay)             # simulate I/O
+        print(f"タスク {name} を開始しました")
+        await asyncio.sleep(delay)             # I/O をシミュレートする
         if stop.is_set():
             return None
         for no in workload:
-            await asyncio.sleep(0)            # yield to allow cancellation
+            await asyncio.sleep(0)            # キャンセルできるように制御を譲る
             if no == find_value:
                 stop.set()
                 return name
         return None
     except asyncio.CancelledError:
-        print(f"Task {name} cancelled")
+        print(f"タスク {name} がキャンセルされました")
         raise
 
 async def main():
@@ -30,7 +30,7 @@ async def main():
         for finished in asyncio.as_completed(tasks):
             res = await finished
             if res:
-                print("Found in", res)
+                print("見つかったタスク:", res)
                 break
     finally:
         for t in tasks:

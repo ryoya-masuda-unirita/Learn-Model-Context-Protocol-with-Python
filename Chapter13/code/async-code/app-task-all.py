@@ -2,13 +2,13 @@ import asyncio
 from typing import List
 
 async def create_task(name:str, delay:int, workload: List[int], find_value:int) -> str:
-   print(f"Task {name} started")
+   print(f"タスク {name} を開始しました")
    await asyncio.sleep(delay)
-   # loop workload, if value found, then return, if not found return -1
+   # workload をループし、値が見つかれば返す。見つからなければ -1 を返す
    for no in workload:
       if no == find_value:
-         return f"Task {name} found {no}"
-   return f"Not found in {name}"
+         return f"タスク {name} が {no} を見つけました"
+   return f"{name} では見つかりませんでした"
 
 async def main():
     tasks = [
@@ -19,6 +19,6 @@ async def main():
 
     finished, unfinished = await asyncio.wait(tasks, return_when=asyncio.ALL_COMPLETED)
     for x in finished:
-       print("Found in task:", x.result())
+       print("タスクの結果:", x.result())
 
 asyncio.run(main())

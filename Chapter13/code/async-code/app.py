@@ -1,9 +1,9 @@
 import asyncio
 
 async def task(name, delay):
-    print(f"Task {name} started")
+    print(f"タスク {name} を開始しました")
     await asyncio.sleep(delay)
-    print(f"Task {name} finished after {delay} seconds")
+    print(f"タスク {name} が {delay} 秒後に終了しました")
 
 async def main():
     await asyncio.gather(

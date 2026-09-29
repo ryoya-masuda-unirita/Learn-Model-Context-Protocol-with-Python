@@ -16,29 +16,29 @@ from starlette.types import Receive, Scope, Send
 
 from event_store import InMemoryEventStore
 
-# Configure logging
+# ログを設定する
 logger = logging.getLogger(__name__)
 
 
 @click.command()
-@click.option("--port", default=3000, help="Port to listen on for HTTP")
+@click.option("--port", default=3000, help="HTTP で待ち受けるポート")
 @click.option(
     "--log-level",
     default="INFO",
-    help="Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)",
+    help="ログレベル（DEBUG、INFO、WARNING、ERROR、CRITICAL）",
 )
 @click.option(
     "--json-response",
     is_flag=True,
     default=False,
-    help="Enable JSON responses instead of SSE streams",
+    help="SSE ストリームの代わりに JSON レスポンスを返す",
 )
 def main(
     port: int,
     log_level: str,
     json_response: bool,
 ) -> int:
-    # Configure logging
+    # ログを設定する
     logging.basicConfig(
         level=getattr(logging, log_level.upper()),
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -51,34 +51,34 @@ def main(
         ctx = app.request_context
         interval = arguments.get("interval", 1.0)
         count = arguments.get("count", 5)
-        caller = arguments.get("caller", "unknown")
+        caller = arguments.get("caller", "不明")
 
-        # Send the specified number of notifications with the given interval
+        # 指定した間隔で、指定した数の通知を送る
         for i in range(count):
-            # Include more detailed message for resumability demonstration
-            notification_msg = f"[{i + 1}/{count}] Event from '{caller}' - Use Last-Event-ID to resume if disconnected"
+            # resumability のデモ用に、詳しいメッセージを含める
+            notification_msg = f"[{i + 1}/{count}] '{caller}' からのイベント - 切断された場合は Last-Event-ID を使って再開できます"
             await ctx.session.send_log_message(
                 level="info",
                 data=notification_msg,
                 logger="notification_stream",
-                # Associates this notification with the original request
-                # Ensures notifications are sent to the correct response stream
-                # Without this, notifications will either go to:
-                # - a standalone SSE stream (if GET request is supported)
-                # - nowhere (if GET request isn't supported)
+                # この通知を元のリクエストに関連付ける
+                # 通知が正しいレスポンスストリームに送られるようにする
+                # これがないと、通知の送り先は次のどちらかになる：
+                # - 独立した SSE ストリーム（GET リクエストに対応している場合）
+                # - どこにも送られない（GET リクエストに対応していない場合）
                 related_request_id=ctx.request_id,
             )
-            logger.debug(f"Sent notification {i + 1}/{count} for caller: {caller}")
-            if i < count - 1:  # Don't wait after the last notification
+            logger.debug(f"通知を送信しました {i + 1}/{count}（呼び出し元: {caller}）")
+            if i < count - 1:  # 最後の通知の後は待たない
                 await anyio.sleep(interval)
 
-        # This will send a resource notificaiton though standalone SSE
-        # established by GET request
+        # GET リクエストで確立した独立した SSE を通じて、
+        # resource の通知を送る
         await ctx.session.send_resource_updated(uri=AnyUrl("http:///test_resource"))
         return [
             types.TextContent(
                 type="text",
-                text=(f"Sent {count} notifications with {interval}s interval for caller: {caller}"),
+                text=(f"{interval} 秒間隔で {count} 件の通知を送信しました（呼び出し元: {caller}）"),
             )
         ]
 
@@ -87,60 +87,60 @@ def main(
         return [
             types.Tool(
                 name="start-notification-stream",
-                description=("Sends a stream of notifications with configurable count and interval"),
+                description=("件数と間隔を指定して、通知をストリームで送る"),
                 inputSchema={
                     "type": "object",
                     "required": ["interval", "count", "caller"],
                     "properties": {
                         "interval": {
                             "type": "number",
-                            "description": "Interval between notifications in seconds",
+                            "description": "通知の間隔（秒）",
                         },
                         "count": {
                             "type": "number",
-                            "description": "Number of notifications to send",
+                            "description": "送る通知の数",
                         },
                         "caller": {
                             "type": "string",
-                            "description": ("Identifier of the caller to include in notifications"),
+                            "description": ("通知に含める呼び出し元の識別子"),
                         },
                     },
                 },
             )
         ]
 
-    # Create event store for resumability
-    # The InMemoryEventStore enables resumability support for StreamableHTTP transport.
-    # It stores SSE events with unique IDs, allowing clients to:
-    #   1. Receive event IDs for each SSE message
-    #   2. Resume streams by sending Last-Event-ID in GET requests
-    #   3. Replay missed events after reconnection
-    # Note: This in-memory implementation is for demonstration ONLY.
-    # For production, use a persistent storage solution.
+    # resumability 用のイベントストアを作る
+    # InMemoryEventStore で、StreamableHTTP transport の resumability に対応できる。
+    # SSE イベントを一意な ID 付きで保存するので、クライアントは次のことができる：
+    #   1. SSE メッセージごとにイベント ID を受け取る
+    #   2. GET リクエストで Last-Event-ID を送り、ストリームを再開する
+    #   3. 再接続後に、受け取り損ねたイベントを再生する
+    # 注意：このインメモリ実装はデモ専用。
+    # 本番環境では永続化ストレージを使うこと。
     event_store = InMemoryEventStore()
 
-    # Create the session manager with our app and event store
+    # アプリとイベントストアを使ってセッションマネージャーを作る
     session_manager = StreamableHTTPSessionManager(
         app=app,
-        event_store=event_store,  # Enable resumability
+        event_store=event_store,  # resumability を有効にする
         json_response=json_response,
     )
 
-    # ASGI handler for streamable HTTP connections
+    # Streamable HTTP 接続用の ASGI ハンドラー
     async def handle_streamable_http(scope: Scope, receive: Receive, send: Send) -> None:
         await session_manager.handle_request(scope, receive, send)
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette) -> AsyncIterator[None]:
-        """Context manager for managing session manager lifecycle."""
+        """セッションマネージャーのライフサイクルを管理するコンテキストマネージャー。"""
         async with session_manager.run():
-            logger.info("Application started with StreamableHTTP session manager!")
+            logger.info("StreamableHTTP セッションマネージャー付きでアプリケーションを起動しました！")
             try:
                 yield
             finally:
-                logger.info("Application shutting down...")
+                logger.info("アプリケーションを終了しています...")
 
-    # Create an ASGI application using the transport
+    # transport を使って ASGI アプリケーションを作る
     starlette_app = Starlette(
         debug=True,
         routes=[
@@ -149,12 +149,12 @@ def main(
         lifespan=lifespan,
     )
 
-    # Wrap ASGI application with CORS middleware to expose Mcp-Session-Id header
-    # for browser-based clients (ensures 500 errors get proper CORS headers)
+    # ブラウザベースのクライアントに Mcp-Session-Id ヘッダーを公開するため、ASGI アプリケーションを
+    # CORS middleware で包む（500 エラーにも正しい CORS ヘッダーが付くようにする）
     starlette_app = CORSMiddleware(
         starlette_app,
-        allow_origins=["*"],  # Allow all origins - adjust as needed for production
-        allow_methods=["GET", "POST", "DELETE"],  # MCP streamable HTTP methods
+        allow_origins=["*"],  # すべてのオリジンを許可する（本番環境では必要に応じて調整する）
+        allow_methods=["GET", "POST", "DELETE"],  # MCP の Streamable HTTP で使うメソッド
         expose_headers=["Mcp-Session-Id"],
     )
 

@@ -28,7 +28,7 @@ python client.py
 次のような結果になります：
 
 ```text
-result: Ah, bonsoir, my dear interlocutor! It is a pleasure to make your acquaintance. As you may have surmised, I am Monsieur Lestrange, a vampire of some six centuries in age. One could say that I have had ample time to observe the intricacies of life, even from the peculiar vantage of my somewhat... unique existence.
+結果: Ah, bonsoir, my dear interlocutor! It is a pleasure to make your acquaintance. As you may have surmised, I am Monsieur Lestrange, a vampire of some six centuries in age. One could say that I have had ample time to observe the intricacies of life, even from the peculiar vantage of my somewhat... unique existence.
 
 However, if I must indulge in the topic of "me," I find it rather tedious when compared to the perennial tribulation of managing a magnificent yet drafty castle. You see, my abode, a resplendent structure that has stood the test of time for more than a millennium, possesses an architectural charm that is unfortunately accompanied by the inefficiencies of medieval insulation.
 

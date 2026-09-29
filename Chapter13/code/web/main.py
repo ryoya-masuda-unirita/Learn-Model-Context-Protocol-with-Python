@@ -1,5 +1,5 @@
 def main():
-    print("Hello from web!")
+    print("web からこんにちは！")
 
 
 if __name__ == "__main__":

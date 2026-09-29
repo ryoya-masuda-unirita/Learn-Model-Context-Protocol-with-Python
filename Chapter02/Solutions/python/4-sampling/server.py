@@ -11,29 +11,29 @@ initialized = False
 
 product = {
     "id": "12345",
-    "name": "Sample Product",
+    "name": "サンプル商品",
     "price": 19.99,
-    "keywords": ["sample", "product", "example"]
+    "keywords": ["サンプル", "商品", "例"]
 }
 
 class ProductStore:
     def __init__(self):
         self.started = False
         self.listeners = {}
-        # create timer that adds a product to the queue every 5 seconds
+        # 5秒ごとに商品をキューに追加するタイマーを作る
 
     def add_product(self):
-        """Add a product to the store and notify listeners."""
+        """ストアに商品を追加し、リスナーに通知する。"""
         product = {
             "id": str(random.randint(10000, 99999)),
-            "name": f"Product {random.randint(1, 100)}",
+            "name": f"商品 {random.randint(1, 100)}",
             "price": round(random.uniform(10.0, 100.0), 2),
-            "keywords": [f"keyword{random.randint(1, 5)}" for _ in range(random.randint(1, 3))]
+            "keywords": [f"キーワード{random.randint(1, 5)}" for _ in range(random.randint(1, 3))]
         }
         self.dispatch_message("new_product", product)
 
     def start_product_queue_timer(self):
-        """Start a timer that adds a product to the queue every 5 seconds."""
+        """5秒ごとに商品をキューに追加するタイマーを開始する。"""
         def schedule_next():
             delay = random.uniform(1, 2)
             self.product_timer = threading.Timer(delay, self.add_product)
@@ -49,14 +49,14 @@ class ProductStore:
         if not self.started:
             self.started = True
             self.start_product_queue_timer()
-        """Add a listener for product updates."""
-        # In a real application, this would register the callback to be called when a new product is added
+        """商品の更新を受け取るリスナーを追加する。"""
+        # 実際のアプリケーションでは、新しい商品が追加されたときに呼ばれるコールバックとして登録する
         callbacks = self.listeners.get(message, [])
         callbacks.append(callback)
         self.listeners[message] = callbacks
 
     def dispatch_message(self, message, payload):
-        """Dispatch a message to all registered listeners."""
+        """登録されているすべてのリスナーにメッセージを送る。"""
         callbacks = self.listeners.get(message, [])
         for callback in callbacks:
             callback(payload)
@@ -71,10 +71,10 @@ def create_sampling_message(product):
                 "role": "system",
                 "content": {
                     "type": "text",
-                    "text": f"New product available: {product['name']} (ID: {product['id']}, Price: {product['price']}). Keywords: {', '.join(product['keywords'])}"
+                    "text": f"新しい商品が入荷しました: {product['name']}（ID: {product['id']}、価格: {product['price']}）。キーワード: {', '.join(product['keywords'])}"
                 }
             }],
-            "systemPrompt": "You are a helpful assistant assisting with product descriptions",
+            "systemPrompt": "あなたは商品説明の作成を手伝う、親切なアシスタントです",
             "includeContext": "thisServer",
             "maxTokens": 300
         }
@@ -86,31 +86,31 @@ store.add_listener("new_product", lambda product: print(json.dumps(create_sampli
 
 def handle_sampling_response(response):
     content = response['result']['content']['text']
-    print("[SERVER] [Sampling response received]:", content)
+    print("[SERVER] [サンプリングの応答を受信しました]:", content)
     sys.stdout.flush()
-    # TODO, update the store or perform any other action with the response
+    # TODO: 応答を使ってストアを更新するなど、必要な処理を行う
 
 while True:
     for line in sys.stdin:
         message = line.strip()
         if message == "hello":
-            print("hello there")
-            sys.stdout.flush()  # Ensure output is sent immediately
+            print("こんにちは")
+            sys.stdout.flush()  # 出力をすぐに送る
         elif message.startswith('{"jsonrpc":'):
             json_message = json.loads(message)
             method = json_message.get('method', '')
 
             if not initialized:
                 if method != "initialize" and method != "notifications/initialized":
-                    print(f"Server not initialized. Please send an 'initialized' notification first. You sent {method}")
+                    print(f"サーバーが初期化されていません。先に 'initialized' 通知を送ってください。送られたメソッド: {method}")
                     sys.stdout.flush()
                     continue
 
-            
+
 
             match method:
                 case "notifications/initialized":
-                    # print("Server initialized successfully.")
+                    # print("サーバーの初期化に成功しました。")
                     sys.stdout.flush()
                     initialized = True
                     break
@@ -119,7 +119,7 @@ while True:
                     sys.stdout.flush()
                     # initialized = True
                     break
-                     # should return capabilities
+                     # capabilities を返すべき
                 case "tools/call":
                     tool_name = json_message['params']['name']
                     args = json_message['params']['args']
@@ -133,16 +133,16 @@ while True:
                     print(json.dumps(progress_notification))
                     sys.stdout.flush()
 
-                    # todo create a response for the tool call, i.e call the right tool
+                    # TODO: tool 呼び出しへの応答を作る（つまり、正しい tool を呼び出す）
                     response = {
                         "jsonrpc": "2.0",
                         "id": json_message["id"],
                         "result": {
                             "properties": {
                                 "content": {
-                                    "description": "description of the content",
+                                    "description": "コンテンツの説明",
                                     "items": [
-                                        { "type": "text", "text": f"Called tool {tool_name} with arguments {args}" }
+                                        { "type": "text", "text": f"tool {tool_name} を引数 {args} で呼び出しました" }
                                     ]
                                 }
                             }
@@ -153,7 +153,7 @@ while True:
                     break
                 case "tools/list":
 
-                    # send notification about progress first, then later the response
+                    # 先に進捗の通知を送り、その後で応答を返す
                     print(json.dumps(progress_notification))
                     sys.stdout.flush()
 
@@ -164,13 +164,13 @@ while True:
                             "tools": [
                                 {
                                     "name": "example_tool",
-                                    "description": "An example tool that does something.",
+                                    "description": "何かを行うサンプルの tool。",
                                     "inputSchema": {
                                         "type": "object",
                                         "properties": {
                                             "arg1": {
                                                 "type": "string",
-                                                "description": "An example argument."
+                                                "description": "サンプルの引数。"
                                             }
                                         },
                                         "required": ["arg1"]
@@ -183,19 +183,18 @@ while True:
                     sys.stdout.flush()
                     break
                 case _:
-                    # print(f"Unknown method: {method}")
+                    # print(f"不明なメソッドです: {method}")
                     # sys.stdout.flush()
                     if json_message['result']:
                         handle_sampling_response(json_message)
-                    # sampling response, deal with it, i.e update the store
+                    # サンプリングの応答なので処理する（つまり、ストアを更新する）
                     else:
-                        print(f"Unknown method: {json_message['method']}")
+                        print(f"不明なメソッドです: {json_message['method']}")
                         sys.stdout.flush()
                     break
         elif message == "exit":
-            print("Exiting server.")
+            print("サーバーを終了します。")
             sys.stdout.flush()
             sys.exit(0)
         else:
-            print(f"Unknown message: {message}")
-   
+            print(f"不明なメッセージです: {message}")

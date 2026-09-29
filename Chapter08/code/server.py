@@ -1,21 +1,21 @@
 from mcp.server.fastmcp import FastMCP
 
-# Create an MCP server
+# MCP サーバーを作る
 mcp = FastMCP("Demo")
 
 
-# Add an addition tool
+# 足し算の tool を追加する
 @mcp.tool()
 def add(a: int, b: int) -> int:
-    """Add two numbers"""
+    """2つの数を足し算する"""
     return a + b
 
-# Add a subtraction tool
+# 引き算の tool を追加する
 @mcp.tool()
 def subtract(a: int, b: int) -> int:
-    """Subtract two numbers"""
+    """2つの数を引き算する"""
     return a - b
 
 if __name__ == "__main__":
-    print("Starting MCP server...")
+    print("MCP サーバーを起動しています...")
     mcp.run(transport="stdio")

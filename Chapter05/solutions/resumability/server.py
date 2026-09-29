@@ -26,40 +26,40 @@ from mcp.server.lowlevel import Server
 
 from event_store import InMemoryEventStore
 
-# set up logging
+# ログの準備
 logger = logging.getLogger(__name__)
-# Configure logging
+# ログを設定する
 logging.basicConfig(
     level="INFO",
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 
-# create a store for messages
+# メッセージ用のストアを作る
 event_store = InMemoryEventStore()
 
-# Create an MCP server
+# MCP サーバーを作る
 app = Server("mcp-streamable-http-demo")
 
-# Create the session manager with our app and event store
+# アプリとイベントストアを使ってセッションマネージャーを作る
 session_manager = StreamableHTTPSessionManager(
     app=app,
-    event_store=event_store,  # Enable resumability
+    event_store=event_store,  # resumability を有効にする
     json_response=True,
 )
 
-# ASGI handler for streamable HTTP connections
+# Streamable HTTP 接続用の ASGI ハンドラー
 async def handle_streamable_http(scope: Scope, receive: Receive, send: Send) -> None:
     await session_manager.handle_request(scope, receive, send)
 
 @contextlib.asynccontextmanager
 async def lifespan(app: Starlette) -> AsyncIterator[None]:
-    """Context manager for managing session manager lifecycle."""
+    """セッションマネージャーのライフサイクルを管理するコンテキストマネージャー。"""
     async with session_manager.run():
-        logger.info("Application started with StreamableHTTP session manager!")
+        logger.info("StreamableHTTP セッションマネージャー付きでアプリケーションを起動しました！")
         try:
             yield
         finally:
-            logger.info("Application shutting down...")
+            logger.info("アプリケーションを終了しています...")
 
 files = [
     "file1.txt",
@@ -67,49 +67,49 @@ files = [
     "file3.txt"
 ]
 
-# call tool
+# tool の呼び出し
 @app.call_tool()
 async def call_tool(name: str, arguments: dict[str, Any]) -> list[types.ContentBlock]:
     ctx = app.request_context
-    print("ctx:", ctx)
+    print("コンテキスト:", ctx)
 
     no_of_files = len(files)
 
-    # Send the specified number of notifications with the given interval
+    # 指定した間隔で、指定した数の通知を送る
     for i in range(no_of_files):
-        # Include more detailed message for resumability demonstration
-        notification_msg = f"[{i + 1}/{no_of_files}] Event from '{files[i]}' - Use Last-Event-ID to resume if disconnected"
-        print("ctx log method", ctx.session.send_log_message)
+        # resumability のデモ用に、詳しいメッセージを含める
+        notification_msg = f"[{i + 1}/{no_of_files}] '{files[i]}' からのイベント - 切断された場合は Last-Event-ID を使って再開できます"
+        print("コンテキストのログ送信メソッド", ctx.session.send_log_message)
         
         await ctx.session.send_log_message(
             level="info",
             data=notification_msg,
             logger="notification_stream",
-            # Associates this notification with the original request
-            # Ensures notifications are sent to the correct response stream
-            # Without this, notifications will either go to:
-            # - a standalone SSE stream (if GET request is supported)
-            # - nowhere (if GET request isn't supported)
+            # この通知を元のリクエストに関連付ける
+            # 通知が正しいレスポンスストリームに送られるようにする
+            # これがないと、通知の送り先は次のどちらかになる：
+            # - 独立した SSE ストリーム（GET リクエストに対応している場合）
+            # - どこにも送られない（GET リクエストに対応していない場合）
             related_request_id=ctx.request_id,
         )
-        logger.debug(f"Sent notification {i + 1}/{no_of_files}")
-        # if i < no_of_files - 1:  # Don't wait after the last notification
+        logger.debug(f"通知を送信しました {i + 1}/{no_of_files}")
+        # if i < no_of_files - 1:  # 最後の通知の後は待たない
         await anyio.sleep(0.1)
 
     return [
         types.TextContent(
             type="text",
-            text=(f"Processed {no_of_files} "),
+            text=(f"{no_of_files} 件を処理しました"),
         )
     ]
 
-# define list tools, what tools we have
+# tool の一覧（どんな tool があるか）を定義する
 @app.list_tools()
 async def list_tools() -> list[types.Tool]:
     return [
         types.Tool(
             name="process-files",
-            description=("Process a number of files"),
+            description=("複数のファイルを処理する"),
             inputSchema={
                 "type": "object",
                 "required": [],

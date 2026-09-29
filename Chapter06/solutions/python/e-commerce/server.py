@@ -9,7 +9,7 @@ from starlette.routing import Mount, Route
 
 import tools
 
-# Create a server instance
+# サーバーのインスタンスを作る
 server = Server("low-level-server")
 
 def pydantic_to_json(model_cls: type) -> dict:
@@ -50,9 +50,9 @@ async def handle_call_tool(
     name: str, arguments: dict[str, str] | None
 ) -> list[types.TextContent]:
     
-    # tools is a dictionary with tool names as keys
+    # tools は tool 名をキーにした辞書
     if name not in tools.tools:
-        raise ValueError(f"Unknown tool: {name}")
+        raise ValueError(f"不明な tool です: {name}")
     
     tool = tools.tools[name]
 
@@ -60,7 +60,7 @@ async def handle_call_tool(
     try:
         result = await tool["handler"](arguments)
     except Exception as e:
-        raise ValueError(f"Error calling tool {name}: {str(e)}")
+        raise ValueError(f"tool {name} の呼び出しでエラーが発生しました: {str(e)}")
 
     return [
         types.TextContent(type="text", text=str(result))
@@ -71,10 +71,10 @@ async def handle_list_prompts() -> list[types.Prompt]:
     return [
         types.Prompt(
             name="example-prompt",
-            description="An example prompt template",
+            description="サンプルの prompt テンプレート",
             arguments=[
                 types.PromptArgument(
-                    name="arg1", description="Example argument", required=True
+                    name="arg1", description="サンプルの引数", required=True
                 )
             ],
         )
@@ -86,14 +86,14 @@ async def handle_get_prompt(
     name: str, arguments: dict[str, str] | None
 ) -> types.GetPromptResult:
     if name != "example-prompt":
-        raise ValueError(f"Unknown prompt: {name}")
+        raise ValueError(f"不明な prompt です: {name}")
 
     return types.GetPromptResult(
-        description="Example prompt",
+        description="サンプルの prompt",
         messages=[
             types.PromptMessage(
                 role="user",
-                content=types.TextContent(type="text", text="Example prompt text"),
+                content=types.TextContent(type="text", text="サンプルの prompt のテキスト"),
             )
         ],
     )
@@ -122,9 +122,9 @@ if __name__ == "__main__":
     port = 8000
     uvicorn.run(starlette_app, host="127.0.0.1", port=port)
 
-# start with python server.py
+# python server.py で起動する
 
-# test with: npx @modelcontextprotocol/inspector --cli http://localhost:8000/sse --method tools/list
+# テスト方法: npx @modelcontextprotocol/inspector --cli http://localhost:8000/sse --method tools/list
 
 # npx @modelcontextprotocol/inspector --cli http://localhost:8000/sse --method tools/call --tool-name add_to_cart --tool-arg cart_id=1 --tool-arg product_id=2 --tool-arg quantity=3
 # npx @modelcontextprotocol/inspector --cli http://localhost:8000/sse --method tools/call --tool-name get_all_categories

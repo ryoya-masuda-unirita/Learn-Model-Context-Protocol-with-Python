@@ -8,40 +8,40 @@ from starlette.routing import Mount, Host
 
 mcp = FastMCP(name="Elicitation Example")
 
-# todo: elicitation example, turn it into sse
+# TODO: elicitation のサンプル。SSE に対応させる
 
 class MemberPreferences(BaseModel):
-    """Schema for collecting user preferences."""
+    """ユーザーの希望を集めるためのスキーマ。"""
 
-    become_member: bool = Field(description="Want to be a member to receive discounts?")
+    become_member: bool = Field(description="割引を受けられる会員になりますか？")
     name: str = Field(
         default="",
-        description="Your name"
+        description="あなたの名前"
     ),
     email: str = Field(
         default="",
-        description="Your email address"
+        description="あなたのメールアドレス"
     )
 
 @mcp.tool()
 async def book_trip(date: str, member_id: str, ctx: Context[ServerSession, None]) -> str:
-    """Book a trip check if member is available. If member is not present, ask for sign up."""
-    # Check if member is available
+    """旅行を予約する。会員かどうかを確認し、会員でなければ登録を勧める。"""
+    # 会員かどうか確認する
     if not member_id or member_id == "guest":
-        # Date unavailable - ask user for alternative
+        # 会員ではない - ユーザーに登録するか尋ねる
         result = await ctx.elicit(
-            message=(f"Not a member? Would you like to sign up?"),
+            message=(f"会員ではありませんか？ 会員登録しますか？"),
             schema=MemberPreferences,
         )
 
         if result.action == "accept" and result.data:
             if result.data.become_member and result.data.name and result.data.email:
-                return f"[BOOKED] Booked for {date}, welcome {result.data.name} as a member!"
-            return f"[BOOKED] for {date}, go to www.example.com to sign up if you change your mind on membership."
-        return f"[BOOKED] for {date}, go to www.example.com to sign up."
+                return f"[BOOKED] {date} で予約しました。{result.data.name} さん、会員登録ありがとうございます！"
+            return f"[BOOKED] {date} で予約しました。会員登録したくなったら www.example.com から登録できます。"
+        return f"[BOOKED] {date} で予約しました。会員登録は www.example.com からできます。"
 
-    # Date available
-    return f"[SUCCESS] Booked for {date}, for member {member_id}"
+    # 会員である
+    return f"[SUCCESS] 会員 {member_id} として {date} で予約しました"
 
 app = Starlette(
     routes=[
@@ -50,5 +50,5 @@ app = Starlette(
 )
 
 if __name__ == "__main__":
-    print("Starting Elicitation Example MCP Server...")
+    print("Elicitation サンプルの MCP サーバーを起動しています...")
     mcp.run()

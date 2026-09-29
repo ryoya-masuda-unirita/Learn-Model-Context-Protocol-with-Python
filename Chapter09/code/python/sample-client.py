@@ -1,5 +1,5 @@
 """
-cd to the `examples/snippets/clients` directory and run:
+`examples/snippets/clients` ディレクトリに移動して、次を実行する：
     uv run client
 """
 
@@ -15,9 +15,9 @@ from mcp.shared.context import RequestContext
 import os
 from openai import OpenAI
 
-# Create server parameters for stdio connection
+# stdio 接続用のサーバーパラメーターを作る
 server_params = StdioServerParameters(
-    command="python",  # Using python to run the server
+    command="python",  # python でサーバーを実行する
     args=["sample-server.py"]
 )
 
@@ -47,16 +47,16 @@ async def call_llm(prompt: str, system_prompt: str) -> str:
     return response.choices[0].message.content
 
 
-# Optional: create a sampling callback
+# 任意：サンプリングのコールバックを作る
 async def handle_sampling_message(
     context: RequestContext[ClientSession, None], params: types.CreateMessageRequestParams
 ) -> types.CreateMessageResult:
-    print(f"Sampling request: {params.messages}")
+    print(f"サンプリングのリクエスト: {params.messages}")
 
     message = params.messages[0].content.text
 
-    # todo, call an actual llm and change below
-    response = await call_llm(message, "You're a helpful assistant, keep to the topic, don't make things up too much but definitely create a compelling product description")
+    # TODO: 実際の LLM を呼び出すように、以下を変更する
+    response = await call_llm(message, "あなたは親切なアシスタントです。話題から外れず、話を作りすぎないようにしつつ、必ず魅力的な商品説明を作成してください")
 
     return types.CreateMessageResult(
         role="assistant",
@@ -72,48 +72,48 @@ async def handle_sampling_message(
 async def run():
     async with stdio_client(server_params) as (read, write):
         async with ClientSession(read, write, sampling_callback=handle_sampling_message) as session:
-            # Initialize the connection
+            # 接続を初期化する
             await session.initialize()
 
-            # List available prompts
+            # 使える prompt の一覧を取得する
             # prompts = await session.list_prompts()
-            # print(f"Available prompts: {[p.name for p in prompts.prompts]}")
+            # print(f"使える prompt: {[p.name for p in prompts.prompts]}")
 
-            # # Get a prompt (greet_user prompt from fastmcp_quickstart)
+            # # prompt を取得する（fastmcp_quickstart の greet_user prompt）
             # if prompts.prompts:
             #     prompt = await session.get_prompt("greet_user", arguments={"name": "Alice", "style": "friendly"})
-            #     print(f"Prompt result: {prompt.messages[0].content}")
+            #     print(f"prompt の結果: {prompt.messages[0].content}")
 
-            # # List available resources
+            # # 使える resource の一覧を取得する
             # resources = await session.list_resources()
-            # print(f"Available resources: {[r.uri for r in resources.resources]}")
+            # print(f"使える resource: {[r.uri for r in resources.resources]}")
 
-            # List available tools
+            # 使える tool の一覧を取得する
             # tools = await session.list_tools()
-            # print(f"Available tools: {[t.name for t in tools.tools]}")
+            # print(f"使える tool: {[t.name for t in tools.tools]}")
 
-            # # Read a resource (greeting resource from fastmcp_quickstart)
+            # # resource を読み込む（fastmcp_quickstart の greeting resource）
             # resource_content = await session.read_resource(AnyUrl("greeting://World"))
             # content_block = resource_content.contents[0]
             # if isinstance(content_block, types.TextContent):
-            #     print(f"Resource content: {content_block.text}")
+            #     print(f"resource の内容: {content_block.text}")
 
-            # Call a tool (create_product tool from fastmcp_quickstart)
-            result = await session.call_tool("create_product", arguments={"product_name": "paprika", "keywords": "red, juicy, vegetable"})
-            print("result:", result.content[0].text)
+            # tool を呼び出す（fastmcp_quickstart の create_product tool）
+            result = await session.call_tool("create_product", arguments={"product_name": "パプリカ", "keywords": "赤い、みずみずしい、野菜"})
+            print("結果:", result.content[0].text)
 
             result = await session.call_tool("get_products", arguments={})
-            print("result:", result.content[0].text)
+            print("結果:", result.content[0].text)
 
             # result_unstructured = result.content[0]
             # if isinstance(result_unstructured, types.TextContent):
-            #     print(f"Tool result: {result_unstructured.text}")
+            #     print(f"tool の結果: {result_unstructured.text}")
             # result_structured = result.structuredContent
-            # print(f"Structured tool result: {result_structured}")
+            # print(f"構造化された tool の結果: {result_structured}")
 
 
 def main():
-    """Entry point for the client script."""
+    """クライアントスクリプトのエントリーポイント。"""
     asyncio.run(run())
 
 

@@ -1,7 +1,7 @@
-# we need ot build our own server
+# 独自のサーバーを作る必要がある
 
-# should handle POST /MCP, should
-#  handle initialize, and respond with capabilities
-#  it expects initialized as the next message
-#  should thereafter handle tools/list
-# should handle 
+# POST /MCP を処理すべき。具体的には
+#  initialize を処理して capabilities を返す
+#  次のメッセージとして initialized を受け取る想定
+#  その後で tools/list を処理する
+# さらに処理すべきもの：

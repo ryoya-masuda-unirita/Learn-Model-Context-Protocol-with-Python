@@ -35,9 +35,9 @@ python client.py
 次のような出力になります：
 
 ```text
-Requesting authorization: http://localhost:5000/authorize?client_id=abc&redirect_uri=http://localhost:3000/callback&state=xyz&code_challenge=123&code_challenge_method=plain
-Received authorization code: d54cf5ec-12a2-4103-907f-027183665229
-Access token: ba0a046d-23c3-4f5b-a96c-e28752877e86
-User info response:
+認可をリクエストしています: http://localhost:5000/authorize?client_id=abc&redirect_uri=http://localhost:3000/callback&state=xyz&code_challenge=123&code_challenge_method=plain
+認可コードを受け取りました: d54cf5ec-12a2-4103-907f-027183665229
+アクセストークン: ba0a046d-23c3-4f5b-a96c-e28752877e86
+ユーザー情報の応答:
 {'email': 'chris@example.com', 'name': 'Chris', 'sub': 'user123'}
 ```

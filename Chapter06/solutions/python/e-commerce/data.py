@@ -5,9 +5,9 @@ from tools.schema import AddCartInputModel, CategoryModel, CustomerModel, Produc
 carts: list[AddCartInputModel] = []
 
 categories: list[CategoryModel] = [
-    CategoryModel(name="Electronics", description="Devices and gadgets"),
-    CategoryModel(name="Books", description="Fiction and non-fiction books"),
-    CategoryModel(name="Clothing", description="Apparel and accessories"),
+    CategoryModel(name="家電", description="デバイスやガジェット"),
+    CategoryModel(name="書籍", description="フィクションとノンフィクションの本"),
+    CategoryModel(name="衣料品", description="衣類とアクセサリー"),
 ]
 
 customers: list[CustomerModel] = [
@@ -17,9 +17,9 @@ customers: list[CustomerModel] = [
 ]
 
 products: list[ProductModel] = [
-    ProductModel(id=1, name="Laptop", price=999.99, description="A high-performance laptop"),
-    ProductModel(id=2, name="Smartphone", price=499.99, description="A latest model smartphone"),
-    ProductModel(id=3, name="Headphones", price=199.99, description="Noise-cancelling headphones"),
+    ProductModel(id=1, name="ノートパソコン", price=999.99, description="高性能なノートパソコン"),
+    ProductModel(id=2, name="スマートフォン", price=499.99, description="最新モデルのスマートフォン"),
+    ProductModel(id=3, name="ヘッドホン", price=199.99, description="ノイズキャンセリング機能付きのヘッドホン"),
 ]
 
 cart_items : list[CartItemModel] = [

@@ -16,16 +16,16 @@ professor_dict = {
     "id": 1,
     "name": "Dr. Smith",
     "office_hours": [
-        {"day": "Monday", "from_": 9, "to_": 12},
-        {"day": "Wednesday", "from_": 14, "to_": 17}
+        {"day": "月曜日", "from_": 9, "to_": 12},
+        {"day": "水曜日", "from_": 14, "to_": 17}
     ]
 }
 
 professor = Professor(**professor_dict)
 
-professor_serialized = professor.model_dump() # {"id": 1, "name": "Dr. Smith", "office_hours": [{"day": "Monday", "from_": 9, "to_": 12}, {"day": "Wednesday", "from_": 14, "to_": 17}]}}
+professor_serialized = professor.model_dump() # {"id": 1, "name": "Dr. Smith", "office_hours": [{"day": "月曜日", "from_": 9, "to_": 12}, {"day": "水曜日", "from_": 14, "to_": 17}]}}
 
-print("Running pydantic version: ", pydantic.__version__)
+print("pydantic のバージョン: ", pydantic.__version__)
 
 print(professor)
 print(professor_serialized)

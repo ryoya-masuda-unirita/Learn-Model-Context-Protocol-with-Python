@@ -6,7 +6,7 @@ async def handler(args) -> list[CategoryModel]:
 
 tool_get_all_categories = {
     "name": "get_all_categories",
-    "description": "Gets all product categories",
+    "description": "すべての商品カテゴリーを取得する",
     "input_schema": None,
     "handler": handler 
 }

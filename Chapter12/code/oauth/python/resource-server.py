@@ -3,7 +3,7 @@ import requests
 
 app = Flask(__name__)
 
-# Simulated token store (shared with auth server in real world)
+# シミュレーション用のトークンストア（実際には認可サーバーと共有する）
 valid_tokens = {}
 AUTH_SERVER = "http://localhost:5000"
 
@@ -14,9 +14,9 @@ def userinfo():
         return jsonify({"error": "missing_token"}), 401
 
     token = auth_header.split(" ")[1]
-    print("valid tokens:", valid_tokens)
+    print("有効なトークン:", valid_tokens)
 
-    # check validity of token with /introspect
+    # /introspect でトークンが有効か確認する
     token_response = requests.post(f"{AUTH_SERVER}/introspect", data={
       "token": token
     })
@@ -35,8 +35,8 @@ def userinfo():
 
 if __name__ == "__main__":
     PORT = 5001
-    print(f"Resource server started on {PORT}")
+    print(f"リソースサーバーをポート {PORT} で起動しました")
     app.run(port=PORT)
-    # Simulate shared token store
+    # 共有トークンストアをシミュレートする
     from auth_server import access_tokens
     valid_tokens.update(access_tokens)

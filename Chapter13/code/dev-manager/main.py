@@ -1,5 +1,5 @@
 def main():
-    print("Hello from dev-manager!")
+    print("dev-manager からこんにちは！")
 
 
 if __name__ == "__main__":

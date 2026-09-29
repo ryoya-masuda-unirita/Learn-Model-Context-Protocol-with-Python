@@ -24,8 +24,8 @@ python client.py
 次のような出力になります：
 
 ```text
-Available tools: ['book_trip']
-[CLIENT] Received elicitation data: Not a member? Would you like to sign up?
-[CLIENT]: Selecting alternative date: 2025-01-01
-Result:  [BOOKED] Booked for 2025-01-02, welcome chris as a member!
+使える tool: ['book_trip']
+[CLIENT] elicitation のデータを受信しました: 会員ではありませんか？ 会員登録しますか？
+[CLIENT]: 代わりの日付を選択します: 2025-01-01
+結果:  [BOOKED] 2025-01-02 で予約しました。chris さん、会員登録ありがとうございます！
 ````

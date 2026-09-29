@@ -43,8 +43,7 @@ python sse.py
 クライアントが接続すると、サーバーのコンソールに次のように表示されます：
 
 ```text
-HTTP streaming server running on port 8000
-Starting SSE server on port 8000...
+ポート 8000 で SSE サーバーを起動しています...
 ```
 
 別のターミナルでクライアントを起動します：
@@ -56,12 +55,12 @@ python sse_client.py
 クライアントのコンソールには次のような出力が表示されます：
 
 ```text
-Received SSE: data: Sun Jun  1 18:48:42 2025
-Received SSE: data: Sun Jun  1 18:48:43 2025
-Received SSE: data: Sun Jun  1 18:48:44 2025
-Received SSE: data: Sun Jun  1 18:48:45 2025
-Received SSE: data: Sun Jun  1 18:48:46 2025
-Received SSE: data: 5 messages sent, closing connection.
+SSE を受信: data: Sun Jun  1 18:48:42 2025
+SSE を受信: data: Sun Jun  1 18:48:43 2025
+SSE を受信: data: Sun Jun  1 18:48:44 2025
+SSE を受信: data: Sun Jun  1 18:48:45 2025
+SSE を受信: data: Sun Jun  1 18:48:46 2025
+SSE を受信: data: 5 件のメッセージを送信しました。接続を閉じます。
 ```
 
 ## Streaming HTTP サンプルの実行
@@ -75,8 +74,7 @@ python streaming_http_server.py
 クライアントが接続すると、サーバーのコンソールに次のように表示されます：
 
 ```text
-Streaming HTTP server running on port 8000
-Streaming HTTP connection established
+ポート 8000 でストリーミングサーバーを起動しています...
 ```
 
 別のターミナルでクライアントを起動します：

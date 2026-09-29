@@ -1,5 +1,5 @@
 """
-cd to the `examples/snippets/clients` directory and run:
+`examples/snippets/clients` ディレクトリに移動して、次を実行する：
     uv run client
 """
 
@@ -15,9 +15,9 @@ from mcp.shared.context import RequestContext
 import os
 from openai import OpenAI
 
-# Create server parameters for stdio connection
+# stdio 接続用のサーバーパラメーターを作る
 server_params = StdioServerParameters(
-    command="python",  # Using python to run the server
+    command="python",  # python でサーバーを実行する
     args=["server.py"]
 )
 
@@ -47,16 +47,16 @@ async def call_llm(prompt: str, system_prompt: str) -> str:
     return response.choices[0].message.content
 
 
-# Optional: create a sampling callback
+# 任意：サンプリングのコールバックを作る
 async def handle_sampling_message(
     context: RequestContext[ClientSession, None], params: types.CreateMessageRequestParams
 ) -> types.CreateMessageResult:
-    print(f"Sampling request: {params.messages}")
+    print(f"サンプリングのリクエスト: {params.messages}")
 
     message = params.messages[0].content.text
-    system_prompt = params.systemPrompt or "You're a helpful assistant, keep to the topic, don't make things up too much but definitely create a compelling product description"
+    system_prompt = params.systemPrompt or "あなたは親切なアシスタントです。話題から外れず、話を作りすぎないようにしつつ、必ず魅力的な商品説明を作成してください"
 
-    # todo, call an actual llm and change below
+    # TODO: 実際の LLM を呼び出すように、以下を変更する
     response = await call_llm(message, system_prompt)
 
     return types.CreateMessageResult(
@@ -73,17 +73,17 @@ async def handle_sampling_message(
 async def run():
     async with stdio_client(server_params) as (read, write):
         async with ClientSession(read, write, sampling_callback=handle_sampling_message) as session:
-            # Initialize the connection
+            # 接続を初期化する
             await session.initialize()
 
 
-            # Call a tool (create_product tool from fastmcp_quickstart)
-            result = await session.call_tool("talk_to", arguments={"name": "Monsieur Lestrange", "topic": "Tell me about you"})
-            print("result:", result.content[0].text)
+            # tool を呼び出す（fastmcp_quickstart の create_product tool）
+            result = await session.call_tool("talk_to", arguments={"name": "Monsieur Lestrange", "topic": "あなた自身について教えて"})
+            print("結果:", result.content[0].text)
 
 
 def main():
-    """Entry point for the client script."""
+    """クライアントスクリプトのエントリーポイント。"""
     asyncio.run(run())
 
 

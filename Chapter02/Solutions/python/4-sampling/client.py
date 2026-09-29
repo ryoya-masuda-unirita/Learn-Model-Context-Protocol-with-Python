@@ -1,4 +1,4 @@
-# need to start a child process and send info to it via stdin
+# 子プロセスを起動し、stdin 経由で情報を送る必要がある
 
 import subprocess
 import json
@@ -9,9 +9,9 @@ from utils.messages import list_tools_message, initialize_message, initialized_m
 
 message_queue = queue.Queue()
 
-# Start the child process
+# 子プロセスを起動する
 proc = subprocess.Popen(
-    ['python3', 'server.py'],  # Replace with your child script
+    ['python3', 'server.py'],  # 起動する子スクリプトに置き換える
     stdin=subprocess.PIPE,
     stdout=subprocess.PIPE,
     text=True
@@ -20,15 +20,15 @@ proc = subprocess.Popen(
 message = 'hello\n'
 
 def is_sampling_message(message):
-    """Check if a message is a sampling message."""
+    """メッセージがサンプリングのメッセージかを判定する。"""
     return message.get('method', '').startswith('sampling')
 
 def is_notification_message(message):
-    """Check if a message is a notification."""
+    """メッセージが通知かを判定する。"""
     return message.get('method', '').startswith('notifications/')
 
 def create_sampling_message(llm_response):
-    """Create a sampling message for a product."""
+    """商品用のサンプリングメッセージを作る。"""
     sampling_message = {
         "jsonrpc": "2.0",
         "result": {
@@ -40,53 +40,53 @@ def create_sampling_message(llm_response):
     return sampling_message
 
 def call_llm(message):
-    return "LLM: " + message 
+    return "LLM: " + message
 
 
 def handle_sampling_message(message):
-    """Handle a sampling message."""
-    print("[CLIENT] Calling LLM to complete request", message)
-    # get content info from message, send that to LLM
+    """サンプリングのメッセージを処理する。"""
+    print("[CLIENT] リクエストを完了するために LLM を呼び出します", message)
+    # メッセージから内容を取り出し、LLM に送る
 
     content = message['params']['messages'][0]['content']['text']
     llm_response = call_llm(content)
     message = create_sampling_message(llm_response)
     send_message(serialize_message(message))
-    # should call LLM to complete request
+    # LLM を呼び出してリクエストを完了すべき
 
 def listen_to_stdout():
-    """Listen to the stdout of the child process and handle messages."""
+    """子プロセスの stdout を監視し、メッセージを処理する。"""
     while True:
         response = proc.stdout.readline()
         if not response:
-            break  # Exit if no more output
+            break  # 出力がなくなったら終了する
 
         try:
             parsed_response = json.loads(response)
             if is_sampling_message(parsed_response):
                 handle_sampling_message(parsed_response)
-                # consume message if it is a sampling message
+                # サンプリングのメッセージならここで処理する
             else:
-                # put message in the queue for further processing
+                # 後続の処理のためにキューに入れる
                 message_queue.put(response.strip())
         except json.JSONDecodeError:
-            # If the response is not JSON, just print it
-            print("[THREAD] Non-JSON response received:", response.strip())
+            # 応答が JSON でなければ、そのまま表示する
+            print("[THREAD] JSON ではない応答を受信しました:", response.strip())
             # print_response(response, prefix='[THREAD]: \n')
-        
+
 
 def send_message(message):
-    """Send a message to the child process."""
+    """子プロセスにメッセージを送る。"""
     print_response(message, prefix='[CLIENT]: ')
     proc.stdin.write(message)
     proc.stdin.flush()
 
 def serialize_message(message):
-    """Serialize a message to JSON format."""
+    """メッセージを JSON 形式にシリアライズする。"""
     return json.dumps(message) + '\n'
 
 def print_response(response, prefix = ""):
-    """Print the response from the server."""
+    """サーバーからの応答を表示する。"""
     try:
         parsed = json.loads(response)
         print(prefix,json.dumps(parsed, indent=2))
@@ -94,47 +94,47 @@ def print_response(response, prefix = ""):
         print(prefix, response.strip())
 
 def connect():
-    print("Connecting to the server...")
-    # 1. Ask for capabilities
+    print("サーバーに接続しています...")
+    # 1. capabilities を問い合わせる
     send_message(serialize_message(initialize_message))
 
-    # Read response from child
+    # 子プロセスからの応答を読む
     # response = proc.stdout.readline()
     response = message_queue.get()
-    print_response(response, prefix='[SERVER]: \n')    
+    print_response(response, prefix='[SERVER]: \n')
 
-    # 2. Send initialized notification
+    # 2. initialized 通知を送る
     send_message(serialize_message(initialized_message))
 
 def send_simple_message(message):
-    # Send a simple text message to the child
+    # 子プロセスにシンプルなテキストメッセージを送る
     send_message(message)
 
     response = proc.stdout.readline()
-    print_response(response, prefix='[SERVER]: \n')  
+    print_response(response, prefix='[SERVER]: \n')
 
 def list_tools():
-    # 3. send a message to list tools
-    # send a JSON-RPC message
+    # 3. tool の一覧を取得するメッセージを送る
+    # JSON-RPC メッセージを送る
     send_message(serialize_message(list_tools_message))
 
     has_result = False
     while not has_result:
         # response = proc.stdout.readline()
         response = message_queue.get()
-        # check if message has result attribute, if so break out of loop
-        
+        # メッセージに result 属性があれば、ループを抜ける
+
         parsed_response = json.loads(response)
         if 'result' in parsed_response:
             has_result = True
             return parsed_response['result']['tools']
         else:
-            # this is a notification, we can print it
+            # これは通知なので表示する
             print_response(response, prefix=f'[SERVER] {parsed_response["method"]}: \n')
 
 def call_tool(tool_name, args):
-    # 4. call a tool
-    # send a JSON-RPC message
+    # 4. tool を呼び出す
+    # JSON-RPC メッセージを送る
 
     tool_message = {
         "jsonrpc": "2.0",
@@ -157,14 +157,14 @@ def call_tool(tool_name, args):
             has_result = True
             return parsed_response["result"]["properties"]["content"]["items"]
         else:
-            # this is a notification, we can print it
+            # これは通知なので表示する
             print_response(response, prefix=f'[SERVER] {parsed_response["method"]}: \n')
 
 def close_server():
     # send_message('exit\n')
 
     exit_code = proc.wait()
-    print(f"Child exited with code {exit_code}")
+    print(f"子プロセスが終了コード {exit_code} で終了しました")
 
 tools = []
 
@@ -174,23 +174,23 @@ listener_thread.start()
 def main():
     connect()
 
-    # a sampling message can be sent at any time here
+    # サンプリングのメッセージは、ここでいつでも送られてくる可能性がある
 
-    tool_response = list_tools() 
+    tool_response = list_tools()
     tools.extend(tool_response)
-    
-    print("Tools available:", tools)
+
+    print("使える tool:", tools)
 
     tool = tools[0]
 
-    tool_call_response = call_tool(tool["name"],{"args1": "hello"})
+    tool_call_response = call_tool(tool["name"],{"args1": "こんにちは"})
     for content in tool_call_response:
-        print_response(content['text'], prefix='[SERVER] tool response: \n')
-   
-    # call tool, we need a name and arguments
+        print_response(content['text'], prefix='[SERVER] tool の応答: \n')
+
+    # tool を呼び出すには、名前と引数が必要
     close_server()
 
 main()
 
 
-# todo: add notifications support, should loop when calling tools or listing tools and/or use an async system
+# TODO: 通知に対応する。tool の呼び出しや一覧取得のときにループするか、非同期の仕組みを使う

@@ -1,11 +1,11 @@
 from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
 
-# Create server parameters for stdio connection
+# stdio 接続用のサーバーパラメーターを作る
 server_params = StdioServerParameters(
-    command="mcp",  # Executable
-    args=["run", "server.py"],  # Optional command line arguments
-    env=None,  # Optional environment variables
+    command="mcp",  # 実行ファイル
+    args=["run", "server.py"],  # コマンドライン引数（任意）
+    env=None,  # 環境変数（任意）
 )
 
 async def run():
@@ -13,17 +13,17 @@ async def run():
         async with ClientSession(
             read, write
         ) as session:
-            # Initialize the connection
+            # 接続を初期化する
             await session.initialize()
 
-            # List available tools
+            # 使える tool の一覧を取得する
             mcp_tools = await session.list_tools()
-            print("LISTING TOOLS")
+            print("tool の一覧")
 
             tools = []
 
             for tool in mcp_tools.tools:
-                print("Tool: ", tool.name)
+                print("tool: ", tool.name)
                 tools.append({
                     "name": tool.name,
                     "description": tool.description,
@@ -31,28 +31,28 @@ async def run():
                 })
 
             while True:
-                command = input("Enter command (or 'quit' to exit): ")
+                command = input("コマンドを入力してください（'quit' で終了）: ")
                 if command == "quit":
                     break
-                # Process other commands as needed
+                # 必要に応じて、ほかのコマンドも処理する
 
-                # if command in tools, then call the tool
+                # コマンドが tool 名なら、その tool を呼び出す
                 if command in [tool["name"] for tool in tools]:
-                    # Find the tool
+                    # tool を探す
                     tool = next((t for t in tools if t["name"] == command), None)
                     if tool:
-                        print(f"Using tool: {tool['name']}")
+                        print(f"使用する tool: {tool['name']}")
 
-                        # Prepare the arguments for the tool
+                        # tool に渡す引数を用意する
                         arguments = {}
-                        print("Tool arguments:", tool["parameters"])
+                        print("tool の引数:", tool["parameters"])
                         for param in tool["parameters"]["properties"]:
-                            print(f"Parameter: {param}")
-                            arguments[param] = input(f"Enter {param}: ")
+                            print(f"パラメーター: {param}")
+                            arguments[param] = input(f"{param} を入力してください: ")
 
                         result = await session.call_tool(tool["name"], arguments=arguments)
 
-                        print("Result: ", result.content)
+                        print("結果: ", result.content)
 
 
 

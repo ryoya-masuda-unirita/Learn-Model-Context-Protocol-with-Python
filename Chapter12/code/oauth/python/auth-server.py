@@ -4,7 +4,7 @@ import requests
 
 app = Flask(__name__)
 
-# In-memory stores
+# インメモリのストア
 auth_codes = {}
 access_tokens = {}
 
@@ -35,7 +35,7 @@ def authorize():
     state = request.args.get("state")
     code_challenge = request.args.get("code_challenge")
 
-    # Simulate login and consent
+    # ログインと同意をシミュレートする
     code = str(uuid.uuid4())
     auth_codes[code] = {
         "client_id": client_id,
@@ -53,7 +53,7 @@ def token():
     if code not in auth_codes:
         return jsonify({"error": "invalid_code"}), 400
 
-    # Simplified PKCE check
+    # 簡略化した PKCE のチェック
     if auth_codes[code]["code_challenge"] != code_verifier:
         return jsonify({"error": "invalid_code_verifier"}), 400
 
@@ -68,9 +68,9 @@ def token():
 
 @app.route("/logout")
 def logout():
-    return "Logged out (simulated)", 200
+    return "ログアウトしました（シミュレーション）", 200
 
 if __name__ == "__main__":
     PORT = 5000
-    print(f"Auth server started and running on {PORT}")
+    print(f"認可サーバーをポート {PORT} で起動しました")
     app.run(port=PORT)

@@ -6,26 +6,26 @@ from mcp.types import (
     TextContent
 )
 
-# Create an MCP server
+# MCP サーバーを作る
 mcp = FastMCP("Streamable DEMO")
 
-@mcp.tool(description="A simple tool returning file content")
+@mcp.tool(description="ファイルの内容を返すシンプルな tool")
 async def echo(message: str, ctx: Context) -> str:
 
     # ctx2 = mcp.get_context()
-    # print(f"Context ID: {ctx2}")
+    # print(f"コンテキスト ID: {ctx2}")
 
-    # await ctx.debug(f"Processing file 1/3: {message}")
-    await ctx.info(f"Processing file 1/3:")
-    await ctx.info(f"Processing file 2/3:")
-    await ctx.info(f"Processing file 3/3:")
+    # await ctx.debug(f"ファイルを処理中 1/3: {message}")
+    await ctx.info(f"ファイルを処理中 1/3:")
+    await ctx.info(f"ファイルを処理中 2/3:")
+    await ctx.info(f"ファイルを処理中 3/3:")
 
     # await ctx.log(
     #         level="info",
-    #         message="hello there",
+    #         message="こんにちは",
     #         logger_name="Obi Wan",
     #     )
 
-    return f"Here's the file content: {message}"
+    return f"ファイルの内容です: {message}"
 
 mcp.run(transport="streamable-http")

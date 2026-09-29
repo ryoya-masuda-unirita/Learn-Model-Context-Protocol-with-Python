@@ -59,7 +59,7 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
   "tools": [
     {
       "name": "get_orders",
-      "description": "get all orders",
+      "description": "すべての注文を取得する",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -111,7 +111,7 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
     },
     {
       "name": "get_order",
-      "description": "get order by id",
+      "description": "ID で注文を取得する",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -147,7 +147,7 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
     },
     {
       "name": "place_order",
-      "description": "place order",
+      "description": "注文する",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -183,7 +183,7 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
     },
     {
       "name": "get_cart",
-      "description": "get a singular cart",
+      "description": "カートを1つ取得する",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -236,7 +236,7 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
     },
     {
       "name": "get_cart_items",
-      "description": "get cart items",
+      "description": "カートの中身を取得する",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -300,7 +300,7 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
     },
     {
       "name": "add_to_cart",
-      "description": "add to cart",
+      "description": "カートに追加する",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -356,7 +356,7 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
     },
     {
       "name": "get_all_products",
-      "description": "Get all products",
+      "description": "すべての商品を取得する",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -411,7 +411,7 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
     },
     {
       "name": "get_product",
-      "description": "Get product by ID",
+      "description": "ID で商品を取得する",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -456,7 +456,7 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
     },
     {
       "name": "get_all_categories",
-      "description": "Get all categories",
+      "description": "すべてのカテゴリーを取得する",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -507,7 +507,7 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/list
     },
     {
       "name": "get_all_customers",
-      "description": "Get all customers",
+      "description": "すべての顧客を取得する",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -572,33 +572,33 @@ npx @modelcontextprotocol/inspector --cli mcp run server.py --method tools/call 
   "content": [
     {
       "type": "text",
-      "text": "{\n  \"id\": \"a231765d-7eae-4462-9042-a6e00b211bf0\",\n  \"name\": \"Category 1\",\n  \"description\": \"Description of Category 1\"\n}"
+      "text": "{\n  \"id\": \"a231765d-7eae-4462-9042-a6e00b211bf0\",\n  \"name\": \"カテゴリー 1\",\n  \"description\": \"カテゴリー 1 の説明\"\n}"
     },
     {
       "type": "text",
-      "text": "{\n  \"id\": \"50285d76-e7b8-4939-b2df-08452750b5da\",\n  \"name\": \"Category 2\",\n  \"description\": \"Description of Category 2\"\n}"
+      "text": "{\n  \"id\": \"50285d76-e7b8-4939-b2df-08452750b5da\",\n  \"name\": \"カテゴリー 2\",\n  \"description\": \"カテゴリー 2 の説明\"\n}"
     },
     {
       "type": "text",
-      "text": "{\n  \"id\": \"fdd934ee-f8c8-47dc-ab63-1efe68a8bbb2\",\n  \"name\": \"Category 3\",\n  \"description\": \"Description of Category 3\"\n}"
+      "text": "{\n  \"id\": \"fdd934ee-f8c8-47dc-ab63-1efe68a8bbb2\",\n  \"name\": \"カテゴリー 3\",\n  \"description\": \"カテゴリー 3 の説明\"\n}"
     }
   ],
   "structuredContent": {
     "result": [
       {
         "id": "a231765d-7eae-4462-9042-a6e00b211bf0",
-        "name": "Category 1",
-        "description": "Description of Category 1"
+        "name": "カテゴリー 1",
+        "description": "カテゴリー 1 の説明"
       },
       {
         "id": "50285d76-e7b8-4939-b2df-08452750b5da",
-        "name": "Category 2",
-        "description": "Description of Category 2"
+        "name": "カテゴリー 2",
+        "description": "カテゴリー 2 の説明"
       },
       {
         "id": "fdd934ee-f8c8-47dc-ab63-1efe68a8bbb2",
-        "name": "Category 3",
-        "description": "Description of Category 3"
+        "name": "カテゴリー 3",
+        "description": "カテゴリー 3 の説明"
       }
     ]
   },

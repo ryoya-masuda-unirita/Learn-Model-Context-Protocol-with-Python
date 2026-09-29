@@ -1,35 +1,35 @@
 [project]
 name = "learn-mcp-with-python"
 version = "0.1.0"
-description = "Sample code for Learn Model Context Protocol with Python"
+description = "Learn Model Context Protocol with Python のサンプルコード"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    # mcp 2.x renamed FastMCP to MCPServer and removed several APIs used in this repo
-    # (RequestContext, streamablehttp_client, ...). 1.13.1 is the oldest version
-    # verified to provide every API used here (Streamable HTTP, elicitation).
+    # mcp 2.x では FastMCP が MCPServer に名前が変わり、このリポジトリで使っている API
+    # （RequestContext、streamablehttp_client など）がいくつか削除された。1.13.1 は、ここで使う
+    # すべての API（Streamable HTTP、elicitation）があることを確認した最も古いバージョン。
     "mcp[cli]>=1.13.1,<2",
-    # Transitive deps of mcp, declared explicitly because the samples import them directly
+    # mcp の間接的な依存だが、サンプルが直接 import しているので明示的に宣言する
     "anyio",
     "click",
-    # [email] for EmailStr in Chapter10
+    # Chapter10 の EmailStr のために [email] を付ける
     "pydantic[email]",
     "pydantic-settings",
     "starlette",
     "uvicorn",
-    # Chapter05 / Chapter11 / Chapter12 HTTP samples
+    # Chapter05 / Chapter11 / Chapter12 の HTTP サンプル
     "flask",
     "requests",
-    # Chapter11 auth samples
+    # Chapter11 の認証サンプル
     "pyjwt",
     "python-dotenv",
-    # Chapter07 / Chapter09 LLM clients (Amazon Bedrock via OpenAI-compatible API)
+    # Chapter07 / Chapter09 の LLM クライアント（OpenAI 互換 API 経由で Amazon Bedrock を使う）
     "openai",
     "aws-bedrock-token-generator",
-    # Chapter13 web sample
+    # Chapter13 の Web サンプル
     "fastapi[standard]",
 ]
 
 [tool.uv]
-# Collection of standalone sample scripts, not an installable package
+# 独立したサンプルスクリプトの集まりであり、インストール可能なパッケージではない
 package = false

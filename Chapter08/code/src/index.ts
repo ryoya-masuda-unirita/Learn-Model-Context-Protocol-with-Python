@@ -2,17 +2,17 @@ import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mc
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
-// Create an MCP server
+// MCP サーバーを作る
 const server = new McpServer({
   name: "demo-server",
   version: "1.0.0"
 });
 
-// Add an addition tool
+// 足し算の tool を追加する
 server.registerTool("add",
   {
-    title: "Addition Tool",
-    description: "Add two numbers",
+    title: "足し算 tool",
+    description: "2つの数を足し算する",
     inputSchema: { a: z.number(), b: z.number() }
   },
   async ({ a, b }) => {
@@ -22,11 +22,11 @@ server.registerTool("add",
   }
 );
 
-// Start receiving messages on stdin and sending messages on stdout
+// stdin でメッセージを受け取り、stdout にメッセージを送り始める
 
 
 async function main() {
-    console.log("Starting MCP server...");
+    console.log("MCP サーバーを起動しています...");
     const transport = new StdioServerTransport();
     await server.connect(transport);
 }

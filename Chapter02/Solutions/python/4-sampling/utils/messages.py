@@ -62,6 +62,6 @@ progress_notification = {
   "jsonrpc": "2.0",
   "method": "notifications/progress",
   "params": {
-    "message": "Working on it..."
+    "message": "処理中です..."
   }
 };

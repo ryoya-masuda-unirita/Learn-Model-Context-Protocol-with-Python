@@ -19,7 +19,7 @@ settings = {
 }
 
 def valid_token(token: str) -> bool:
-    # remove the "Bearer " prefix
+    # "Bearer " という接頭辞を取り除く
     if token.startswith("Bearer "):
         token = token[7:]
         return token == "secret-token"
@@ -30,15 +30,15 @@ class CustomHeaderMiddleware(BaseHTTPMiddleware):
 
         has_header = request.headers.get("Authorization")
         if not has_header:
-            print("-> Missing Authorization header!")
-            return Response(status_code=401, content="Unauthorized")
+            print("-> Authorization ヘッダーがありません！")
+            return Response(status_code=401, content="認証されていません")
 
         if not valid_token(has_header):
-            print("-> Invalid token!")
-            return Response(status_code=403, content="Forbidden")
+            print("-> トークンが無効です！")
+            return Response(status_code=403, content="アクセスが拒否されました")
 
-        print("Valid token, proceeding...")
-        print(f"-> Received {request.method} {request.url}")
+        print("有効なトークンです。処理を続けます...")
+        print(f"-> 受信: {request.method} {request.url}")
         response = await call_next(request)
         response.headers['Custom'] = 'Example'
         return response
@@ -46,7 +46,7 @@ class CustomHeaderMiddleware(BaseHTTPMiddleware):
 
 app = FastMCP(
     name="MCP Resource Server",
-    instructions="Resource Server that validates tokens via Authorization Server introspection",
+    instructions="認可サーバーの introspection でトークンを検証するリソースサーバー",
     host=settings["host"],
     port=settings["port"],
     debug=True,
@@ -55,23 +55,23 @@ app = FastMCP(
 @app.tool()
 async def get_time() -> dict[str, Any]:
     """
-    Get the current server time.
+    サーバーの現在時刻を取得する。
 
-    This tool demonstrates that system information can be protected
-    by OAuth authentication. User must be authenticated to access it.
+    この tool は、システム情報を OAuth 認証で保護できることを示す。
+    アクセスするには、ユーザーが認証されている必要がある。
     """
 
     now = datetime.datetime.now()
 
     return {
         "current_time": now.isoformat(),
-        "timezone": "UTC",  # Simplified for demo
+        "timezone": "UTC",  # デモ用に簡略化している
         "timestamp": now.timestamp(),
         "formatted": now.strftime("%Y-%m-%d %H:%M:%S"),
     }
 
 async def setup(app) -> None:
-    """Run the server using StreamableHTTP transport."""
+    """StreamableHTTP transport でサーバーを実行する。"""
     
 
     starlette_app = app.streamable_http_app()
@@ -94,9 +94,9 @@ middleware = [
 ]
 
 async def main():
-    print("Running MCP Resource Server...")
+    print("MCP リソースサーバーを実行しています...")
     starlette_app = await setup(app)
-    print("Adding custom middleware...")
+    print("カスタム middleware を追加しています...")
     starlette_app.add_middleware(CustomHeaderMiddleware)
 
     await run(starlette_app)

@@ -5,20 +5,20 @@ class DatabaseConnection:
         return self.conn
 
     def __exit__(self, exc_type, exc_value, traceback):
-        print("Closing database connection")
+        print("データベース接続を閉じています")
         self.close_connection(self.conn)
 
     def connect_to_database(self):
-        # Logic to connect to the database
+        # データベースに接続する処理
         pass
 
     def close_connection(self, conn):
-        # Logic to close the database connection
+        # データベース接続を閉じる処理
         pass
 
 with DatabaseConnection() as db_conn:
-    print("Using database connection:", db_conn)
-    # Perform database operations
+    print("データベース接続を使用中:", db_conn)
+    # データベースを操作する
     # db_conn.execute("SELECT * FROM table")
     # db_conn.commit()
     # db_conn.rollback()

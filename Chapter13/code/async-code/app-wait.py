@@ -1,9 +1,9 @@
 import asyncio
 
 async def fetch_data(url: str):
-   print("Fetching data...")
+   print("データを取得しています...")
    await asyncio.sleep(1)
-   return {"data": f" Result from {url}: some data"}
+   return {"data": f"{url} からの結果: なんらかのデータ"}
 
 async def main():
    done, _ = await asyncio.wait([

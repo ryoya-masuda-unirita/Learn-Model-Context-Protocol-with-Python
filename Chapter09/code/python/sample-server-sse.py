@@ -32,11 +32,11 @@ products: List[Product] = []
 
 @mcp.tool()
 async def create_product(product_name: str, keywords: str, ctx: Context[ServerSession, None]) -> str:
-    """Create a product and generate a product description using LLM sampling."""
+    """商品を作成し、LLM のサンプリングで商品説明を生成する。"""
 
     product = Product(name=product_name, description="")
 
-    prompt = f"Create a product description about {product_name} described by as {keywords}"
+    prompt = f"{product_name} の商品説明を作成してください。特徴: {keywords}"
 
     result = await ctx.session.create_message(
         messages=[
@@ -53,7 +53,7 @@ async def create_product(product_name: str, keywords: str, ctx: Context[ServerSe
 
     products.append(product)
 
-    # return the complete product
+    # 完成した商品を返す
     return json.dumps({
         "id": product.id,
         "name": product.name,
@@ -61,11 +61,11 @@ async def create_product(product_name: str, keywords: str, ctx: Context[ServerSe
     })
 
 if __name__ == "__main__":
-    print("Starting server...")
+    print("サーバーを起動しています...")
     mcp.run()
 
 
-# Mount the SSE server to the existing ASGI server
+# 既存の ASGI サーバーに SSE サーバーをマウントする
 app = Starlette(
     routes=[
         Mount('/', app=mcp.sse_app()),
