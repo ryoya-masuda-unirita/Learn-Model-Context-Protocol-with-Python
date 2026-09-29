@@ -1,16 +1,23 @@
 """LLM を使って呼び出す tool を決める、MCP サーバー（server.py）のクライアント。
 
 自然言語のプロンプトを LLM に渡し、LLM が選んだ tool を MCP サーバーで実行する。
+LLM は Amazon Bedrock の OpenAI 互換 API 経由で呼び出す。
+実行には、Bedrock を使える AWS の認証情報が必要（例: `AWS_PROFILE=oic uv run python client_llm.py`）。
 """
 from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
+from aws_bedrock_token_generator import provide_token
 from openai import OpenAI
 from openai.types.chat import ChatCompletionFunctionToolParam, ChatCompletionMessageFunctionToolCall
 
 # LLM
-import os
 import json
 from typing import Any
+
+# Amazon Bedrock の OpenAI 互換エンドポイント（bedrock-mantle）と、使うモデル
+BEDROCK_REGION: str = "us-east-1"
+BEDROCK_BASE_URL: str = f"https://bedrock-mantle.{BEDROCK_REGION}.api.aws/openai/v1"
+BEDROCK_MODEL_ID: str = "openai.gpt-5.5"
 
 # stdio 接続用のサーバーパラメーターを作る
 server_params: StdioServerParameters = StdioServerParameters(
@@ -34,14 +41,10 @@ def call_llm(prompt: str, functions: list[ChatCompletionFunctionToolParam]) -> l
     list[dict[str, Any]]
         呼び出すべき tool の名前（name）と引数（args）の辞書のリスト。
     """
-    token = os.environ["GITHUB_TOKEN"]
-    endpoint = "https://models.github.ai/inference"
-
-    model_name = "gpt-4o"
-
+    # Bedrock の API キーとして、AWS の認証情報（AWS_PROFILE など）から短期トークンを作る
     client = OpenAI(
-        base_url=endpoint,
-        api_key=token,
+        base_url=BEDROCK_BASE_URL,
+        api_key=provide_token(region=BEDROCK_REGION),
     )
 
     print("LLM を呼び出しています")
@@ -56,7 +59,7 @@ def call_llm(prompt: str, functions: list[ChatCompletionFunctionToolParam]) -> l
             "content": prompt,
             },
         ],
-        model=model_name,
+        model=BEDROCK_MODEL_ID,
         tools = functions,
         # 任意のパラメーター
         temperature=1.,

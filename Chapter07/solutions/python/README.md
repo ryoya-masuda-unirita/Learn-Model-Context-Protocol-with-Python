@@ -64,10 +64,17 @@ tool:  get_products
 
 ## LLM サンプルのテスト
 
-1. 次のように入力して、LLM クライアントを実行します：
+このサンプルは、LLM として Amazon Bedrock の GPT-5.5（モデル ID `openai.gpt-5.5`、リージョン us-east-1）を、OpenAI 互換 API で呼び出します。実行には次のものが必要です：
+
+- Bedrock を使える AWS の認証情報（`aws configure` などで設定したプロファイル）
+- Bedrock で OpenAI の GPT-5.5 が使える状態になっていること
+
+Bedrock の API キーは、実行時に AWS の認証情報から短期トークンを自動で作るので、別途発行する必要はありません。使うプロファイルは環境変数 `AWS_PROFILE` で指定します。
+
+1. 次のように入力して、LLM クライアントを実行します（`<プロファイル名>` は自分の AWS のプロファイル名に置き換えます）：
 
   ```sh
-  uv run python client_llm.py
+  AWS_PROFILE=<プロファイル名> uv run python client_llm.py
   ```
 
   次のような出力になります：
@@ -87,13 +94,12 @@ tool:  get_products
   プロンプトを入力してください: 商品を見せて
   ```
 
-  次のような出力になります：
+  LLM が get_products tool を選んで呼び出し、次のような出力になります：
 
   ```text
   LLM を呼び出しています
   tool 名:  get_products
-  [05/22/25 16:35:14] INFO     Processing request of type CallToolRequest                                        server.py:551
-  tool の結果:  [TextContent(type='text', text='{\n  "type": "text",\n  "name": "Name: 商品 1"\n}', annotations=None), TextContent(type='text', text='{\n  "type": "text",\n  "name": "Name: 商品 2"\n}', annotations=None), TextContent(type='text', text='{\n  "type": "text",\n  "name": "Name: 商品 3"\n}', annotations=None)]
+  tool の結果:  [TextContent(type='text', text='{\n  "id": 1,\n  "name": "商品 1",\n  "price": 10.0,\n  "description": "商品 1 の説明",\n  "category": "カテゴリー 1"\n}', annotations=None, meta=None), TextContent(type='text', text='{\n  "id": 2,\n  "name": "商品 2",\n  "price": 20.0,\n  "description": "商品 2 の説明",\n  "category": "カテゴリー 2"\n}', annotations=None, meta=None), TextContent(type='text', text='{\n  "id": 3,\n  "name": "商品 3",\n  "price": 30.0,\n  "description": "商品 3 の説明",\n  "category": "カテゴリー 3"\n}', annotations=None, meta=None)]
   入力を待っています...（'quit' で終了）
   ```
 
@@ -102,8 +108,7 @@ tool:  get_products
   ```text
   LLM を呼び出しています
   tool 名:  add_product_to_cart
-  [05/22/25 17:21:31] INFO     Processing request of type CallToolRequest                                        server.py:551
-  tool の結果:  [TextContent(type='text', text='{\n  "type": "text",\n  "name": "ID: 921f95e8-0855-40ca-8587-8a6e38bfd69d,product: 1,quantity: 1"\n}', annotations=None)]
+  tool の結果:  [TextContent(type='text', text='{\n  "cart_id": 0,\n  "product_id": 1,\n  "quantity": 1\n}', annotations=None, meta=None)]
   入力を待っています...（'quit' で終了）
   ```
 
@@ -112,9 +117,8 @@ tool:  get_products
   ```text
   LLM を呼び出しています
   tool 名:  list_cart
-  [05/22/25 17:23:10] INFO     Processing request of type CallToolRequest                                        server.py:551
-  tool の結果:  [TextContent(type='text', text='{\n  "type": "text",\n  "name": "ID: 9d0e23f3-23d5-4d7e-bfa9-71be86b26f04,product: 1,quantity: 1"\n}', annotations=None)]
+  tool の結果:  [TextContent(type='text', text='{\n  "cart_id": 0,\n  "product_id": 1,\n  "quantity": 1\n}', annotations=None, meta=None)]
   入力を待っています...（'quit' で終了）
-  ````
+  ```
 
   追加した商品がカートに入っていることが分かります。

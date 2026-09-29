@@ -12,22 +12,27 @@ uv sync
 
 ## 実行
 
+このサンプルは、LLM として Amazon Bedrock の GPT-5.5（モデル ID `openai.gpt-5.5`、リージョン us-east-1）を、OpenAI 互換 API で呼び出します。実行には次のものが必要です：
+
+- Bedrock を使える AWS の認証情報（`aws configure` などで設定したプロファイル）
+- Bedrock で OpenAI の GPT-5.5 が使える状態になっていること
+
+Bedrock の API キーは、実行時に AWS の認証情報から短期トークンを自動で作るので、別途発行する必要はありません。使うプロファイルは環境変数 `AWS_PROFILE` で指定します。
+
+次のコマンドで実行します（`<プロファイル名>` は自分の AWS のプロファイル名に置き換えます）：
+
 ```sh
-uv run python sample-client.py
+AWS_PROFILE=<プロファイル名> uv run python sample-client.py
 ```
 
-次のような出力になります：
+サーバーからのサンプリングのリクエストに応えて LLM が商品説明を生成し、次のような出力になります（生成される文章は実行するたびに変わります）：
 
 ```text
-[08/16/25 19:31:40] INFO     Processing request of type CallToolRequest               server.py:624
-サンプリングのリクエスト: [SamplingMessage(role='user', content=TextContent(type='text', text='パプリカ の商品説明を作成してください。特徴: 赤い、みずみずしい、野菜', annotations=None, meta=None))]
-[08/16/25 19:31:43] INFO     Processing request of type ListToolsRequest              server.py:624
-結果: {"id": 1, "name": "パプリカ", "description": "**Product Description: Paprika \u2013 The Vibrant Touch of Flavor**\n\nElevate your culinary creations with our premium Paprika, a stunning red spice derived from the most luscious, juicy peppers. This vibrant addition is more than just a seasoning; it\u2019s a burst of color and taste that brings warmth and depth to every dish.\n\nOur Paprika is sourced from high-quality, sun-ripened vegetables, meticulously harvested at their peak to ensure maximum flavor. With its rich, sweet notes and subtle smokiness, this natural spice delivers a delightful punch that enhances everything from savory stews and roasted meats to vibrant vegetable dishes and sauces.\n\nNot only is our Paprika a feast for the eyes with its brilliant red hue, but it's also packed with antioxidants and vitamins, making it a nutritious choice for health-conscious cooks. Whether you sprinkle it onto a beloved family recipe or use it to create something intentionally new, our Paprika is versatile enough to brighten any meal.\n\nTransform everyday cooking into an extraordinary experience with the irresistible"}
-                    INFO     Processing request of type CallToolRequest               server.py:624
-
+サンプリングのリクエスト: [SamplingMessage(role='user', content=TextContent(type='text', text='パプリカ の商品説明を作成してください。特徴: 赤い、みずみずしい、野菜', annotations=None, meta=None), meta=None)]
+結果: {"id": 1, "name": "パプリカ", "description": "鮮やかな赤色が食卓を彩る、みずみずしい赤パプリカです。  \nシャキッとした食感とやさしい甘みが特徴で、サラダや炒め物、マリネなど幅広い料理にぴったり。カットするだけで料理の見た目が華やかになり、野菜のおいしさを手軽に楽しめます。  \n毎日の食事に彩りとフレッシュ感を添える、使いやすい野菜です。"}
 結果: {
   "id": 1,
   "name": "パプリカ",
-  "description": "**Product Description: Paprika – The Vibrant Touch of Flavor**\n\nElevate your culinary creations with our premium Paprika, a stunning red spice derived from the most luscious, juicy peppers. This vibrant addition is more than just a seasoning; it’s a burst of color and taste that brings warmth and depth to every dish.\n\nOur Paprika is sourced from high-quality, sun-ripened vegetables, meticulously harvested at their peak to ensure maximum flavor. With its rich, sweet notes and subtle smokiness, this natural spice delivers a delightful punch that enhances everything from savory stews and roasted meats to vibrant vegetable dishes and sauces.\n\nNot only is our Paprika a feast for the eyes with its brilliant red hue, but it's also packed with antioxidants and vitamins, making it a nutritious choice for health-conscious cooks. Whether you sprinkle it onto a beloved family recipe or use it to create something intentionally new, our Paprika is versatile enough to brighten any meal.\n\nTransform everyday cooking into an extraordinary experience with the irresistible"
+  "description": "鮮やかな赤色が食卓を彩る、みずみずしい赤パプリカです。  \nシャキッとした食感とやさしい甘みが特徴で、サラダや炒め物、マリネなど幅広い料理にぴったり。カットするだけで料理の見た目が華やかになり、野菜のおいしさを手軽に楽しめます。  \n毎日の食事に彩りとフレッシュ感を添える、使いやすい野菜です。"
 }
 ```

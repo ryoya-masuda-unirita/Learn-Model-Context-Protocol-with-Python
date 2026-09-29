@@ -1,11 +1,10 @@
 """MCP サーバー（sample-server.py）に stdio で接続し、サンプリングのリクエストに LLM で応えるクライアント。
 
-`examples/snippets/clients` ディレクトリに移動して、次を実行する：
-    uv run client
+LLM は Amazon Bedrock の OpenAI 互換 API 経由で呼び出す。
+実行には、Bedrock を使える AWS の認証情報が必要（例: `AWS_PROFILE=oic uv run python sample-client.py`）。
 """
 
 import asyncio
-import os
 
 from pydantic import AnyUrl
 
@@ -13,8 +12,13 @@ from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
 from mcp.shared.context import RequestContext
 
-import os
+from aws_bedrock_token_generator import provide_token
 from openai import OpenAI
+
+# Amazon Bedrock の OpenAI 互換エンドポイント（bedrock-mantle）と、使うモデル
+BEDROCK_REGION: str = "us-east-1"
+BEDROCK_BASE_URL: str = f"https://bedrock-mantle.{BEDROCK_REGION}.api.aws/openai/v1"
+BEDROCK_MODEL_ID: str = "openai.gpt-5.5"
 
 # stdio 接続用のサーバーパラメーターを作る
 server_params: StdioServerParameters = StdioServerParameters(
@@ -42,10 +46,11 @@ async def call_llm(prompt: str, system_prompt: str) -> str:
     RuntimeError
         LLM から本文が返ってこなかった場合。
     """
+    # Bedrock の API キーとして、AWS の認証情報（AWS_PROFILE など）から短期トークンを作る
     client = OpenAI(
-    base_url="https://models.github.ai/inference",
-    api_key=os.environ["GITHUB_TOKEN"],
-)
+        base_url=BEDROCK_BASE_URL,
+        api_key=provide_token(region=BEDROCK_REGION),
+    )
 
     response = client.chat.completions.create(
         messages=[
@@ -58,7 +63,7 @@ async def call_llm(prompt: str, system_prompt: str) -> str:
                 "content": prompt,
             }
         ],
-        model="openai/gpt-4o-mini",
+        model=BEDROCK_MODEL_ID,
         temperature=1,
         max_tokens=200,
         top_p=1
@@ -109,7 +114,7 @@ async def handle_sampling_message(
             type="text",
             text=response,
         ),
-        model="gpt-3.5-turbo",
+        model=BEDROCK_MODEL_ID,
         stopReason="endTurn",
     )
 

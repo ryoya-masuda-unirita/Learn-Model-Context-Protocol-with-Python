@@ -85,11 +85,12 @@ async def create_product(product_name: str, keywords: str, ctx: Context[ServerSe
     products.append(product)
 
     # 完成した商品を返す
+    # 日本語をエスケープせず、そのまま読める形で返す
     return json.dumps({
         "id": product.id,
         "name": product.name,
         "description": product.description
-    })
+    }, ensure_ascii=False)
 
 if __name__ == "__main__":
     print("サーバーを起動しています...")

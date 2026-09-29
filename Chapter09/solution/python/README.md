@@ -14,18 +14,26 @@ uv sync
 
 ## 実行
 
-次のコマンドで実行します：
+このサンプルは、LLM として Amazon Bedrock の GPT-5.5（モデル ID `openai.gpt-5.5`、リージョン us-east-1）を、OpenAI 互換 API で呼び出します。実行には次のものが必要です：
+
+- Bedrock を使える AWS の認証情報（`aws configure` などで設定したプロファイル）
+- Bedrock で OpenAI の GPT-5.5 が使える状態になっていること
+
+Bedrock の API キーは、実行時に AWS の認証情報から短期トークンを自動で作るので、別途発行する必要はありません。使うプロファイルは環境変数 `AWS_PROFILE` で指定します。
+
+次のコマンドで実行します（`<プロファイル名>` は自分の AWS のプロファイル名に置き換えます）：
 
 ```sh
-uv run python client.py
+AWS_PROFILE=<プロファイル名> uv run python client.py
 ```
 
-次のような結果になります：
+LLM が characters.json のキャラクターになりきって応答し、次のような結果になります（生成される文章は実行するたびに変わります。クライアントの max_tokens が 200 なので、途中で切れます）：
 
 ```text
-結果: Ah, bonsoir, my dear interlocutor! It is a pleasure to make your acquaintance. As you may have surmised, I am Monsieur Lestrange, a vampire of some six centuries in age. One could say that I have had ample time to observe the intricacies of life, even from the peculiar vantage of my somewhat... unique existence.
+サンプリングのリクエスト: [SamplingMessage(role='user', content=TextContent(type='text', text='Monsieur Lestrange と話してください。話題は「あなた自身について教えて」です。', annotations=None, meta=None), meta=None)]
+結果: ああ、これはこれは。ご丁寧にありがとうございます。
 
-However, if I must indulge in the topic of "me," I find it rather tedious when compared to the perennial tribulation of managing a magnificent yet drafty castle. You see, my abode, a resplendent structure that has stood the test of time for more than a millennium, possesses an architectural charm that is unfortunately accompanied by the inefficiencies of medieval insulation.
+わたくしは **Monsieur Lestrange** と申します。六百年ほど生きております吸血鬼でして、まあ……世間では「古き夜の貴族」などと勝手に呼ばれることもありますが、実情はもっと地味なものです。
 
-Ah, the electricity bill! It is a bane of my existence, I assure you. The monthly accumulation of expenses tends to escalate, particularly during the colder months when I find myself resorting to those ghastly electrical heaters to combat the chill that seeps through the
+たとえば、皆さまは吸血鬼と聞くと、棺、満月、霧の中の古城、あるいは勇敢な吸血鬼ハンターとの死闘などを想像なさるでしょう。ええ、そういうものも多少はございます。しかし、
 ```
