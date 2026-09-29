@@ -14,11 +14,15 @@ from mcp.shared.context import RequestContext
 
 from aws_bedrock_token_generator import provide_token
 from openai import OpenAI
+from openai.types.shared import ReasoningEffort
 
 # Amazon Bedrock の OpenAI 互換エンドポイント（bedrock-mantle）と、使うモデル
 BEDROCK_REGION: str = "us-east-1"
 BEDROCK_BASE_URL: str = f"https://bedrock-mantle.{BEDROCK_REGION}.api.aws/openai/v1"
 BEDROCK_MODEL_ID: str = "openai.gpt-5.5"
+# GPT-5.5 は推論してから本文を書く。文章を書くだけのこの用途では推論は不要なので止め、
+# max_tokens をすべて本文に使えるようにする（推論で上限を使い切ると本文が空になるため）
+REASONING_EFFORT: ReasoningEffort = "none"
 
 # stdio 接続用のサーバーパラメーターを作る
 server_params: StdioServerParameters = StdioServerParameters(
@@ -64,6 +68,7 @@ async def call_llm(prompt: str, system_prompt: str) -> str:
             }
         ],
         model=BEDROCK_MODEL_ID,
+        reasoning_effort=REASONING_EFFORT,
         temperature=1,
         max_tokens=200,
         top_p=1
