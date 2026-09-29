@@ -1,4 +1,5 @@
 """pydantic モデルで tool の入力を検証する MCP サーバー。"""
+import sys
 from mcp.server.fastmcp import FastMCP
 from uuid import uuid4
 
@@ -55,5 +56,6 @@ def sum(a: int, b: int) -> int:
     return a + b
 
 if __name__ == "__main__":
-    print("MCP サーバーを起動しています...")
+    # stdio では stdout が MCP の通信に使われるので、メッセージは stderr に出す
+    print("MCP サーバーを起動しています...", file=sys.stderr)
     mcp.run()

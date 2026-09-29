@@ -31,10 +31,11 @@ async def create_task(name:str, delay:int, workload: List[int], find_value:int) 
 
 async def main() -> None:
     """3つのタスクを実行し、すべて完了してから結果を表示する。"""
+    # Python 3.11 以降、asyncio.wait にはコルーチンではなくタスクを渡す必要がある
     tasks = [
-        create_task("A", 3, [1, 2, 3], 2),
-        create_task("B", 1, [4, 5, 6], 2),
-        create_task("C", 5, [7, 8, 9], 2),
+        asyncio.create_task(create_task("A", 3, [1, 2, 3], 2)),
+        asyncio.create_task(create_task("B", 1, [4, 5, 6], 2)),
+        asyncio.create_task(create_task("C", 5, [7, 8, 9], 2)),
     ]
 
     finished, unfinished = await asyncio.wait(tasks, return_when=asyncio.ALL_COMPLETED)

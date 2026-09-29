@@ -96,7 +96,7 @@ async def get_time() -> dict[str, Any]:
     dict[str, Any]
         現在時刻（ISO 形式）、タイムゾーン、UNIX タイムスタンプ、整形した日時。
     """
-    now = datetime.datetime.now()
+    now = datetime.datetime.now(datetime.timezone.utc)
 
     return {
         "current_time": now.isoformat(),

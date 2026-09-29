@@ -1,4 +1,4 @@
-"""/stream に initialize を POST し、返ってきたストリームを表示するテスト用クライアント。"""
+"""MCP サーバー（server.py）の /mcp に initialize を POST し、返ってきたストリームを表示するテスト用クライアント。"""
 from typing import Any
 
 import requests
@@ -29,7 +29,7 @@ headers: dict[str, str] = {
     }
 
 response = requests.post(
-        f'http://localhost:{8000}/stream', 
+        f'http://localhost:{8000}/mcp', 
         stream=True, 
         headers=headers,
         data=json.dumps(message))

@@ -20,10 +20,11 @@ async def fetch_data(url: str) -> dict[str, str]:
 
 async def main() -> None:
    """3つの取得処理を asyncio.wait で並行に実行し、結果を表示する。"""
+   # Python 3.11 以降、asyncio.wait にはコルーチンではなくタスクを渡す必要がある
    done, _ = await asyncio.wait([
-       fetch_data("google.com"),
-       fetch_data("bing.com"),
-       fetch_data("yahoo.com")
+       asyncio.create_task(fetch_data("google.com")),
+       asyncio.create_task(fetch_data("bing.com")),
+       asyncio.create_task(fetch_data("yahoo.com"))
    ])
 
    for task in done:

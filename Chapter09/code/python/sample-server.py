@@ -2,6 +2,7 @@
 
 クライアント（sample-client.py）から stdio 経由で起動される。
 """
+import sys
 from mcp.server.fastmcp import Context, FastMCP
 from mcp.server.session import ServerSession
 from mcp.types import SamplingMessage, TextContent
@@ -104,5 +105,6 @@ async def create_product(product_name: str, keywords: str, ctx: Context[ServerSe
     }, ensure_ascii=False)
 
 if __name__ == "__main__":
-    print("サーバーを起動しています...")
+    # stdio では stdout が MCP の通信に使われるので、メッセージは stderr に出す
+    print("サーバーを起動しています...", file=sys.stderr)
     mcp.run()

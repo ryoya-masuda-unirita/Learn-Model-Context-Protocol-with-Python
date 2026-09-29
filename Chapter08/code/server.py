@@ -2,6 +2,7 @@
 
 VS Code などの MCP ホストから stdio 経由で起動される。
 """
+import sys
 from mcp.server.fastmcp import FastMCP
 
 # MCP サーバーを作る
@@ -47,5 +48,6 @@ def subtract(a: int, b: int) -> int:
     return a - b
 
 if __name__ == "__main__":
-    print("MCP サーバーを起動しています...")
+    # stdio では stdout が MCP の通信に使われるので、メッセージは stderr に出す
+    print("MCP サーバーを起動しています...", file=sys.stderr)
     mcp.run(transport="stdio")

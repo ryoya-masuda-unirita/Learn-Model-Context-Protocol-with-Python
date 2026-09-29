@@ -292,8 +292,9 @@ def call_tool(tool_name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
     raise AssertionError("到達しないはずのコードです")
 
 def close_server() -> None:
-    """子プロセスの終了を待つ。"""
-    # send_message('exit\n')
+    """サーバーに終了を指示し、子プロセスの終了を待つ。"""
+    # exit を送らないとサーバーが終了せず、proc.wait() で待ち続けてしまう
+    send_message('exit\n')
 
     exit_code = proc.wait()
     print(f"子プロセスが終了コード {exit_code} で終了しました")

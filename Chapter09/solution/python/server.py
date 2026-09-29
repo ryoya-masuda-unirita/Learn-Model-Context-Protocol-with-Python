@@ -2,6 +2,7 @@
 
 characters.json のキャラクター設定を使い、応答の生成をクライアントの LLM に依頼する。
 """
+import sys
 from mcp.server.fastmcp import Context, FastMCP
 from mcp.server.session import ServerSession
 from mcp.types import SamplingMessage, TextContent
@@ -76,5 +77,6 @@ async def talk_to(name: str, topic: str, ctx: Context[ServerSession, None]) -> s
     return result.content.text
 
 if __name__ == "__main__":
-    print("サーバーを起動しています...")
+    # stdio では stdout が MCP の通信に使われるので、メッセージは stderr に出す
+    print("サーバーを起動しています...", file=sys.stderr)
     mcp.run()

@@ -251,7 +251,7 @@ while True:
                 case _:
                     # print(f"不明なメソッドです: {method}")
                     # sys.stdout.flush()
-                    if json_message['result']:
+                    if json_message.get('result'):
                         handle_sampling_response(json_message)
                     # サンプリングの応答なので処理する（つまり、ストアを更新する）
                     else:

@@ -49,7 +49,7 @@ app: Server = Server("mcp-streamable-http-demo")
 session_manager: StreamableHTTPSessionManager = StreamableHTTPSessionManager(
     app=app,
     event_store=event_store,  # resumability を有効にする
-    json_response=True,
+    json_response=False,  # SSE で返す（True だとイベント ID が付かず、resumability が使えない）
 )
 
 # Streamable HTTP 接続用の ASGI ハンドラー

@@ -35,7 +35,7 @@ def pydantic_to_json(model_cls: type[BaseModel]) -> dict[str, Any]:
     dict[str, Any]
         type、properties、required を持つ JSON Schema。
     """
-    schema = model_cls.schema()
+    schema = model_cls.model_json_schema()
     properties = {}
     required = schema.get("required", [])
     for prop, details in schema.get("properties", {}).items():

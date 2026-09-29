@@ -27,7 +27,7 @@ uv run python client.py
 次のような結果になります：
 
 ```text
-2025-09-30 13:25:54 - mcp_client - INFO - tool の結果: meta=None content=[TextContent(type='text', text='{\n  "current_time": "2025-09-30T13:25:54.311900",\n  "timezone": "UTC",\n  "timestamp": 1759238754.3119,\n  "formatted": "2025-09-30 13:25:54"\n}', annotations=None, meta=None)] structuredContent={'current_time': '2025-09-30T13:25:54.311900', 'timezone': 'UTC', 'timestamp': 1759238754.3119, 'formatted': '2025-09-30 13:25:54'} isError=False
+2025-09-30 13:25:54 - mcp_client - INFO - tool の結果: meta=None content=[TextContent(type='text', text='{\n  "current_time": "2025-09-30T13:25:54.311900+00:00",\n  "timezone": "UTC",\n  "timestamp": 1759238754.3119,\n  "formatted": "2025-09-30 13:25:54"\n}', annotations=None, meta=None)] structuredContent={'current_time': '2025-09-30T13:25:54.311900+00:00', 'timezone': 'UTC', 'timestamp': 1759238754.3119, 'formatted': '2025-09-30 13:25:54'} isError=False
 ```
 
 これは、送った認証情報が受け入れられたことを意味します。

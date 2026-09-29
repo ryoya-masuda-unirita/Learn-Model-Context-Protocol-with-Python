@@ -2,6 +2,7 @@
 
 `uvicorn sample-server-sse:app --port 3000` で起動する。
 """
+import sys
 from starlette.applications import Starlette
 from starlette.routing import Mount, Host
 
@@ -93,7 +94,8 @@ async def create_product(product_name: str, keywords: str, ctx: Context[ServerSe
     }, ensure_ascii=False)
 
 if __name__ == "__main__":
-    print("サーバーを起動しています...")
+    # stdio では stdout が MCP の通信に使われるので、メッセージは stderr に出す
+    print("サーバーを起動しています...", file=sys.stderr)
     mcp.run()
 
 

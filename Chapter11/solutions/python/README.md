@@ -49,8 +49,8 @@ payload = {
         "sub": "1234567890",               # サブジェクト（ユーザー ID）
         "name": "User Userson",                # カスタム claim
         "admin": True,                     # カスタム claim
-        "iat": datetime.datetime.utcnow(),# 発行日時
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1),  # 有効期限
+        "iat": datetime.datetime.now(datetime.timezone.utc),# 発行日時
+        "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1),  # 有効期限
         "scopes": ["User.Write"]  # scope（権限）用のカスタム claim
     }
 ```

@@ -1,46 +1,75 @@
-# サンプルの実行
+# resumability（再開可能性）を curl で試す
+
+resumability に対応したサーバー（[../resumability/server.py](../resumability/server.py)）に curl でリクエストを送り、途中で切断されたストリームを Last-Event-ID を使って再開する流れを確認します。
+
+## サーバーの起動
+
+```bash
+cd ../resumability
+uv run python server.py
+```
+
+ポート 3000 の `/mcp/` で待ち受けます（`/mcp` に送ると `/mcp/` にリダイレクトされるので、URL の末尾に `/` を付けます）。
 
 ## クライアント
 
-接続
+### 接続
+
+`-i` を付けて、応答ヘッダーも表示します：
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/mcp" -H "Accept: text/event-stream, application/json" -H "Content-Type: application/json" -d '{
+curl -i -X POST "http://127.0.0.1:3000/mcp/" -H "Accept: text/event-stream, application/json" -H "Content-Type: application/json" -d '{
   "jsonrpc": "2.0",
   "id": 1,
   "method": "initialize",
-  "params": { "protocolVersion": "2025-03-26", "capabilities": { "tools": {}, "logging": {} }, "clientInfo": { "name": "ExampleClient", "version": "1.0.0" } }
+  "params": { "protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": { "name": "ExampleClient", "version": "1.0.0" } }
 }'
 ```
 
-d81eb3a0-eb26-4e79-96a5-64bfd409a3f3
+応答ヘッダーの `mcp-session-id` がセッション ID です。以降のリクエストでは、`<セッション ID>` をこの値に置き換えます。
 
-初期化
+### 初期化
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/mcp" -H "Content-Type: application/json" -H "Accept: text/event-stream, application/json" -H "mcp-session-id: d81eb3a0-eb26-4e79-96a5-64bfd409a3f3" -d '{
+curl -X POST "http://127.0.0.1:3000/mcp/" -H "Accept: text/event-stream, application/json" -H "Content-Type: application/json" -H "mcp-session-id: <セッション ID>" -d '{
     "jsonrpc": "2.0",
     "method": "notifications/initialized"
 }'
-
 ```
 
-tool の呼び出し
+### tool の呼び出し
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/mcp" -H "Content-Type: application/json" -H "Accept: text/event-stream, application/json" -H "mcp-session-id: d81eb3a0-eb26-4e79-96a5-64bfd409a3f3" -d '{
+curl -N -X POST "http://127.0.0.1:3000/mcp/" -H "Accept: text/event-stream, application/json" -H "Content-Type: application/json" -H "mcp-session-id: <セッション ID>" -d '{
     "jsonrpc": "2.0",
-    "id": 1,
+    "id": 2,
     "method": "tools/call",
     "params": {
       "name": "process-files",
-      "arguments": { "message": "chris" }
+      "arguments": {}
     }
 }'
 ```
 
-もう一度 tool を呼び出します。今度は次の last-event-id を指定します：bc0898d8-c66b-4355-9c0c-9f1de74c1535_1757283309847_ispthgge
+ファイルごとの進捗の通知と最終結果が、SSE のイベントとして返ってきます。各イベントには `id:` でイベント ID が付いています：
+
+```text
+id: f518368b-2154-4000-9eb8-9753701dcf83
+event: message
+data: {"method":"notifications/message","params":{"level":"info","logger":"notification_stream","data":"[1/3] 'file1.txt' からのイベント - 切断された場合は Last-Event-ID を使って再開できます"},"jsonrpc":"2.0"}
+
+id: eb791416-6037-45ea-b8e4-256a5bfba12b
+event: message
+data: {"method":"notifications/message","params":{"level":"info","logger":"notification_stream","data":"[2/3] 'file2.txt' からのイベント - 切断された場合は Last-Event-ID を使って再開できます"},"jsonrpc":"2.0"}
+...
+```
+
+### Last-Event-ID を使った再開
+
+最初のイベントまで受け取ったところで切断された、という想定で、そのイベント ID を `last-event-id` ヘッダーに付けて GET します：
 
 ```bash
-curl "http://127.0.0.1:8000/mcp" -H "Content-Type: application/json" -H "Accept: text/event-stream, application/json" -H "mcp-session-id: d81eb3a0-eb26-4e79-96a5-64bfd409a3f3" -H "last-event-id: bc0898d8-c66b-4355-9c0c-9f1de74c1535_1757283309847_ispthgge"
+curl -N "http://127.0.0.1:3000/mcp/" -H "Accept: text/event-stream, application/json" -H "mcp-session-id: <セッション ID>" -H "last-event-id: <最初のイベント ID>"
 ```
+
+サーバーはイベントストアに保存しているイベントのうち、指定した ID より後のもの（2件目以降の通知と最終結果）を再送します。

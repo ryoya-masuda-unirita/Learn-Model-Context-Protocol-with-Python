@@ -10,8 +10,9 @@ from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 import datetime
 from typing import Any
 
-# JWT の署名に使う秘密鍵
-secret_key: str = 'your-secret-key'
+# JWT の署名に使う秘密鍵（サンプル用の値。本番では環境変数などで管理し、コードに書かない）
+# HS256 では 32 バイト以上の鍵が必要（短いと PyJWT が InsecureKeyLengthWarning を出す）
+secret_key: str = 'your-secret-key-for-hs256-at-least-32-bytes'
 
 def generate_token() -> str:
     """テスト用の JWT を生成する。
@@ -30,8 +31,8 @@ def generate_token() -> str:
         "sub": "1234567890",               # サブジェクト（ユーザー ID）
         "name": "User Userson",                # カスタム claim
         "admin": True,                     # カスタム claim
-        "iat": datetime.datetime.utcnow(),# 発行日時
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1),  # 有効期限
+        "iat": datetime.datetime.now(datetime.timezone.utc),# 発行日時
+        "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1),  # 有効期限
         "scopes": ["Admin.Write", "User.Read"]  # scope（権限）用のカスタム claim
     }
 

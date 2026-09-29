@@ -2,6 +2,7 @@
 
 `uvicorn server:app` でポート 8000 の SSE サーバーとして起動する。
 """
+import sys
 from pydantic import BaseModel, Field
 
 from mcp.server.fastmcp import Context, FastMCP
@@ -82,5 +83,6 @@ app: Starlette = Starlette(
 )
 
 if __name__ == "__main__":
-    print("Elicitation サンプルの MCP サーバーを起動しています...")
+    # stdio では stdout が MCP の通信に使われるので、メッセージは stderr に出す
+    print("Elicitation サンプルの MCP サーバーを起動しています...", file=sys.stderr)
     mcp.run()

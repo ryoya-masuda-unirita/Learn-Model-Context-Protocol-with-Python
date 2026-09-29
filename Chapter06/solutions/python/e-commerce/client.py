@@ -30,7 +30,7 @@ async def run() -> None:
             tools = await session.list_tools()
             print(tools)
 
-            result = await session.call_tool("add", arguments={"a": 1, "b": 2})
+            result = await session.call_tool("get_all_products", arguments={})
             print("tool の結果:", result)
 
             prompts = await session.list_prompts()

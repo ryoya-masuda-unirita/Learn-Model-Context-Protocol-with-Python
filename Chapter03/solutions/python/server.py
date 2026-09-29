@@ -136,7 +136,9 @@ carts: list[Cart] = []
 cart_items: list[CartItem] = []
 
 customers: list[Customer] = [
-    Customer(id=1, name="顧客 1", email="email")
+    Customer(id=1, name="顧客 1", email="email"),
+    Customer(id=101, name="顧客 101", email="email"),
+    Customer(id=102, name="顧客 102", email="email")
 ]
 
 
