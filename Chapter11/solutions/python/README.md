@@ -10,7 +10,7 @@ source ./venv/bin/activate
 ## 依存関係のインストール
 
 ```bash
-pip install "mcp[cli]" dotenv PyJWT
+pip install "mcp[cli]" python-dotenv PyJWT
 ```
 
 ## トークンの生成

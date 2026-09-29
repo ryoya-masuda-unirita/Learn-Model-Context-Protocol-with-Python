@@ -68,7 +68,7 @@ SSE を受信: data: 5 件のメッセージを送信しました。接続を閉
 サーバーを起動します：
 
 ```bash
-python streaming_http_server.py
+python streaming.py
 ```
 
 クライアントが接続すると、サーバーのコンソールに次のように表示されます：
@@ -80,14 +80,15 @@ python streaming_http_server.py
 別のターミナルでクライアントを起動します：
 
 ```bash
-python streaming_http_client.py
+python streaming_client.py
 ```
 クライアントのコンソールには次のような出力が表示されます：
 
 ```text
-2025-06-01T15:10:43.193Z
-2025-06-01T15:10:44.197Z
-2025-06-01T15:10:45.205Z
-2025-06-01T15:10:46.209Z
-2025-06-01T15:10:47.211Z
+{'message': 'こんにちは、世界！'}
+{'message': 'こんにちは、世界！'}
+{'message': 'こんにちは、世界！'}
+{'message': 'こんにちは、世界！'}
+{'message': 'こんにちは、世界！'}
+5 件のメッセージに達しました。接続を閉じます。
 ```

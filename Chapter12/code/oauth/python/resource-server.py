@@ -1,6 +1,6 @@
 """アクセストークンで保護されたユーザー情報を提供するリソースサーバー（Flask）。
 
-`python resource-server.py` でポート 5001 で起動する。
+`python resource-server.py` でポート 5051 で起動する。
 """
 from flask import Flask, Response, request, jsonify
 import requests
@@ -9,7 +9,7 @@ app: Flask = Flask(__name__)
 
 # シミュレーション用のトークンストア（実際には認可サーバーと共有する）
 valid_tokens: dict[str, dict[str, str]] = {}
-AUTH_SERVER: str = "http://localhost:5000"
+AUTH_SERVER: str = "http://localhost:5050"
 
 @app.route("/userinfo")
 def userinfo() -> Response | tuple[Response, int]:
@@ -47,9 +47,6 @@ def userinfo() -> Response | tuple[Response, int]:
     })
 
 if __name__ == "__main__":
-    PORT = 5001
+    PORT = 5051
     print(f"リソースサーバーをポート {PORT} で起動しました")
     app.run(port=PORT)
-    # 共有トークンストアをシミュレートする
-    from auth_server import access_tokens
-    valid_tokens.update(access_tokens)

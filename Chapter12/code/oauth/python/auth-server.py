@@ -1,6 +1,6 @@
 """OAuth 2.1 の認可コードフローをシミュレートする認可サーバー（Flask）。
 
-/authorize、/token、/introspect、/logout を提供する。`python auth-server.py` でポート 5000 で起動する。
+/authorize、/token、/introspect、/logout を提供する。`python auth-server.py` でポート 5050 で起動する。
 """
 from typing import Any
 
@@ -107,6 +107,6 @@ def logout() -> tuple[str, int]:
     return "ログアウトしました（シミュレーション）", 200
 
 if __name__ == "__main__":
-    PORT = 5000
+    PORT = 5050
     print(f"認可サーバーをポート {PORT} で起動しました")
     app.run(port=PORT)

@@ -3,8 +3,8 @@ import requests
 from urllib.parse import urlparse, parse_qs
 
 # 設定
-AUTH_SERVER: str = "http://localhost:5000"
-RESOURCE_SERVER: str = "http://localhost:5001"
+AUTH_SERVER: str = "http://localhost:5050"
+RESOURCE_SERVER: str = "http://localhost:5051"
 CLIENT_ID: str = "abc"
 REDIRECT_URI: str = "http://localhost:3000/callback"
 STATE: str = "xyz"
