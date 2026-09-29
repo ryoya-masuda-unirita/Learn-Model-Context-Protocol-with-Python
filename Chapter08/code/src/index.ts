@@ -26,7 +26,8 @@ server.registerTool("add",
 
 
 async function main() {
-    console.log("MCP サーバーを起動しています...");
+    // stdio では stdout が MCP の通信に使われるので、メッセージは stderr に出す
+    console.error("MCP サーバーを起動しています...");
     const transport = new StdioServerTransport();
     await server.connect(transport);
 }

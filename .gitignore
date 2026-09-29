@@ -9,3 +9,7 @@ __pycache__/
 # エージェントの引き継ぎメモ（リポジトリには含めない）
 .agent-handoff.md
 .serena/
+
+# Chapter08 の TypeScript サンプル（npm install / npm run build で作られる）
+node_modules/
+Chapter08/code/build/
