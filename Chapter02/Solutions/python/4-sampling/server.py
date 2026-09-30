@@ -14,6 +14,7 @@ from typing import Any
 from utils.messages import initializeResponse, progress_notification
 
 
+# initialize → notifications/initialized のハンドシェイクが終わったかどうか
 initialized: bool = False
 
 product: dict[str, Any] = {
@@ -60,6 +61,7 @@ class ProductStore:
 
         実際には 1〜2 秒後に商品を追加するタイマーを2つ開始する。
         """
+        # メインスレッドは stdin の読み取りで止まっているので、商品の追加は別スレッド（threading.Timer）で行う
         def schedule_next() -> None:
             """1〜2 秒後に商品を追加するタイマーを開始する。"""
             delay = random.uniform(1, 2)
@@ -121,11 +123,14 @@ def create_sampling_message(product: dict[str, Any]) -> dict[str, Any]:
     dict[str, Any]
         sampling/createMessage の JSON-RPC リクエスト。
     """
+    # サンプリングは「サーバー → クライアント」へのリクエスト。tools/list などとは向きが逆になる
+    # 本来はリクエストごとに一意な id を振り、クライアントからの応答の id と突き合わせる
     sampling_message = {
         "jsonrpc": "2.0",
         "id": 1,
         "method": "sampling/createMessage",
         "params": {
+            # 本来の MCP では、messages の role は user / assistant のみ。システムへの指示は systemPrompt に書く
             "messages": [{
                 "role": "system",
                 "content": {
@@ -134,14 +139,28 @@ def create_sampling_message(product: dict[str, Any]) -> dict[str, Any]:
                 }
             }],
             "systemPrompt": "あなたは商品説明の作成を手伝う、親切なアシスタントです",
+            # LLM に渡すコンテキストの範囲（none / thisServer / allServers）
             "includeContext": "thisServer",
             "maxTokens": 300
         }
     }
     return sampling_message
 
+def send_sampling_request(product: dict[str, Any]) -> None:
+    """商品説明の生成を依頼するサンプリングのリクエストを、クライアントに送る。
+
+    Parameters
+    ----------
+    product : dict[str, Any]
+        説明を生成したい商品（id、name、price、keywords を持つ辞書）。
+    """
+    print(json.dumps(create_sampling_message(product)))
+    # タイマーのスレッドから送るので、flush しないとメインループの次の flush まで送られない
+    sys.stdout.flush()
+
+# 新しい商品が追加されたら、その商品説明の生成をクライアントに依頼する
 store: ProductStore = ProductStore()
-store.add_listener("new_product", lambda product: print(json.dumps(create_sampling_message(product))) and sys.stdout.flush())
+store.add_listener("new_product", send_sampling_request)
 
 def handle_sampling_response(response: dict[str, Any]) -> None:
     """クライアントから届いたサンプリングの応答を処理する。
@@ -156,16 +175,21 @@ def handle_sampling_response(response: dict[str, Any]) -> None:
     sys.stdout.flush()
     # TODO: 応答を使ってストアを更新するなど、必要な処理を行う
 
+# stdio トランスポートでは「1行 = 1メッセージ」。stdin を1行ずつ読んで処理する。
+# 各 case の break で for を抜けても、外側の while True で再び stdin を読み始めるので処理は続く
 while True:
     for line in sys.stdin:
         message: str = line.strip()
         if message == "hello":
             print("こんにちは")
-            sys.stdout.flush()  # 出力をすぐに送る
+            # stdout がパイプだとバッファリングされるので、flush しないとクライアントの readline() が待ち続ける
+            sys.stdout.flush()
+        # クライアントは json.dumps で送るので、JSON-RPC のメッセージは必ず '{"jsonrpc":' で始まる
         elif message.startswith('{"jsonrpc":'):
             json_message: dict[str, Any] = json.loads(message)
             method: str = json_message.get('method', '')
 
+            # ハンドシェイクが終わるまでは、initialize と notifications/initialized 以外を受け付けない
             if not initialized:
                 if method != "initialize" and method != "notifications/initialized":
                     print(f"サーバーが初期化されていません。先に 'initialized' 通知を送ってください。送られたメソッド: {method}")
@@ -176,11 +200,13 @@ while True:
 
             match method:
                 case "notifications/initialized":
+                    # 通知（id を持たないメッセージ）なので、応答は返さない
                     # print("サーバーの初期化に成功しました。")
                     sys.stdout.flush()
                     initialized = True
                     break
                 case "initialize":
+                    # サーバーの capabilities を返す。ここではまだ initialized にせず、クライアントからの initialized 通知を待つ
                     print(json.dumps(initializeResponse))
                     sys.stdout.flush()
                     # initialized = True
@@ -190,6 +216,7 @@ while True:
                     tool_name: str = json_message['params']['name']
                     args: dict[str, Any] = json_message['params']['args']
 
+                    # tool の処理の途中で、クライアント側の LLM に商品説明の生成を依頼する
                     print(json.dumps(create_sampling_message(product)))
                     sys.stdout.flush()
 
@@ -200,6 +227,7 @@ while True:
                     sys.stdout.flush()
 
                     # TODO: tool 呼び出しへの応答を作る（つまり、正しい tool を呼び出す）
+                    # 本来の MCP では、引数のキーは "arguments"、結果は {"content": [...]} の形。ここでは独自の形に簡略化している
                     response: dict[str, Any] = {
                         "jsonrpc": "2.0",
                         "id": json_message["id"],
@@ -249,6 +277,7 @@ while True:
                     sys.stdout.flush()
                     break
                 case _:
+                    # クライアントからのサンプリングの応答は method を持たないので、ここに来る。result の有無で判定する
                     # print(f"不明なメソッドです: {method}")
                     # sys.stdout.flush()
                     if json_message.get('result'):
@@ -258,6 +287,7 @@ while True:
                         print(f"不明なメソッドです: {json_message['method']}")
                         sys.stdout.flush()
                     break
+        # "exit" はこのサンプル独自の終了コマンド（MCP の仕様にはない）。実際の stdio サーバーは stdin が閉じられたら終了する
         elif message == "exit":
             print("サーバーを終了します。")
             sys.stdout.flush()

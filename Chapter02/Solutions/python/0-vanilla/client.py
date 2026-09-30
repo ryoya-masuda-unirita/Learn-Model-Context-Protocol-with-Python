@@ -9,15 +9,17 @@ import json
 from typing import Any
 
 # 子プロセスを起動する
+# stdin / stdout をパイプでつなぐ。これが MCP の stdio トランスポートの基本形
 proc: subprocess.Popen[str] = subprocess.Popen(
     ['python3', 'server.py'],  # 起動する子スクリプトに置き換える
     stdin=subprocess.PIPE,
     stdout=subprocess.PIPE,
-    text=True
+    text=True  # bytes ではなく str でやり取りする
 )
 # PIPE を指定しているので実行時は None にならないが、型の上では None もありうるため絞り込む
 assert proc.stdin is not None and proc.stdout is not None
 
+# JSON-RPC 2.0 のリクエスト。id を付けると、応答が必要な「リクエスト」になる
 list_tools_message: dict[str, Any] = {
     "jsonrpc": "2.0",
     "id": 1,
@@ -59,6 +61,7 @@ def serialize_message(message: dict[str, Any]) -> str:
 send_message(message)
 
 # 子プロセスからの応答を読む
+# サーバーは1行で応答するので、1行だけ読む。応答が届くまでここで待つ
 response: str = proc.stdout.readline()
 print('[SERVER]:', response.strip())
 
@@ -69,6 +72,7 @@ response = proc.stdout.readline()
 print('[SERVER]:', response.strip())
 
 # 子プロセス（つまりサーバー）を終了させる
+# "exit" はこのサンプル独自の終了コマンド（MCP の仕様にはない）
 send_message('exit\n')
 
 exit_code: int = proc.wait()

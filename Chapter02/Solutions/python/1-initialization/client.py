@@ -11,11 +11,12 @@ from typing import Any
 from utils.messages import list_tools_message, initialize_message, initialized_message
 
 # 子プロセスを起動する
+# stdin / stdout をパイプでつなぐ。これが MCP の stdio トランスポートの基本形
 proc: subprocess.Popen[str] = subprocess.Popen(
     ['python3', 'server.py'],  # 起動する子スクリプトに置き換える
     stdin=subprocess.PIPE,
     stdout=subprocess.PIPE,
-    text=True
+    text=True  # bytes ではなく str でやり取りする
 )
 
 message: str = 'hello\n'
@@ -79,6 +80,7 @@ def connect() -> None:
     print_response(response, prefix='[SERVER]: \n')
 
     # 2. initialized 通知を送る
+    # 通知なのでサーバーからの応答はない。ここで readline() すると応答を待ち続けて止まってしまう
     send_message(serialize_message(initialized_message))
 
 def send_simple_message(message: str) -> None:

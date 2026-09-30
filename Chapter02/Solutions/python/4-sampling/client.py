@@ -13,14 +13,16 @@ from typing import Any
 
 from utils.messages import list_tools_message, initialize_message, initialized_message
 
+# 監視スレッドが受け取ったメッセージを、メインスレッドに渡すためのキュー（queue.Queue はスレッドセーフ）
 message_queue: queue.Queue[str] = queue.Queue()
 
 # 子プロセスを起動する
+# stdin / stdout をパイプでつなぐ。これが MCP の stdio トランスポートの基本形
 proc: subprocess.Popen[str] = subprocess.Popen(
     ['python3', 'server.py'],  # 起動する子スクリプトに置き換える
     stdin=subprocess.PIPE,
     stdout=subprocess.PIPE,
-    text=True
+    text=True  # bytes ではなく str でやり取りする
 )
 
 message: str = 'hello\n'
@@ -68,6 +70,7 @@ def create_sampling_message(llm_response: str) -> dict[str, Any]:
     dict[str, Any]
         サーバーに返すサンプリングの応答メッセージ。
     """
+    # 本来の応答には、リクエストと同じ id や、role / model などを含める。ここでは簡略化している
     sampling_message = {
         "jsonrpc": "2.0",
         "result": {
@@ -91,6 +94,7 @@ def call_llm(message: str) -> str:
     str
         プロンプトの先頭に "LLM: " を付けた文字列。
     """
+    # このサンプルでは実際の LLM は呼ばない（実際の LLM を使ったサンプリングは Chapter09 で扱う）
     return "LLM: " + message
 
 
@@ -121,6 +125,8 @@ def listen_to_stdout() -> None:
     """
     # PIPE を指定しているので実行時は None にならないが、型の上では None もありうるため絞り込む
     assert proc.stdout is not None
+    # サンプリングのリクエストは、メインスレッドが応答を待っている間にも届く。
+    # そのため、メインスレッドとは別に、常に stdout を読み続けるスレッドが必要になる
     while True:
         response = proc.stdout.readline()
         if not response:
@@ -193,11 +199,14 @@ def connect() -> None:
     send_message(serialize_message(initialize_message))
 
     # 子プロセスからの応答を読む
+    # stdout は監視スレッドが読んでいるので、メインスレッドはキューから受け取る
+    # （2つのスレッドが同じ stdout を読むと、メッセージを取り合ってしまう）
     # response = proc.stdout.readline()
     response = message_queue.get()
     print_response(response, prefix='[SERVER]: \n')
 
     # 2. initialized 通知を送る
+    # 通知なのでサーバーからの応答はない。ここで readline() すると応答を待ち続けて止まってしまう
     send_message(serialize_message(initialized_message))
 
 def send_simple_message(message: str) -> None:
@@ -236,6 +245,7 @@ def list_tools() -> list[dict[str, Any]]:
         # メッセージに result 属性があれば、ループを抜ける
 
         parsed_response = json.loads(response)
+        # 応答は result を持ち、通知は method を持つ。result の有無で見分ける
         if 'result' in parsed_response:
             has_result = True
             return parsed_response['result']['tools']
@@ -272,6 +282,7 @@ def call_tool(tool_name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
             "name": tool_name,
             "args": args
         },
+        # 本来はリクエストごとに別の id を振る。このサンプルでは同時に1つしか送らないので固定にしている
         "id": 1
     }
 
@@ -301,6 +312,7 @@ def close_server() -> None:
 
 tools: list[dict[str, Any]] = []
 
+# daemon=True にすると、メインスレッドが終わったときにこのスレッドも一緒に終わる
 listener_thread: threading.Thread = threading.Thread(target=listen_to_stdout, daemon=True)
 listener_thread.start()
 
@@ -317,7 +329,7 @@ def main() -> None:
 
     tool = tools[0]
 
-    tool_call_response = call_tool(tool["name"],{"args1": "こんにちは"})
+    tool_call_response = call_tool(tool["name"],{"arg1": "こんにちは"})
     for content in tool_call_response:
         print_response(content['text'], prefix='[SERVER] tool の応答: \n')
 
