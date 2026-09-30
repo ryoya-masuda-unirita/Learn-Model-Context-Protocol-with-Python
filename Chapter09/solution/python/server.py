@@ -3,6 +3,7 @@
 characters.json のキャラクター設定を使い、応答の生成をクライアントの LLM に依頼する。
 """
 import sys
+from pathlib import Path
 from mcp.server.fastmcp import Context, FastMCP
 from mcp.server.session import ServerSession
 from mcp.types import SamplingMessage, TextContent
@@ -19,7 +20,9 @@ import json
 mcp: FastMCP = FastMCP(name="Sampling Example")
 
 # characters.json を読み込む
-with open("../characters.json") as f:
+# '../characters.json' とだけ書くとカレントディレクトリから探されるため、このファイルの場所を基準にする
+CHARACTERS_PATH: Path = Path(__file__).resolve().parent.parent / "characters.json"
+with open(CHARACTERS_PATH) as f:
     characters = json.load(f)
 
 @mcp.tool()

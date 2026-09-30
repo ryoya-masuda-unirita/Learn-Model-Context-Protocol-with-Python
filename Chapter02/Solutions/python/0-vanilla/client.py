@@ -6,12 +6,20 @@ MCP の仕組みを理解するため、SDK を使わずに最小限のやり取
 
 import subprocess
 import json
+import sys
+from pathlib import Path
 from typing import Any
 
 # 子プロセスを起動する
 # stdin / stdout をパイプでつなぐ。これが MCP の stdio トランスポートの基本形
+# 'server.py' とだけ書くとカレントディレクトリから探されるため、リポジトリのルートなど
+# 別の場所から実行するとサーバーが起動できない。このファイルの場所を基準に絶対パスにする
+SERVER_PATH: Path = Path(__file__).resolve().parent / 'server.py'
+
 proc: subprocess.Popen[str] = subprocess.Popen(
-    ['python3', 'server.py'],  # 起動する子スクリプトに置き換える
+    # 'python3' だと PATH 上の別の Python（Homebrew など）が起動されることがあるため、
+    # クライアントと同じ Python（仮想環境）でサーバーを起動する
+    [sys.executable, str(SERVER_PATH)],  # 起動する子スクリプトに置き換える
     stdin=subprocess.PIPE,
     stdout=subprocess.PIPE,
     text=True  # bytes ではなく str でやり取りする

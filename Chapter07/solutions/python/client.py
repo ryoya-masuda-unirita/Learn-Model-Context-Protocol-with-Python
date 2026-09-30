@@ -1,13 +1,19 @@
 """MCP サーバー（server.py）に stdio で接続し、コマンドで tool を呼び出す対話型クライアント。"""
 from typing import Any
 
+from pathlib import Path
+
 from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
+
+# 'server.py' とだけ書くとカレントディレクトリから探されるため、リポジトリのルートなど
+# 別の場所から実行するとサーバーが起動できない。このファイルの場所を基準に絶対パスにする
+SERVER_PATH: Path = Path(__file__).resolve().parent / "server.py"
 
 # stdio 接続用のサーバーパラメーターを作る
 server_params: StdioServerParameters = StdioServerParameters(
     command="mcp",  # 実行ファイル
-    args=["run", "server.py"],  # コマンドライン引数（任意）
+    args=["run", str(SERVER_PATH)],  # コマンドライン引数（任意）
     env=None,  # 環境変数（任意）
 )
 

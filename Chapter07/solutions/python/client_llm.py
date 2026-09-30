@@ -4,6 +4,8 @@
 LLM は Amazon Bedrock の OpenAI 互換 API 経由で呼び出す。
 実行には、Bedrock を使える AWS の認証情報が必要（例: `AWS_PROFILE=oic uv run python client_llm.py`）。
 """
+from pathlib import Path
+
 from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
 from aws_bedrock_token_generator import provide_token
@@ -19,10 +21,14 @@ BEDROCK_REGION: str = "us-east-1"
 BEDROCK_BASE_URL: str = f"https://bedrock-mantle.{BEDROCK_REGION}.api.aws/openai/v1"
 BEDROCK_MODEL_ID: str = "openai.gpt-5.5"
 
+# 'server.py' とだけ書くとカレントディレクトリから探されるため、リポジトリのルートなど
+# 別の場所から実行するとサーバーが起動できない。このファイルの場所を基準に絶対パスにする
+SERVER_PATH: Path = Path(__file__).resolve().parent / "server.py"
+
 # stdio 接続用のサーバーパラメーターを作る
 server_params: StdioServerParameters = StdioServerParameters(
     command="mcp",  # 実行ファイル
-    args=["run", "server.py"],  # コマンドライン引数（任意）
+    args=["run", str(SERVER_PATH)],  # コマンドライン引数（任意）
     env=None,  # 環境変数（任意）
 )
 

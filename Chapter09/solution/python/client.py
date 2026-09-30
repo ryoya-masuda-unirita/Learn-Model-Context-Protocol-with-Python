@@ -5,6 +5,8 @@ LLM は Amazon Bedrock の OpenAI 互換 API 経由で呼び出す。
 """
 
 import asyncio
+import sys
+from pathlib import Path
 
 from pydantic import AnyUrl
 
@@ -24,10 +26,15 @@ BEDROCK_MODEL_ID: str = "openai.gpt-5.5"
 # max_tokens をすべて本文に使えるようにする（推論で上限を使い切ると本文が空になるため）
 REASONING_EFFORT: ReasoningEffort = "none"
 
+# 'server.py' とだけ書くとカレントディレクトリから探されるため、リポジトリのルートなど
+# 別の場所から実行するとサーバーが起動できない。このファイルの場所を基準に絶対パスにする
+SERVER_PATH: Path = Path(__file__).resolve().parent / "server.py"
+
 # stdio 接続用のサーバーパラメーターを作る
 server_params: StdioServerParameters = StdioServerParameters(
-    command="python",  # python でサーバーを実行する
-    args=["server.py"]
+    # 'python' だと PATH 上の別の Python が起動されることがあるため、クライアントと同じ Python で起動する
+    command=sys.executable,
+    args=[str(SERVER_PATH)]
 )
 
 async def call_llm(prompt: str, system_prompt: str) -> str:
