@@ -13,8 +13,8 @@ from starlette.routing import Mount, Host
 
 mcp: FastMCP = FastMCP(name="Elicitation Example")
 
-# TODO: elicitation のサンプル。SSE に対応させる
-
+# elicitation で使えるのは、文字列・数値・真偽値などの単純な型のフィールドだけ（ネストしたオブジェクトは不可）。
+# クライアントが簡単な入力フォームとして表示できるようにするための制限
 class MemberPreferences(BaseModel):
     """ユーザーの希望を集めるためのスキーマ。"""
 
@@ -51,11 +51,16 @@ async def book_trip(date: str, member_id: str, ctx: Context[ServerSession, None]
     # 会員かどうか確認する
     if not member_id or member_id == "guest":
         # 会員ではない - ユーザーに登録するか尋ねる
+        # elicitation は「サーバー → クライアント」へのリクエスト。ユーザーに追加の入力を求める。
+        # schema に渡したモデルが JSON Schema になってクライアントに届き、クライアントはそれを元に入力フォームなどを出す。
+        # ユーザーが答えるまで、tool の処理はここで止まって待つ
         result = await ctx.elicit(
             message=(f"会員ではありませんか？ 会員登録しますか？"),
             schema=MemberPreferences,
         )
 
+        # action は accept（入力して送信）/ decline（断った）/ cancel（閉じた）のどれか。
+        # accept 以外では data は入ってこない
         if result.action == "accept" and result.data:
             if result.data.become_member and result.data.name and result.data.email:
                 return f"[BOOKED] {date} で予約しました。{result.data.name} さん、会員登録ありがとうございます！"
@@ -72,6 +77,9 @@ app: Starlette = Starlette(
 )
 
 if __name__ == "__main__":
-    # stdio では stdout が MCP の通信に使われるので、メッセージは stderr に出す
+    # python server.py でも、クライアントが接続しにいく SSE のサーバーとして起動する。
+    # 以前は mcp.run()（stdio）を呼んでいたため、python で起動するとクライアントが接続できなかった
     print("Elicitation サンプルの MCP サーバーを起動しています...", file=sys.stderr)
-    mcp.run()
+    import uvicorn
+
+    uvicorn.run(app, host="127.0.0.1", port=3000)

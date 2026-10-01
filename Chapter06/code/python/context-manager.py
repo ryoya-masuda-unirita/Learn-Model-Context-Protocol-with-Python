@@ -16,8 +16,9 @@ class DatabaseConnection:
         Any
             データベースの接続（このサンプルでは None）。
         """
-        print
+        print("データベースに接続しています")
         self.conn = self.connect_to_database()
+        # ここで返した値が、with ... as db_conn の db_conn に入る
         return self.conn
 
     def __exit__(
@@ -37,6 +38,8 @@ class DatabaseConnection:
         traceback : TracebackType | None
             例外のトレースバック。発生していなければ None。
         """
+        # with ブロックを抜けるときは、例外が起きても必ずここが呼ばれる。だから後片付け（接続を閉じるなど）を書く。
+        # MCP の SDK が async with stdio_client(...) のように with を使うのも、接続やプロセスを確実に閉じるため
         print("データベース接続を閉じています")
         self.close_connection(self.conn)
 

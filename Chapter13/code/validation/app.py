@@ -23,6 +23,8 @@ product: dict[str, Any] = { "id": "1", "name": "商品 1", "price": 10.0 }
 book: dict[str, Any] = { "id": "1", "title": "本 1", "author": "著者 1", "pages": 100 }
 
 # 2. より安全な検証方法
+# 型ヒントと違い、pydantic のモデルは実行時に中身を検証する。型が合わない値は変換を試み、できなければ ValidationError になる。
+# MCP の SDK も、tool の引数やメッセージの検証に pydantic を使っている
 try:
    parsed_product = Product(**product)
    parsed_book = Book(**book)

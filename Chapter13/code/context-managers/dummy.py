@@ -112,7 +112,11 @@ async def streamablehttp_client(url: str) -> tuple[DummyStream, DummyStream, Non
 # メインの非同期関数
 async def main() -> None:
     """ダミーのクライアントで、MCP のクライアントの流れ（接続、初期化、tool の一覧取得）を再現する。"""
+    # 本物の streamablehttp_client は async with で使うコンテキストマネージャーで、抜けるときに接続を閉じる。
+    # このダミーでは簡単にするため、ただの async 関数にしている
     read_stream, write_stream, _ = await streamablehttp_client("http://localhost:8000/mcp")
+    # async with に入ると __aenter__ が、抜けると（例外が起きても）__aexit__ が呼ばれる。
+    # 本物の ClientSession も、__aexit__ で受信用のタスクを止めるなどの後片付けをしている
     async with DummyClientSession(read_stream, write_stream) as session:
         await session.initialize()
         tools = await session.list_tools()

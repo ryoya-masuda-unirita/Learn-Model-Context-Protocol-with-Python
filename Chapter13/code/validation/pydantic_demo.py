@@ -28,8 +28,10 @@ professor_dict: dict[str, Any] = {
     ]
 }
 
+# 入れ子の辞書も、OfficeHour のモデルに自動で変換される
 professor = Professor(**professor_dict)
 
+# model_dump() はモデルを辞書に戻す。JSON にして送るときなどに使う
 professor_serialized = professor.model_dump() # {"id": 1, "name": "Dr. Smith", "office_hours": [{"day": "月曜日", "from_": 9, "to_": 12}, {"day": "水曜日", "from_": 14, "to_": 17}]}}
 
 print("pydantic のバージョン: ", pydantic.__version__)

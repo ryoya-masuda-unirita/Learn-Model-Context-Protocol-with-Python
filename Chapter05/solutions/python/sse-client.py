@@ -71,20 +71,26 @@ async def message_handler(
         else:
             if isinstance(message, types.ServerNotification):
                 print("通知:", message)
+            # RequestResponder は「サーバーからクライアントへのリクエスト」（サンプリングなど）。
+            # クライアントが送ったリクエストへの応答は、call_tool() などの戻り値として返るので、ここには来ない
             elif isinstance(message, RequestResponder):
-                print("リクエストへの応答:", message)
-            else:
                 print("サーバーからのリクエスト:", message)
+            else:
+                print("不明なメッセージ:", message)
 
 async def main() -> None:
     """サーバーに接続し、セッションを初期化して tool を呼び出す。"""
     print("クライアントを起動しています...")
     # SSE サーバーに接続する（Streamable HTTP と違い、セッション ID を返す関数はない）
+    # SSE では、サーバーが最初のイベントで POST 先の URL（/messages/?session_id=...）を教えてくる。
+    # セッション ID はヘッダーではなく、この URL のクエリに入っている
     async with sse_client(f"http://localhost:{port}/sse") as (
         read_stream,
         write_stream,
     ): 
         # クライアントのストリームを使ってセッションを作る
+        # logging_callback はログの通知（notifications/message）だけを受け取る。
+        # message_handler はサーバーから届くすべてのメッセージを受け取るので、ログの通知は両方に届く
         async with ClientSession(
             read_stream, 
             write_stream,

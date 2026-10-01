@@ -27,6 +27,8 @@ async def main() -> None:
        asyncio.create_task(fetch_data("yahoo.com"))
    ])
 
+   # done は set なので、順番は決まっていない（実行するたびに表示の順番が変わることがある）。
+   # 渡した順に結果がほしいなら gather を使う
    for task in done:
        print(task.result())
 

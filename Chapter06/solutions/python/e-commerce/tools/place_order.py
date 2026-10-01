@@ -12,7 +12,7 @@
 from typing import Any
 
 from data import orders, customers
-from .schema import OrderModel
+from .schema import OrderModel, PlaceOrderInputModel
 
 async def handler(args: dict[str, Any]) -> OrderModel:
     """顧客の新しい注文を作成する。
@@ -20,7 +20,7 @@ async def handler(args: dict[str, Any]) -> OrderModel:
     Parameters
     ----------
     args : dict[str, Any]
-        tool に渡された引数。OrderModel のフィールド（order_id、customer_id、quantity、total_price）を持つ。
+        tool に渡された引数。customer_id、quantity、total_price を持つ。
 
     Returns
     -------
@@ -32,9 +32,10 @@ async def handler(args: dict[str, Any]) -> OrderModel:
     ValueError
         存在しない顧客の ID が指定された場合。
     """
-    order = OrderModel(**args)
+    order = PlaceOrderInputModel(**args)
 
-    if order.customer_id != 0 and not any(customer.id == order.customer_id for customer in customers):
+    # 0 は「すべての顧客」のような特別な意味を持たないので、存在しない顧客として弾く
+    if not any(customer.id == order.customer_id for customer in customers):
         raise ValueError(f"customer_id が不正です: {order.customer_id}")
 
     # 新しい ID で新しい注文を作る
@@ -46,6 +47,6 @@ async def handler(args: dict[str, Any]) -> OrderModel:
 tool_place_order: dict[str, Any] = {
     "name": "place_order",
     "description": "顧客の新しい注文を作成する",
-    "input_schema": OrderModel,
+    "input_schema": PlaceOrderInputModel,
     "handler": handler
 }

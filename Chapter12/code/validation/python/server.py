@@ -7,10 +7,13 @@ mcp: FastMCP = FastMCP(name="Tool Example")
 
 from pydantic import BaseModel
 
+# tool の引数に pydantic のモデルを使うと、FastMCP がモデルから inputSchema を作り、
+# 呼び出されたときには引数をモデルとして検証してくれる。足りないフィールドや型の違う値は、tool の処理に入る前に弾かれる
 class User(BaseModel):
     """ユーザー。"""
 
-    id: int
+    # id はサーバーが採番するので、省略できるようにする（必須にすると、呼び出す側が意味のない値を考えて渡すことになる）
+    id: int = 0
     name: str
     email: str
 
@@ -25,7 +28,7 @@ def create_user(user: User) -> User:
     Parameters
     ----------
     user : User
-        作成するユーザー。id は採番し直す。
+        作成するユーザー。id は省略でき、指定しても採番し直す。
 
     Returns
     -------
@@ -37,6 +40,7 @@ def create_user(user: User) -> User:
     users.append(user)
     return user
 
+# 関数名がそのまま tool 名になる。sum は Python の組み込み関数と同じ名前なので、このファイルの中では組み込みの sum を使えなくなる点に注意
 @mcp.tool()
 def sum(a: int, b: int) -> int:
     """2つの数を足し算する。

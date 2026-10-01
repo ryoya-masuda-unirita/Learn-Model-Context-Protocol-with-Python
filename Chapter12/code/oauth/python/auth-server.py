@@ -12,6 +12,7 @@ import requests
 app: Flask = Flask(__name__)
 
 # インメモリのストア
+# サーバーを再起動すると、発行した認可コードやアクセストークンはすべて無効になる
 auth_codes: dict[str, dict[str, Any]] = {}
 access_tokens: dict[str, dict[str, str]] = {}
 
@@ -25,6 +26,8 @@ def introspect() -> Response:
     Response
         トークンが有効なら active=True とユーザー情報、無効なら active=False の JSON。
     """
+    # リソースサーバーは、受け取ったトークンが本物かを自分では判断できないので、発行した認可サーバーに問い合わせる。
+    # （JWT のように署名を自分で検証できるトークンなら、この問い合わせは不要になる）
     token = request.form.get("token")
     # token が送られてこなかった場合は、無効なトークンとして扱う
     token_data = access_tokens.get(token) if token is not None else None
@@ -58,6 +61,8 @@ def authorize() -> WerkzeugResponse:
     code_challenge = request.args.get("code_challenge")
 
     # ログインと同意をシミュレートする
+    # 本来はここでログイン画面と「このアプリに許可しますか？」の同意画面を出す。
+    # 認可コードは、ユーザーのブラウザを経由してクライアントに渡される（だから短命・1回限りにする）
     code = str(uuid.uuid4())
     auth_codes[code] = {
         "client_id": client_id,
@@ -79,11 +84,17 @@ def token() -> Response | tuple[Response, int]:
     code = request.form.get("code")
     code_verifier = request.form.get("code_verifier")
 
-    if code not in auth_codes:
+    if code is None or code not in auth_codes:
         return jsonify({"error": "invalid_code"}), 400
 
+    # 認可コードは1回しか使えない。取り出すと同時にストアから消すことで、盗まれたコードを使い回されないようにする
+    auth_code = auth_codes.pop(code)
+
     # 簡略化した PKCE のチェック
-    if auth_codes[code]["code_challenge"] != code_verifier:
+    # PKCE は、認可コードを盗んだ第三者がトークンと交換できないようにする仕組み。最初に code_challenge を送った本人しか
+    # 元の code_verifier を知らない。OAuth 2.1 では code_verifier を SHA-256 にかけた値（S256）と比べるが、
+    # ここでは簡略化のため、そのまま（plain）比べている
+    if auth_code["code_challenge"] != code_verifier:
         return jsonify({"error": "invalid_code_verifier"}), 400
 
     access_token = str(uuid.uuid4())

@@ -15,9 +15,13 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Mount, Route
 
+# tools はこのファイルと同じディレクトリにあるパッケージ。python server.py で実行すると、
+# スクリプトのディレクトリが import の検索パスに入るので、どこから実行しても見つかる
 import tools
 
 # サーバーのインスタンスを作る
+# low-level の Server は、FastMCP のように関数から tool を自動で作らない。
+# tools/list の応答も tools/call の振り分けも自分で書くので手間は増えるが、MCP のメッセージとの対応が見えやすい
 server: Server = Server("low-level-server")
 
 def pydantic_to_json(model_cls: type[BaseModel]) -> dict[str, Any]:
@@ -35,6 +39,8 @@ def pydantic_to_json(model_cls: type[BaseModel]) -> dict[str, Any]:
     dict[str, Any]
         type、properties、required を持つ JSON Schema。
     """
+    # pydantic のモデルから JSON Schema を作れるので、inputSchema を手で書かずに済む。
+    # クライアント（LLM）は、このスキーマを見て tool に渡す引数を組み立てる
     schema = model_cls.model_json_schema()
     properties = {}
     required = schema.get("required", [])
@@ -92,6 +98,7 @@ async def handle_call_tool(
         tool が存在しない場合、または tool の呼び出しでエラーが発生した場合。
     """
     # tools は tool 名をキーにした辞書
+    # low-level の Server では、どの tool が呼ばれてもこの関数に来るので、name で振り分ける
     if name not in tools.tools:
         raise ValueError(f"不明な tool です: {name}")
     
@@ -165,6 +172,10 @@ async def handle_get_prompt(
         ],
     )
 
+# SSE トランスポートを自分で組み立てる（FastMCP の sse_app() がやっていることを手で書いている）。
+#   GET  /sse        : 接続を開きっぱなしにし、サーバー → クライアントのメッセージを流す
+#   POST /messages/  : クライアント → サーバーのメッセージを受け取る
+# 引数の "/messages/" は、/sse に接続したクライアントへ「ここに POST して」と伝える URL
 sse: SseServerTransport = SseServerTransport("/messages/")
 
 async def handle_sse(request: Request) -> Response:
@@ -180,6 +191,7 @@ async def handle_sse(request: Request) -> Response:
     Response
         接続が終わった後に返す空のレスポンス。
     """
+    # 1つの SSE 接続が1つの MCP セッションになる。接続が続く間 server.run() が動き、切断されると抜ける
     async with sse.connect_sse(
         request.scope, request.receive, request._send
     ) as streams:
@@ -200,6 +212,7 @@ import uvicorn
 
 port: int = 8000
 
+# if __name__ == "__main__" で囲んでいないので、このファイルを import しただけでサーバーが起動する点に注意
 uvicorn.run(starlette_app, host="127.0.0.1", port=port)
 
 # python server.py で起動する

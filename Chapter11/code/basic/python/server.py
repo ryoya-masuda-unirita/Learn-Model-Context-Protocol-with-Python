@@ -36,11 +36,14 @@ def valid_token(token: str) -> bool:
         トークンが "secret-token" なら True。
     """
     # "Bearer " という接頭辞を取り除く
+    # このサンプルでは決め打ちの文字列と比べるだけ。本番では JWT などの署名付きトークンを検証する（solutions を参照）
     if token.startswith("Bearer "):
         token = token[7:]
         return token == "secret-token"
     return False
 
+# MCP のメッセージを処理する前に、HTTP のレベルでトークンを確認する。
+# 認証に失敗したリクエストは MCP サーバーまで届かないので、tool ごとに認証を書かなくてよい
 class CustomHeaderMiddleware(BaseHTTPMiddleware):
     """Authorization ヘッダーのトークンを検証する middleware。"""
 
@@ -64,6 +67,8 @@ class CustomHeaderMiddleware(BaseHTTPMiddleware):
             print("-> Authorization ヘッダーがありません！")
             return Response(status_code=401, content="認証されていません")
 
+            # 401 は「誰なのかわからない（認証情報がない）」、403 は「誰かはわかったが許可できない」。
+            # なお MCP の認可の仕様では、無効・期限切れのトークンにも 401 を返すことになっている
         if not valid_token(has_header):
             print("-> トークンが無効です！")
             return Response(status_code=403, content="アクセスが拒否されました")
@@ -77,7 +82,7 @@ class CustomHeaderMiddleware(BaseHTTPMiddleware):
 
 app: FastMCP = FastMCP(
     name="MCP Resource Server",
-    instructions="認可サーバーの introspection でトークンを検証するリソースサーバー",
+    instructions="固定のトークンでアクセスを制限したサーバー",
     host=settings["host"],
     port=settings["port"],
     debug=True,
@@ -149,6 +154,7 @@ async def main() -> None:
     print("MCP リソースサーバーを実行しています...")
     starlette_app = await setup(app)
     print("カスタム middleware を追加しています...")
+    # streamable_http_app() は普通の Starlette アプリなので、Starlette の middleware をそのまま追加できる
     starlette_app.add_middleware(CustomHeaderMiddleware)
 
     await run(starlette_app)

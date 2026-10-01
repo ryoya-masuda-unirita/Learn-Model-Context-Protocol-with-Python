@@ -9,8 +9,11 @@ import requests
 import logging
 from dotenv import load_dotenv
 import os
+from pathlib import Path
 
-load_dotenv()
+# util.py が書き出した .env を読む。場所を指定しないと、実行した場所によっては別の .env を読んでしまうので、
+# このファイルと同じディレクトリの .env を指定する
+load_dotenv(Path(__file__).resolve().parent / ".env")
 token: str | None = os.getenv("TOKEN")
 if not token:
     print(".env ファイルに TOKEN が見つかりません。util.py を実行して生成してください。")
@@ -73,16 +76,20 @@ async def message_handler(
         raise message
     elif isinstance(message, types.ServerNotification):
         logger.info("通知: %s", message)
+    # RequestResponder は「サーバーからクライアントへのリクエスト」（サンプリングなど）。
+    # クライアントが送ったリクエストへの応答は、call_tool() などの戻り値として返るので、ここには来ない
     elif isinstance(message, RequestResponder):
-        logger.info("リクエストへの応答: %s", message)
+        logger.info("サーバーからのリクエスト: %s", message)
     else:
-        logger.info("サーバーからのメッセージ: %s", message)
+        logger.info("不明なメッセージ: %s", message)
 
 async def main() -> None:
     """トークンを Authorization ヘッダーに付けてサーバーに接続し、get_time tool を呼び出す。"""
     logger.info("クライアントを起動しています...")
     async with streamablehttp_client(
         url = f"http://localhost:{port}/mcp",
+        # Streamable HTTP は普通の HTTP リクエストなので、JWT は Authorization ヘッダーで送る。
+        # 以降のすべてのリクエスト（initialize、tools/call など）にこのヘッダーが付く
         headers = {"Authorization": f"Bearer {token}"}
     ) as (
         read_stream,

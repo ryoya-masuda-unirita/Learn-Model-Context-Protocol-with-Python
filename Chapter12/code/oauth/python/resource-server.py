@@ -8,6 +8,7 @@ import requests
 app: Flask = Flask(__name__)
 
 # シミュレーション用のトークンストア（実際には認可サーバーと共有する）
+# このサンプルでは使っておらず、トークンの確認は認可サーバーの /introspect に任せている
 valid_tokens: dict[str, dict[str, str]] = {}
 AUTH_SERVER: str = "http://localhost:5050"
 
@@ -37,6 +38,7 @@ def userinfo() -> Response | tuple[Response, int]:
     token_data = token_response.json()
     is_active = token_data.get("active", False)
 
+    # OAuth の仕様では、無効・期限切れのトークンには 401 を返す（403 は「トークンは有効だが権限が足りない」とき）
     if not is_active:
         return jsonify({"error": "invalid_token"}), 403
 

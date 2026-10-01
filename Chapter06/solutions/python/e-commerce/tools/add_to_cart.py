@@ -1,8 +1,8 @@
 """ショッピングカートに商品を追加する add_to_cart tool の定義。"""
 from typing import Any
 
-from .schema import AddCartInputModel
-from data import carts
+from .schema import AddCartInputModel, CartItemModel
+from data import cart_items
 
 async def add_handler(args: dict[str, Any]) -> str:
     """ショッピングカートに商品を追加する add_to_cart tool のハンドラー。
@@ -25,14 +25,12 @@ async def add_handler(args: dict[str, Any]) -> str:
     try:
         # Pydantic モデルで入力を検証する
         input_model = AddCartInputModel(**args)
-        carts.append(input_model)
+        # get_all_cart_items が読む cart_items に追加する（別のリストに入れると、追加した商品が見えない）
+        cart_items.append(CartItemModel(**input_model.model_dump()))
 
     except Exception as e:
         raise ValueError(f"入力が不正です: {str(e)}")
 
-    # TODO: Pydantic を追加して AddInputModel を作り、引数を検証できるようにする
-
-    """add tool のハンドラー関数。"""
     return f"カートに追加しました"
 
 tool_add_to_cart: dict[str, Any] = {

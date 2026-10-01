@@ -10,6 +10,7 @@ from .get_orders import tool_get_orders
 from .get_product import tool_get_product
 from .place_order import tool_place_order
 
+# tool 名で引けるように辞書にしておく。tool を増やすときは、ファイルを足してここに1行追加するだけでよい
 tools: dict[str, dict[str, Any]] = {
   tool_add_to_cart["name"] : tool_add_to_cart,
   tool_get_all_categories["name"] : tool_get_all_categories,

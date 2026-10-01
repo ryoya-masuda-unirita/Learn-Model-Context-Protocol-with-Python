@@ -30,6 +30,8 @@ class Product:
         self.name = name
         self.price = price
 
+# 型ヒントは実行時にはチェックされない（Product 以外を append してもエラーにならない）。
+# mypy などの型チェッカーやエディターが、間違いを事前に見つけるために使う
 products: List[Product] = []
 
 products.append(Product(id="1", name="商品 1", price=10.0))

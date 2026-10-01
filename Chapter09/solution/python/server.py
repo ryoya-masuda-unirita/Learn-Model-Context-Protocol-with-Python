@@ -22,7 +22,8 @@ mcp: FastMCP = FastMCP(name="Sampling Example")
 # characters.json を読み込む
 # '../characters.json' とだけ書くとカレントディレクトリから探されるため、このファイルの場所を基準にする
 CHARACTERS_PATH: Path = Path(__file__).resolve().parent.parent / "characters.json"
-with open(CHARACTERS_PATH) as f:
+# encoding を指定しないと OS の既定の文字コードで読まれ、Windows（cp932）では日本語が読めずにエラーになる
+with open(CHARACTERS_PATH, encoding="utf-8") as f:
     characters = json.load(f)
 
 @mcp.tool()
@@ -65,6 +66,8 @@ async def talk_to(name: str, topic: str, ctx: Context[ServerSession, None]) -> s
     prompt = f"{name} と話してください。"
     prompt += f"話題は「{topic}」です。"
     
+    # サーバーは LLM を持っていないので、クライアントに「この内容で LLM に生成させて」と依頼する（sampling/createMessage）。
+    # create_message() はクライアントの応答が返るまで待つので、tool の処理はここで一時停止する
     result = await ctx.session.create_message(
         messages=[
             SamplingMessage(
@@ -72,6 +75,7 @@ async def talk_to(name: str, topic: str, ctx: Context[ServerSession, None]) -> s
                 content=TextContent(type="text", text=prompt),
             )
         ],
+        # キャラクターの設定はサーバーが持っているので、systemPrompt としてクライアントに渡す
         system_prompt=system_prompt,
         temperature=0.9,
         max_tokens=4000,

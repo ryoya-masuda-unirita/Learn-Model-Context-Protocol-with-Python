@@ -21,6 +21,7 @@ async def fetch_data(url: str) -> dict[str, str]:
 async def main() -> None:
    """3つの取得処理を asyncio.gather で並行に実行し、結果を表示する。"""
    # 複数のコルーチンを別々の引数として渡し、正しくまとめて実行する
+   # gather の結果は、終わった順ではなく渡した順に並ぶ。それぞれ1秒かかるが、並行に動くので全体も約1秒で終わる
    results = await asyncio.gather(
        fetch_data("google.com"),
        fetch_data("bing.com"),

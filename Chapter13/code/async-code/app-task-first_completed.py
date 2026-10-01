@@ -54,12 +54,15 @@ async def main() -> None:
     ]
 
     try:
+        # as_completed は、終わった順にタスクを返す。B が最初に終わるが見つからない（None）ので、次に終わる A を待つ
         for finished in asyncio.as_completed(tasks):
             res = await finished
             if res:
                 print("見つかったタスク:", res)
                 break
     finally:
+        # 答えが出たら、まだ動いているタスクは不要なのでキャンセルする。
+        # gather で後片付けが終わるのを待たないと、キャンセル中のタスクが残ったままプログラムが終わってしまう
         for t in tasks:
             if not t.done():
                 t.cancel()

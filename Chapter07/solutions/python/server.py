@@ -9,6 +9,8 @@ from pydantic import BaseModel
 from typing import Any, Union, List
 
 # MCP サーバーを作る
+# このファイルには if __name__ == "__main__" がない。クライアントが `mcp run server.py` で起動し、
+# mcp コマンドがこの変数 mcp を見つけて stdio のサーバーとして動かす
 mcp: FastMCP = FastMCP("Demo")
 
 class Product(BaseModel):
@@ -64,9 +66,12 @@ products: list[dict[str, Any]] = [
     }
 ]
 
+# データはメモリ上のリストに持っているだけ。stdio のサーバーはクライアントが終了すると一緒に終わるので、
+# クライアントを起動し直すとカートは空に戻る
 cart: list[CartItem] = []
 
 # カートに商品を追加する
+# docstring は tool の説明として LLM に渡る。LLM はこの説明を読んで、どの tool を呼ぶか・引数に何を入れるかを決める
 @mcp.tool()
 def add_product_to_cart(product_name: str) -> CartItem:
     """カートに商品を追加する。
@@ -90,7 +95,9 @@ def add_product_to_cart(product_name: str) -> CartItem:
     if not product:
         # tool 内で送出した例外は、MCP のエラー応答（isError=True）としてクライアントに返る
         raise ValueError(f"商品 [{product_name}] が見つかりません")
-    cart_item = CartItem(cart_id=0, product_id=product["id"], quantity=1)
+    # このサンプルではカートは1つだけ。cart_id を省略すると CartItem の __init__ で 1 になる
+    # （以前は cart_id=0 を渡していたため、既定値の 1 が使われていなかった）
+    cart_item = CartItem(product_id=product["id"], quantity=1)
     cart.append(cart_item)
     return cart_item
 

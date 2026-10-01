@@ -23,7 +23,7 @@ async def create_task(name:str, delay:int, workload: List[int], find_value:int) 
    """
    print(f"タスク {name} を開始しました")
    await asyncio.sleep(delay)
-   # workload をループし、値が見つかれば返す。見つからなければ -1 を返す
+   # workload をループし、値が見つかればそのことを伝えるメッセージを返す。見つからなければ「見つからなかった」と返す
    for no in workload:
       if no == find_value:
          return f"タスク {name} が {no} を見つけました"
@@ -38,6 +38,7 @@ async def main() -> None:
         asyncio.create_task(create_task("C", 5, [7, 8, 9], 2)),
     ]
 
+    # ALL_COMPLETED なので、一番遅い C（5秒）が終わるまで待つ。finished は set なので、表示の順番は決まっていない
     finished, unfinished = await asyncio.wait(tasks, return_when=asyncio.ALL_COMPLETED)
     for x in finished:
        print("タスクの結果:", x.result())

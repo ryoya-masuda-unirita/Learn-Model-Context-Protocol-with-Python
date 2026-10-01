@@ -26,6 +26,7 @@ BEDROCK_MODEL_ID: str = "openai.gpt-5.5"
 SERVER_PATH: Path = Path(__file__).resolve().parent / "server.py"
 
 # stdio 接続用のサーバーパラメーターを作る
+# stdio_client はこのコマンドでサーバーを子プロセスとして起動し、stdin / stdout をつなぐ
 server_params: StdioServerParameters = StdioServerParameters(
     command="mcp",  # 実行ファイル
     args=["run", str(SERVER_PATH)],  # コマンドライン引数（任意）
@@ -75,6 +76,11 @@ def call_llm(prompt: str, functions: list[ChatCompletionFunctionToolParam]) -> l
 
     # テキストの応答だけを見たいなら .content を使う
     response_message = response.choices[0].message
+
+    # LLM は必ず tool を呼ぶとは限らない。tool が不要と判断したときは文章で答えるので、それを表示する
+    # （表示しないと、「こんにちは」などと入力したときに何も出力されない）
+    if not response_message.tool_calls and response_message.content:
+        print("LLM の応答: ", response_message.content)
     
     functions_to_call = []
 
@@ -84,6 +90,7 @@ def call_llm(prompt: str, functions: list[ChatCompletionFunctionToolParam]) -> l
             if not isinstance(tool_call, ChatCompletionMessageFunctionToolCall):
                 continue
             # print("tool: ", tool_call)
+            # LLM は tool を実行しない。「この tool をこの引数で呼んで」と返すだけで、実行するのはクライアント
             name = tool_call.function.name
             print("tool 名: ", name)
             args = json.loads(tool_call.function.arguments)
@@ -109,9 +116,12 @@ def convert_to_llm_tool(tool: types.Tool) -> ChatCompletionFunctionToolParam:
         "function": {
             "name": tool.name,
             "description": tool.description or "",
+            # MCP の inputSchema は JSON Schema なので、OpenAI の parameters にほぼそのまま使える。
+            # required を落とすと、LLM は必須の引数を省略してよいと受け取ってしまうので、一緒に渡す
             "parameters": {
                 "type": "object",
-                "properties": tool.inputSchema["properties"]
+                "properties": tool.inputSchema["properties"],
+                "required": tool.inputSchema.get("required", []),
             }
         }
     }
@@ -154,6 +164,7 @@ async def run() -> None:
                 functions_to_call = call_llm(prompt, functions)
 
                 # 提案された関数を呼び出す
+                # LLM が選んだ tool を、MCP の tools/call でサーバーに実行してもらう
                 for f in functions_to_call:
                     result = await session.call_tool(f["name"], arguments=f["args"])
                     print("tool の結果: ", result.content)

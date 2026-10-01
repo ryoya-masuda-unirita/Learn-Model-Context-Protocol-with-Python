@@ -1,6 +1,4 @@
 """旅行予約の MCP サーバーに SSE で接続し、elicitation に応答するクライアント。"""
-# TODO: Python のクライアントを追加する
-
 import asyncio
 
 from mcp import ClientSession
@@ -8,6 +6,8 @@ from mcp.client.sse import sse_client
 from mcp.types import CallToolResult, ElicitRequestParams, ElicitResult, TextContent
 from mcp.shared.context import RequestContext
 
+# サーバーが ctx.elicit() を呼ぶと、SDK がこの関数を呼ぶ。本来はここでユーザーに入力フォームを見せて答えてもらう。
+# このサンプルでは動きを見るため、ユーザーの答えをハードコードしている
 async def elicitation_callback_handler(context: RequestContext[ClientSession, None], params: ElicitRequestParams) -> ElicitResult:
     """サーバーからの elicitation のリクエストに、決まった内容で応答する。
 
@@ -79,6 +79,8 @@ async def main() -> None:
         async with ClientSession(
             read_stream, 
             write_stream,
+            # elicitation_callback を渡すと、initialize でクライアントが elicitation に対応していると伝わる。
+            # 渡さないと、サーバーが ctx.elicit() を呼んだときにエラーになる
             elicitation_callback=elicitation_callback_handler) as session:
             # 接続を初期化する
             await session.initialize()

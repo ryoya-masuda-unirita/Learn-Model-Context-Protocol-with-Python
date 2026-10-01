@@ -20,8 +20,11 @@ CODE_VERIFIER: str = "123"
 # 1b. 既存のトークンがないので、/authorize から始める
 
 # ステップ 1: /authorize へのブラウザのリダイレクトをシミュレートする
+# state は、リダイレクトで戻ってきたときに「自分が始めた認可か」を確かめるための値（CSRF 対策）
 authorize_url = f"{AUTH_SERVER}/authorize?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&state={STATE}&code_challenge={CODE_CHALLENGE}&code_challenge_method=plain"
 print(f"認可をリクエストしています: {authorize_url}")
+# allow_redirects=False にして、リダイレクト先の URL（Location ヘッダー）から認可コードを取り出す。
+# 本物のブラウザなら redirect_uri に飛び、そこで動いているクライアントのサーバーがコードを受け取る
 response = requests.get(authorize_url, allow_redirects=False)
 
 # ステップ 2: リダイレクトから認可コードを取り出す
@@ -48,6 +51,7 @@ access_token = token_data.get("access_token")
 print(f"アクセストークン: {access_token}")
 
 # ステップ 4: リソースサーバーを呼び出す
+# MCP の HTTP サーバーも、この「リソースサーバー」の立場になる。Authorization ヘッダーでアクセストークンを送る
 resource_response = requests.get(f"{RESOURCE_SERVER}/userinfo", headers={
     "Authorization": f"Bearer {access_token}"
 })

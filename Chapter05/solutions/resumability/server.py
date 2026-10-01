@@ -114,7 +114,13 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[types.ContentB
     list[types.ContentBlock]
         処理した件数を伝えるテキスト。
     """
+    # low-level の Server では、どの tool が呼ばれても call_tool が呼ばれる（FastMCP のように関数ごとには分かれない）。
+    # そのため、name を見て公開していない tool を弾く必要がある
+    if name != "process-files":
+        raise ValueError(f"不明な tool です: {name}")
+
     ctx = app.request_context
+    # Streamable HTTP では stdout を通信に使わないので、print してもクライアントとのやり取りは壊れない
     print("コンテキスト:", ctx)
 
     no_of_files = len(files)
@@ -148,6 +154,7 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[types.ContentB
     ]
 
 # tool の一覧（どんな tool があるか）を定義する
+# low-level の Server では、FastMCP が型ヒントから作ってくれる inputSchema も自分で書く
 @app.list_tools()
 async def list_tools() -> list[types.Tool]:
     """公開する tool の一覧を返す。

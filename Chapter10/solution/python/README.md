@@ -29,6 +29,6 @@ uv run python client.py
 ```text
 使える tool: ['book_trip']
 [CLIENT] elicitation のデータを受信しました: 会員ではありませんか？ 会員登録しますか？
-[CLIENT]: 代わりの日付を選択します: 2025-01-01
+[CLIENT]: 会員登録します: chris（chris@example.com）
 結果:  [BOOKED] 2025-01-02 で予約しました。chris さん、会員登録ありがとうございます！
 ````

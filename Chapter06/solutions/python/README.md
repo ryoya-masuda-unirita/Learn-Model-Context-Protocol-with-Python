@@ -24,7 +24,7 @@ uv run python server.py
 注文する
 
 ```
-npx @modelcontextprotocol/inspector --cli http://localhost:8000/sse --method tools/call --tool-name place_order --tool-arg order_id=0 --tool-arg customer_id=1 --tool-arg quantity=1 --tool-arg total_price=100
+npx @modelcontextprotocol/inspector --cli http://localhost:8000/sse --method tools/call --tool-name place_order --tool-arg customer_id=1 --tool-arg quantity=1 --tool-arg total_price=100
 ```
 
 注文を取得する（全件）

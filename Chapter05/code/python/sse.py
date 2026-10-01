@@ -33,6 +33,8 @@ def sse() -> Response:
         max = 5
 
         while True:
+            # SSE のイベントは「data: 本文」の行と、終わりを示す空行（\n\n）でできている。
+            # 空行を忘れると、クライアントはイベントの区切りがわからず受け取れない
             yield f"data: {time.ctime()}\n\n"
             count += 1
             if count >= max:
@@ -40,6 +42,8 @@ def sse() -> Response:
                 break
             time.sleep(1)
 
+    # ジェネレーターを渡すと、Flask は yield されるたびにクライアントへ送る（全部できるまで待たない）。
+    # text/event-stream は SSE であることを示す Content-Type。ブラウザの EventSource はこれでないと受け付けない
     return Response(generate(), mimetype='text/event-stream')
 
 import json

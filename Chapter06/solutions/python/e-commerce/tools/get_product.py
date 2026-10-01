@@ -33,7 +33,7 @@ async def handler(args: dict[str, Any]) -> ProductModel | None:
         if product.id == input.product_id:
             return product
     
-    # 商品が見つからなければ、None を返すかエラーを発生させる
+    # 商品が見つからなければ None を返す。server.py で JSON にすると null になり、LLM は「見つからなかった」と判断できる
     return None
 
 tool_get_product: dict[str, Any] = {

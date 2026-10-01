@@ -11,8 +11,11 @@ from typing import List, Dict, Any, Optional
 
 
 # MCP サーバーを作る
+# `mcp run server.py` は、このファイルの中から FastMCP のオブジェクト（変数 mcp）を探して起動する
 mcp: FastMCP = FastMCP("Demo")
 
+# tool の戻り値に pydantic のモデルを使うと、FastMCP が JSON に変換してクライアントに返す。
+# さらにモデルの定義から outputSchema（戻り値の形）も作られ、tools/list でクライアントに伝わる
 class Customer(BaseModel):
     """顧客。"""
 
@@ -120,6 +123,7 @@ class Order(BaseModel):
         super().__init__(**data)
 
 
+# データはメモリ上のリストに持っているだけなので、サーバーを再起動すると追加した注文やカートは消える
 products: list[Product] = [
     Product(id=1, name="商品 1", price=10.0, description="商品 1 の説明"),
     Product(id=2, name="商品 2", price=20.0, description="商品 2 の説明"),
@@ -132,6 +136,8 @@ orders: list[Order] = [
     Order(id=3, customer_id=102)
 ]
 
+# 注意: カートを作る tool がないため、carts は空のまま。get_cart は常に何も返さない
+# （add_to_cart は cart_items にだけ追加し、Cart は作らない）
 carts: list[Cart] = []
 cart_items: list[CartItem] = []
 
@@ -190,6 +196,8 @@ def get_orders(customer_id:int = 0) -> List[Order]:
     ValueError
         存在しない顧客の ID が指定された場合。
     """
+    # tool の中で例外を投げると、FastMCP がエラーの結果（isError: true）に変換してクライアントに返す。
+    # サーバー自体は落ちないので、LLM はエラーメッセージを見て引数を直して呼び直せる
     if customer_id != 0 and not any(customer.id == customer_id for customer in customers):
         raise ValueError(f"customer_id が不正です: {customer_id}")
 
@@ -217,6 +225,7 @@ def get_order(order_id:int) -> Order | None:
     for order in orders:
         if order.id == order_id:
             return order
+    # None を返すと、クライアントには空の結果（content が空）として届く
     return None
 
 # 注文する
@@ -239,7 +248,8 @@ def place_order(customer_id:int) -> Order:
     ValueError
         存在しない顧客の ID が指定された場合。
     """
-    if customer_id != 0 and not any(customer.id == customer_id for customer in customers):
+    # get_orders と違い、0 は「すべて」の意味を持たないので、存在しない顧客として弾く
+    if not any(customer.id == customer_id for customer in customers):
         raise ValueError(f"customer_id が不正です: {customer_id}")
 
     new_order = Order(customer_id=customer_id)
@@ -266,7 +276,8 @@ def get_cart(customer_id:int) -> Cart | None:
     ValueError
         存在しない顧客の ID が指定された場合。
     """
-    if customer_id != 0 and not any(customer.id == customer_id for customer in customers):
+    # get_orders と違い、0 は「すべて」の意味を持たないので、存在しない顧客として弾く
+    if not any(customer.id == customer_id for customer in customers):
         raise ValueError(f"customer_id が不正です: {customer_id}")
 
     # 顧客 ID でカートを取得する
@@ -377,6 +388,8 @@ def get_all_customers() -> List[Customer]:
     return customers
 
 # resource：商品カタログ
+# tool が「LLM が呼び出す操作」なのに対し、resource は「アプリが読み込んで LLM に渡すデータ」。
+# URI に変数を含まないので、resources/list に固定の resource として載る
 @mcp.resource("resource:product_catalog")
 def get_product_catalog() -> list[dict[str, Any]]:
     """商品カタログを取得する。

@@ -11,6 +11,7 @@ from mcp.client.stdio import stdio_client
 SERVER_PATH: Path = Path(__file__).resolve().parent / "server.py"
 
 # stdio 接続用のサーバーパラメーターを作る
+# stdio_client はこのコマンドでサーバーを子プロセスとして起動し、stdin / stdout をつなぐ（Chapter02 で手で書いたことを SDK がやる）
 server_params: StdioServerParameters = StdioServerParameters(
     command="mcp",  # 実行ファイル
     args=["run", str(SERVER_PATH)],  # コマンドライン引数（任意）
@@ -60,6 +61,8 @@ async def run() -> None:
                         # tool に渡す引数を用意する
                         arguments: dict[str, Any] = {}
                         print("tool の引数:", selected["parameters"])
+                        # inputSchema の properties を見れば、tool がどんな引数を受け取るかがわかる
+                        # input() の値は文字列なので、数値の引数の tool では型が合わずにエラーになる点に注意
                         for param in selected["parameters"]["properties"]:
                             print(f"パラメーター: {param}")
                             arguments[param] = input(f"{param} を入力してください: ")

@@ -65,16 +65,20 @@ async def message_handler(
         raise message
     elif isinstance(message, types.ServerNotification):
         logger.info("通知: %s", message)
+    # RequestResponder は「サーバーからクライアントへのリクエスト」（サンプリングなど）。
+    # クライアントが送ったリクエストへの応答は、call_tool() などの戻り値として返るので、ここには来ない
     elif isinstance(message, RequestResponder):
-        logger.info("リクエストへの応答: %s", message)
+        logger.info("サーバーからのリクエスト: %s", message)
     else:
-        logger.info("サーバーからのメッセージ: %s", message)
+        logger.info("不明なメッセージ: %s", message)
 
 async def main() -> None:
     """トークンを Authorization ヘッダーに付けてサーバーに接続し、get_time tool を呼び出す。"""
     logger.info("クライアントを起動しています...")
     async with streamablehttp_client(
         url = f"http://localhost:{port}/mcp",
+        # Streamable HTTP は普通の HTTP リクエストなので、認証情報は Authorization ヘッダーで送る。
+        # 以降のすべてのリクエスト（initialize、tools/call など）にこのヘッダーが付く
         headers = {"Authorization": "Bearer secret-token"}
     ) as (
         read_stream,

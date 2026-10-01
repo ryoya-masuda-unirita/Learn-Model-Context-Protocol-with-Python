@@ -3,6 +3,8 @@ from pydantic import BaseModel
 
 from tools.schema import AddCartInputModel, CategoryModel, CustomerModel, ProductModel, CartItemModel, OrderModel
 
+# データはメモリ上のリストに持っているだけなので、サーバーを再起動すると追加した内容は消える
+# carts は get_carts.py（tools/__init__.py に登録していない tool）だけが使う
 carts: list[AddCartInputModel] = []
 
 categories: list[CategoryModel] = [

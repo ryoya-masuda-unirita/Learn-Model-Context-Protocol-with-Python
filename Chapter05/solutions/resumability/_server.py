@@ -226,3 +226,9 @@ def main(
     uvicorn.run(starlette_app, host="127.0.0.1", port=port)
 
     return 0
+
+
+# main() は click のコマンドなので、呼び出すとコマンドライン引数（--port など）を読んでから実行される。
+# これがないと、python _server.py で実行しても何も起動せずに終わる
+if __name__ == "__main__":
+    main()

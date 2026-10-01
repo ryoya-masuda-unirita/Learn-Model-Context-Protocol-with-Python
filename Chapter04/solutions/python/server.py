@@ -54,6 +54,7 @@ products: list[dict[str, Any]] = [
     }
 ]
 
+# データはメモリ上のリストに持っているだけなので、サーバーを再起動するとカートは空に戻る
 cart: list[CartItem] = []
 
 # カテゴリーで商品を取得する
@@ -97,6 +98,7 @@ def add_product_to_cart(product_name: str) -> CartItem:
     if not product:
         # tool 内で送出した例外は、MCP のエラー応答（isError=True）としてクライアントに返る
         raise ValueError(f"商品 [{product_name}] が見つかりません")
+    # このサンプルではカートは1つだけ、数量も常に 1 に簡略化している
     cart_item = CartItem(cart_id=1, product_id=product["id"], quantity=1)
     cart.append(cart_item)
 
@@ -125,12 +127,18 @@ def get_products() -> List[Product]:
         すべての商品のリスト。
     """
     # 商品データを Product オブジェクトに変換する
+    # 辞書のまま返すこともできるが、モデルにすると FastMCP が outputSchema（戻り値の形）を作ってクライアントに伝えられる
     products_vm = [Product(**product) for product in products]
     return products_vm
 
 
 
 # 既存の ASGI サーバーに SSE サーバーをマウントする
+# mcp.sse_app() は、SSE トランスポートの MCP サーバーを ASGI アプリとして返す。中には2つのエンドポイントがある
+#   GET  /sse        : サーバー → クライアントの通り道。接続を開きっぱなしにして、応答や通知をイベントとして流す
+#   POST /messages/  : クライアント → サーバーの通り道。リクエストを1件ずつ POST する
+# HTTP は1回のリクエストに1回の応答しか返せないため、stdio の stdin / stdout の代わりに、向きごとに道を分けている
+# '/' にマウントしているので、クライアントは http://localhost:<ポート>/sse に接続する
 app: Starlette = Starlette(
     routes=[
         Mount('/', app=mcp.sse_app()),

@@ -37,7 +37,7 @@ server_params: StdioServerParameters = StdioServerParameters(
     args=[str(SERVER_PATH)]
 )
 
-async def call_llm(prompt: str, system_prompt: str) -> str:
+async def call_llm(prompt: str, system_prompt: str, max_tokens: int) -> str:
     """LLM にプロンプトを送り、生成されたテキストを返す。
 
     Parameters
@@ -46,6 +46,8 @@ async def call_llm(prompt: str, system_prompt: str) -> str:
         ユーザーのプロンプト。
     system_prompt : str
         システムプロンプト。
+    max_tokens : int
+        生成するトークン数の上限。サーバーがサンプリングのリクエストで指定した値を渡す。
 
     Returns
     -------
@@ -77,7 +79,9 @@ async def call_llm(prompt: str, system_prompt: str) -> str:
         model=BEDROCK_MODEL_ID,
         reasoning_effort=REASONING_EFFORT,
         temperature=1,
-        max_tokens=200,
+        # サンプリングでは、どれだけ生成するかはサーバーが決めて maxTokens で伝えてくる。
+        # クライアントが固定値を使うと、サーバーが長い応答を期待していても途中で切れてしまう
+        max_tokens=max_tokens,
         top_p=1
     )
 
@@ -88,6 +92,8 @@ async def call_llm(prompt: str, system_prompt: str) -> str:
 
 
 # 任意：サンプリングのコールバックを作る
+# サーバーが sampling/createMessage を送ってくると、SDK がこの関数を呼ぶ。
+# LLM を持っているのはクライアントなので、ここで LLM を呼び、その結果をサーバーに返す
 async def handle_sampling_message(
     context: RequestContext[ClientSession, None], params: types.CreateMessageRequestParams
 ) -> types.CreateMessageResult:
@@ -117,8 +123,9 @@ async def handle_sampling_message(
         raise ValueError("テキスト以外のサンプリングのリクエストには対応していません")
     message = request_content.text
 
-    # TODO: 実際の LLM を呼び出すように、以下を変更する
-    response = await call_llm(message, "あなたは親切なアシスタントです。話題から外れず、話を作りすぎないようにしつつ、必ず魅力的な商品説明を作成してください")
+    # サーバーが systemPrompt を指定していればそれを使い、なければクライアント側で用意したものを使う
+    system_prompt = params.systemPrompt or "あなたは親切なアシスタントです。話題から外れず、話を作りすぎないようにしつつ、必ず魅力的な商品説明を作成してください"
+    response = await call_llm(message, system_prompt, params.maxTokens)
 
     return types.CreateMessageResult(
         role="assistant",
@@ -185,7 +192,7 @@ async def run() -> None:
             # if isinstance(content_block, types.TextContent):
             #     print(f"resource の内容: {content_block.text}")
 
-            # tool を呼び出す（fastmcp_quickstart の create_product tool）
+            # tool を呼び出す。create_product の処理の途中で、サーバーからサンプリングのリクエストが届く
             result = await session.call_tool("create_product", arguments={"product_name": "パプリカ", "keywords": "赤い、みずみずしい、野菜"})
             print("結果:", first_text(result))
 

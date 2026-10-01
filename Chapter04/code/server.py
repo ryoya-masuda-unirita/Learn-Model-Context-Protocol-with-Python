@@ -29,6 +29,11 @@ def add(a: int, b: int) -> int:
 
 
 # 既存の ASGI サーバーに SSE サーバーをマウントする
+# mcp.sse_app() は、SSE トランスポートの MCP サーバーを ASGI アプリとして返す。中には2つのエンドポイントがある
+#   GET  /sse        : サーバー → クライアントの通り道。接続を開きっぱなしにして、応答や通知をイベントとして流す
+#   POST /messages/  : クライアント → サーバーの通り道。リクエストを1件ずつ POST する
+# HTTP は1回のリクエストに1回の応答しか返せないため、stdio の stdin / stdout の代わりに、向きごとに道を分けている
+# '/' にマウントしているので、クライアントは http://localhost:<ポート>/sse に接続する
 app: Starlette = Starlette(
     routes=[
         Mount('/', app=mcp.sse_app()),

@@ -24,6 +24,8 @@ async def homepage(request: Request) -> JSONResponse:
     return JSONResponse({'hello': '世界'})
 
 
+# Starlette のアプリは ASGI アプリ。ASGI アプリは自分では待ち受けないので、uvicorn などの ASGI サーバーで起動する。
+# MCP の SSE サーバーも同じ ASGI アプリなので、server.py ではこのアプリに MCP をマウントする
 app: Starlette = Starlette(debug=True, routes=[
     Route('/', homepage),
 ])

@@ -1,6 +1,4 @@
 """旅行予約の MCP サーバーに SSE で接続し、elicitation に応答するクライアント（会員登録版）。"""
-# TODO: Python のクライアントを追加する
-
 import asyncio
 
 from mcp import ClientSession
@@ -8,6 +6,8 @@ from mcp.client.sse import sse_client
 from mcp.types import CallToolResult, ElicitRequestParams, ElicitResult, TextContent
 from mcp.shared.context import RequestContext
 
+# サーバーが ctx.elicit() を呼ぶと、SDK がこの関数を呼ぶ。本来はここでユーザーに入力フォームを見せて答えてもらう。
+# このサンプルでは動きを見るため、ユーザーの答えをハードコードしている
 async def elicitation_callback_handler(context: RequestContext[ClientSession, None], params: ElicitRequestParams) -> ElicitResult:
     """サーバーからの elicitation のリクエストに、決まった内容で応答する。
 
@@ -33,14 +33,14 @@ async def elicitation_callback_handler(context: RequestContext[ClientSession, No
     # 2. 予約をキャンセルする（elicitation のやり取り自体を始めたくない）
     # return ElicitResult(action="decline") 動作確認済み
 
-    print("[CLIENT]: 代わりの日付を選択します: 2025-01-01")
+    print("[CLIENT]: 会員登録します: chris（chris@example.com）")
 
-    # 3. 別の日付 2025-01-01 を選び、予約が成立する
+    # 3. 会員登録して予約する
     return ElicitResult(action="accept", content={
           "become_member": True,
           "name": "chris",
           "email": "chris@example.com"
-    }) # 最初の 1月2日ではなく 1月1日で予約されるはず
+    }) # 2025-01-02 で予約され、会員登録のお礼が返るはず
 
 
     
@@ -80,6 +80,8 @@ async def main() -> None:
         async with ClientSession(
             read_stream, 
             write_stream,
+            # elicitation_callback を渡すと、initialize でクライアントが elicitation に対応していると伝わる。
+            # 渡さないと、サーバーが ctx.elicit() を呼んだときにエラーになる
             elicitation_callback=elicitation_callback_handler) as session:
             # 接続を初期化する
             await session.initialize()

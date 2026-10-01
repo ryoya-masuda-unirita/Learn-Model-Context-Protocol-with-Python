@@ -50,6 +50,14 @@ class OrderModel(BaseModel):
     quantity: int
     total_price: float
 
+class PlaceOrderInputModel(BaseModel):
+    """place_order tool の入力。"""
+
+    # order_id はサーバーが採番するので、入力には含めない（含めると LLM が意味のない値を考えて渡すことになる）
+    customer_id: int
+    quantity: int
+    total_price: float
+
 class GetOrderInputModel(BaseModel):
     """get_orders tool の入力。"""
 

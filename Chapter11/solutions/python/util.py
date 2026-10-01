@@ -8,6 +8,7 @@
 import jwt
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 import datetime
+from pathlib import Path
 from typing import Any
 
 # JWT の署名に使う秘密鍵（サンプル用の値。本番では環境変数などで管理し、コードに書かない）
@@ -37,6 +38,8 @@ def generate_token() -> str:
     }
 
     # エンコードする
+    # JWT は「ヘッダー.ペイロード.署名」を Base64 でつないだもの。ペイロードは誰でも読めるが、
+    # 秘密鍵を知らないと署名を作れないので、中身を書き換えると検証で弾かれる
     encoded_jwt = jwt.encode(payload, secret_key, algorithm="HS256", headers=header)
     print("エンコードした JWT:", encoded_jwt)
     return encoded_jwt   
@@ -55,6 +58,8 @@ def validate_token(token: str) -> dict[str, Any] | None:
         デコードした claim。有効期限切れや不正なトークンなら None。
     """
     try:
+        # 署名と有効期限（exp）の両方をここで確認する。algorithms を指定しないと、
+        # 攻撃者が alg を書き換えたトークンを受け入れてしまうおそれがある
         decoded = jwt.decode(token, secret_key, algorithms=["HS256"])
         # print("✅ トークンは有効です。")
         # print("デコードした claim:")
@@ -70,7 +75,9 @@ def validate_token(token: str) -> dict[str, Any] | None:
 if __name__ == "__main__":
     token = generate_token()
     # .env ファイルに書き出す
-    with open(".env", "w") as f:
+    # '.env' とだけ書くとカレントディレクトリに作られ、リポジトリのルートなどから実行すると別の場所にできてしまう。
+    # client.py / server.py と同じディレクトリに書き出す
+    with open(Path(__file__).resolve().parent / ".env", "w", encoding="utf-8") as f:
         f.write(f"TOKEN={token}")
     print(token)
     # validate_token(token)

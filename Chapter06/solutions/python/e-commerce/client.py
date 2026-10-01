@@ -6,6 +6,7 @@ from mcp.client.sse import sse_client
 
 async def run() -> None:
     """SSE でサーバーに接続し、tool と prompt を順に試す。"""
+    # 先に別のターミナルで server.py を起動しておく（SSE はサーバーを子プロセスとして起動しない）
     async with sse_client(url="http://127.0.0.1:8000/sse") as (read, write):
         async with ClientSession(
             read, write
@@ -36,8 +37,9 @@ async def run() -> None:
             prompts = await session.list_prompts()
             print("使える prompt:", prompts)
 
+            # example-prompt は arg1 を必須の引数（required=True）として公開しているので、渡しておく
             prompt = await session.get_prompt(
-                "example-prompt"
+                "example-prompt", arguments={"arg1": "値"}
             )
 
             print("prompt:", prompt)

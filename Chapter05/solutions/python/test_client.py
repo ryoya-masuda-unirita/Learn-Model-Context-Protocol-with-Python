@@ -23,6 +23,7 @@ message: dict[str, Any] = {
         }
     }
 
+# Streamable HTTP では、クライアントは JSON と SSE の両方を受け取れると宣言しなければならない
 headers: dict[str, str] = {
         'Accept': 'application/json, text/event-stream',
         'Content-Type': 'application/json'

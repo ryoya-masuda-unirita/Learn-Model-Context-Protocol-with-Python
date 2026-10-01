@@ -21,8 +21,11 @@ import datetime
 
 from dotenv import load_dotenv
 import os
+from pathlib import Path
 from util import validate_token
-load_dotenv()
+# util.py が書き出した .env を読む。場所を指定しないと、実行した場所によっては別の .env を読んでしまうので、
+# このファイルと同じディレクトリの .env を指定する
+load_dotenv(Path(__file__).resolve().parent / ".env")
 
 settings: dict[str, Any] = {
     "host": "localhost",
@@ -71,6 +74,7 @@ def has_scope(token: str, scope: str) -> bool:
     if not decoded:
         return False
     # とても単純な scope のチェック。実際にはトークンをきちんと解析して scope を確認する
+    # scope は「このトークンで何をしてよいか」。ユーザーが本物でも、必要な scope がなければ断る
     return  scope in decoded["scopes"]
 
 def validate_jwt(token: str) -> bool:
@@ -91,6 +95,8 @@ def validate_jwt(token: str) -> bool:
     return validate_token(token) != None
    
 
+# MCP のメッセージを処理する前に、HTTP のレベルでトークンを確認する。
+# 認証に失敗したリクエストは MCP サーバーまで届かないので、tool ごとに認証を書かなくてよい
 class CustomHeaderMiddleware(BaseHTTPMiddleware):
     """Authorization ヘッダーのトークンを検証する middleware。"""
 
@@ -115,12 +121,15 @@ class CustomHeaderMiddleware(BaseHTTPMiddleware):
             print("-> Authorization ヘッダーがありません！")
             return Response(status_code=401, content="認証されていません")
 
+            # 401 は「誰なのかわからない（認証情報がない）」、403 は「誰かはわかったが許可できない」。
+            # なお MCP の認可の仕様では、無効・期限切れのトークンにも 401 を返すことになっている
         if not validate_jwt(has_header):
             print("-> トークンが無効です！")
             return Response(status_code=403, content="アクセスが拒否されました")
 
         print("有効なトークンです。処理を続けます...")
 
+        # 認証（トークンが本物か）の次に、認可（このユーザーに何を許すか）を確認する
         if not is_user(has_header):
             print("-> ユーザーが存在しません！")
             return Response(status_code=403, content="アクセスが拒否されました - ユーザーが存在しません")
@@ -139,7 +148,7 @@ class CustomHeaderMiddleware(BaseHTTPMiddleware):
 
 app: FastMCP = FastMCP(
     name="MCP Resource Server",
-    instructions="認可サーバーの introspection でトークンを検証するリソースサーバー",
+    instructions="JWT でユーザーと scope を確認してアクセスを制限したサーバー",
     host=settings["host"],
     port=settings["port"],
     debug=True
