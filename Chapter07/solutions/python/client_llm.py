@@ -166,6 +166,7 @@ async def run() -> None:
                 # 提案された関数を呼び出す
                 # LLM が選んだ tool を、MCP の tools/call でサーバーに実行してもらう
                 for f in functions_to_call:
+                    
                     result = await session.call_tool(f["name"], arguments=f["args"])
                     print("tool の結果: ", result.content)
 

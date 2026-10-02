@@ -95,8 +95,9 @@ async def call_llm(prompt: str, system_prompt: str, max_tokens: int) -> str:
 # サーバーが sampling/createMessage を送ってくると、SDK がこの関数を呼ぶ。
 # LLM を持っているのはクライアントなので、ここで LLM を呼び、その結果をサーバーに返す
 async def handle_sampling_message(
-    context: RequestContext[ClientSession, None], params: types.CreateMessageRequestParams
-) -> types.CreateMessageResult:
+    context: RequestContext[ClientSession, None], 
+    params: types.CreateMessageRequestParams
+    ) -> types.CreateMessageResult:
     """サーバーからのサンプリングのリクエストを、LLM を呼び出して処理する。
 
     Parameters
