@@ -12,6 +12,7 @@ from starlette.applications import Starlette
 from starlette.routing import Mount, Host
 
 mcp: FastMCP = FastMCP(name="Elicitation Example")
+AVAILABLE_BOOKING_DATE = "2027-01-01"
 
 # elicitation で使えるのは、文字列・数値・真偽値などの単純な型のフィールドだけ（ネストしたオブジェクトは不可）。
 # クライアントが簡単な入力フォームとして表示できるようにするための制限
@@ -20,7 +21,7 @@ class BookingPreferences(BaseModel):
 
     checkAlternative: bool = Field(description="別の日付を確認しますか？")
     alternativeDate: str = Field(
-        default="2024-12-26",
+        default=AVAILABLE_BOOKING_DATE,
         description="代わりの日付（YYYY-MM-DD）",
     )
 
@@ -35,10 +36,10 @@ def not_available_date(date: str) -> bool:
     Returns
     -------
     bool
-        予約できなければ True。このサンプルでは 2024-12-25 以外はすべて予約できない。
+        予約できなければ True。このサンプルでは 2027-01-01 以外はすべて予約できない。
     """
     # 日付が空いているかのチェックをシミュレートする
-    return date != "2024-12-25"
+    return date != AVAILABLE_BOOKING_DATE
 
 
 @mcp.tool()

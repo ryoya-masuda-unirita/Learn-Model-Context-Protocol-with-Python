@@ -33,12 +33,12 @@ async def elicitation_callback_handler(context: RequestContext[ClientSession, No
     # 2. 予約をキャンセルする
     # return ElicitResult(action="decline"), 動作確認済み
 
-    print("[CLIENT]: 代わりの日付を選択します: 2025-01-01")
+    print("[CLIENT]: 代わりの日付を選択します: 2027-01-01")
 
-    # 3. 別の日付 2025-01-01 を選び、予約が成立する
+    # 3. 別の日付 2027-01-01 を選び、予約が成立する
     return ElicitResult(action="accept", content={
          "checkAlternative": True,
-         "alternativeDate": "2025-01-01"
+         "alternativeDate": "2027-01-01"
     }) # 最初の 1月2日ではなく 1月1日で予約されるはず
 
 
@@ -90,7 +90,7 @@ async def main() -> None:
 
             # tool を呼び出す
             result = await session.call_tool("book_trip", {
-                "date": "2025-01-02"
+                "date": "2027-01-01"
             })
             print("結果: ", first_text(result))
 
